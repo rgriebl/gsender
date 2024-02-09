@@ -71,6 +71,7 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
+// eslint-disable-next-line no-unused-vars
 const renderPage = () => {
     const container = document.createElement('div');
     document.title = `gSender ${settings.version}`;
@@ -96,7 +97,7 @@ const renderPage = () => {
                     </Switch>
                 </Router>
             </GridSystemProvider>
-        </ReduxProvider>,
+        </ReduxProvider>
     );
 };
 
@@ -169,7 +170,7 @@ series([
                 // Token authentication
                 if (token !== store.get('session.token')) {
                     log.warn(
-                        `Received a message with an unauthorized token (${token}).`,
+                        `Received a message with an unauthorized token (${token}).`
                     );
                     return;
                 }
@@ -181,11 +182,11 @@ series([
                     pubsub.publish('message:resize', payload);
                 } else {
                     log.warn(
-                        `No valid action type (${type}) specified in the message.`,
+                        `No valid action type (${type}) specified in the message.`
                     );
                 }
             },
-            false,
+            false
         );
 
         {
@@ -196,7 +197,7 @@ series([
                 (e) => {
                     e.preventDefault();
                 },
-                false,
+                false
             );
 
             window.addEventListener(
@@ -204,7 +205,7 @@ series([
                 (e) => {
                     e.preventDefault();
                 },
-                false,
+                false
             );
         }
 
@@ -237,7 +238,7 @@ series([
                             <h5>{i18n._('Corrupted workspace settings')}</h5>
                             <p>
                                 {i18n._(
-                                    'The workspace settings have become corrupted or invalid. Click Restore Defaults to restore default settings and continue.',
+                                    'The workspace settings have become corrupted or invalid. Click Restore Defaults to restore default settings and continue.'
                                 )}
                             </p>
                             <div>

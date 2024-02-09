@@ -168,8 +168,8 @@ module.exports = {
         new webpack.ContextReplacementPlugin(
             /moment[\/\\]locale$/,
             new RegExp(
-                '^./(' + without(buildConfig.languages, 'en').join('|') + ')$',
-            ),
+                '^./(' + without(buildConfig.languages, 'en').join('|') + ')$'
+            )
         ),
         // Generates a manifest.json file in your root output directory with a mapping of all source file names to their corresponding output file.
         new ManifestPlugin({

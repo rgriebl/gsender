@@ -20,7 +20,7 @@ const GcodeViewer = ({ gcode }) => {
             });
         },
         2000,
-        { trailing: false },
+        { trailing: false }
     );
 
     if (!gcode) {

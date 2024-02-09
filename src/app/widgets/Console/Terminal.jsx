@@ -128,7 +128,7 @@ class TerminalWrapper extends PureComponent {
 
         this.term.setOption(
             'fontFamily',
-            'Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif',
+            'Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif'
         );
         this.term.setOption('fontSize', 14);
 
@@ -147,7 +147,7 @@ class TerminalWrapper extends PureComponent {
                 if (this.props.active) {
                     this.refitTerminal();
                 }
-            }, 150),
+            }, 150)
         );
     }
 
@@ -387,14 +387,14 @@ class TerminalWrapper extends PureComponent {
 
                                 case 'ArrowUp': {
                                     this.updateInputHistoryIndex(
-                                        terminalInputIndex - 1,
+                                        terminalInputIndex - 1
                                     );
                                     break;
                                 }
 
                                 case 'ArrowDown': {
                                     this.updateInputHistoryIndex(
-                                        terminalInputIndex + 1,
+                                        terminalInputIndex + 1
                                     );
                                     break;
                                 }
