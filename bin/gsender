@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-const launchServer = (process.env.NODE_ENV === 'development')
-    ? require('../output/server-cli')
-    : require('../dist/gsender/server-cli');
+const launchServer =
+    process.env.NODE_ENV === 'development'
+        ? require('../output/server-cli')
+        : require('../dist/gsender/server-cli');
 
-launchServer().catch(err => {
+launchServer().catch((err) => {
     console.error('Error:', err);
 });

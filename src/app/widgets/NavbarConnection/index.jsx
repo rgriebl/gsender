@@ -1,25 +1,25 @@
 /*
-* Copyright (C) 2021 Sienci Labs Inc.
-*
-* This file is part of gSender.
-*
-* gSender is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, under version 3 of the License.
-*
-* gSender is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with gSender.  If not, see <https://www.gnu.org/licenses/>.
-*
-* Contact for information regarding this program and its license
-* can be sent through gSender@sienci.com or mailed to the main office
-* of Sienci Labs Inc. in Waterloo, Ontario, Canada.
-*
-*/
+ * Copyright (C) 2021 Sienci Labs Inc.
+ *
+ * This file is part of gSender.
+ *
+ * gSender is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, under version 3 of the License.
+ *
+ * gSender is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with gSender.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Contact for information regarding this program and its license
+ * can be sent through gSender@sienci.com or mailed to the main office
+ * of Sienci Labs Inc. in Waterloo, Ontario, Canada.
+ *
+ */
 
 import get from 'lodash/get';
 import reverse from 'lodash/reverse';
@@ -41,9 +41,8 @@ class NavbarConnectionWidget extends PureComponent {
     static propTypes = {
         widgetId: PropTypes.string.isRequired,
         disableWizardFunction: PropTypes.func,
-        enableWizardFunction: PropTypes.func
+        enableWizardFunction: PropTypes.func,
     };
-
 
     pubsubTokens = [];
 
@@ -54,34 +53,43 @@ class NavbarConnectionWidget extends PureComponent {
     actions = {
         toggleMinimized: () => {
             const { minimized } = this.state;
-            this.setState(state => ({
-                minimized: !minimized
+            this.setState((state) => ({
+                minimized: !minimized,
             }));
         },
         onClickFirmwareButton: (selectedFirmware) => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 alertMessage: '',
-                controllerType: selectedFirmware
+                controllerType: selectedFirmware,
             }));
             this.config.set('controller.type', selectedFirmware);
         },
         onClickPortListing: (selectedPort, isNetworkDevice = false) => {
-            this.setState(state => ({
-                alertMessage: '',
-                port: selectedPort.port
-            }), () => {
-                const { port, baudrate, controllerType } = this.state;
-                if (isNetworkDevice) {
-                    this.openPort(port, controllerType, { baudrate: baudrate, network: true });
-                } else {
-                    this.openPort(port, controllerType, { baudrate: baudrate, network: false });
-                }
-            });
+            this.setState(
+                (state) => ({
+                    alertMessage: '',
+                    port: selectedPort.port,
+                }),
+                () => {
+                    const { port, baudrate, controllerType } = this.state;
+                    if (isNetworkDevice) {
+                        this.openPort(port, controllerType, {
+                            baudrate: baudrate,
+                            network: true,
+                        });
+                    } else {
+                        this.openPort(port, controllerType, {
+                            baudrate: baudrate,
+                            network: false,
+                        });
+                    }
+                },
+            );
         },
         toggleShowUnrecognized: () => {
             const { showUnrecognized } = this.state;
             this.setState({
-                showUnrecognized: !showUnrecognized
+                showUnrecognized: !showUnrecognized,
             });
         },
         handleRefreshPorts: (event) => {
@@ -93,41 +101,41 @@ class NavbarConnectionWidget extends PureComponent {
         },
         hideUnrecognizedDevices: () => {
             this.setState({
-                showUnrecognized: false
+                showUnrecognized: false,
             });
-        }
+        },
     };
 
     setConnectedState() {
         const { port, connectedBaudrate } = this.props;
-        this.setState(state => ({
+        this.setState((state) => ({
             alertMessage: '',
             connecting: false,
             connected: true,
             scanning: false,
             controllerType: state.controllerType,
             port: port,
-            baudrate: connectedBaudrate
+            baudrate: connectedBaudrate,
         }));
 
         log.debug(`Established a connection to the serial port "${port}"`);
     }
 
     setDisconnectedState() {
-        this.setState(state => ({
+        this.setState((state) => ({
             alertMessage: '',
             connecting: false,
             connected: false,
-            scanning: false
+            scanning: false,
         }));
 
         this.refreshPorts();
     }
 
     setScanningState(isScanning) {
-        this.setState(state => ({
+        this.setState((state) => ({
             alertMessage: '',
-            scanning: isScanning
+            scanning: isScanning,
         }));
     }
 
@@ -174,7 +182,10 @@ class NavbarConnectionWidget extends PureComponent {
             this.config.set('baudrate', baudrate);
         }
         if (connection) {
-            this.config.set('connection.serial.rtscts', get(connection, 'serial.rtscts', false));
+            this.config.set(
+                'connection.serial.rtscts',
+                get(connection, 'serial.rtscts', false),
+            );
         }
         this.config.set('autoReconnect', autoReconnect);
     }
@@ -187,13 +198,7 @@ class NavbarConnectionWidget extends PureComponent {
 
         // Common baud rates
         const defaultBaudrates = [
-            250000,
-            115200,
-            57600,
-            38400,
-            19200,
-            9600,
-            2400
+            250000, 115200, 57600, 38400, 19200, 9600, 2400,
         ];
 
         return {
@@ -203,14 +208,16 @@ class NavbarConnectionWidget extends PureComponent {
             connecting: false,
             connected: false,
             scanning: false,
-            baudrates: reverse(sortBy(uniq(controller.baudrates.concat(defaultBaudrates)))),
+            baudrates: reverse(
+                sortBy(uniq(controller.baudrates.concat(defaultBaudrates))),
+            ),
             controllerType: controllerType,
             port: this.config.get('port'),
             baudrate: this.config.get('baudrate'),
             connection: {
                 serial: {
-                    rtscts: this.config.get('connection.serial.rtscts')
-                }
+                    rtscts: this.config.get('connection.serial.rtscts'),
+                },
             },
             autoReconnect: this.config.get('autoReconnect'),
             hasReconnected: false,
@@ -223,31 +230,37 @@ class NavbarConnectionWidget extends PureComponent {
     startLoading() {
         const delay = 5 * 1000; // wait for 5 seconds
 
-        this.setState(state => ({
-            loading: true
+        this.setState((state) => ({
+            loading: true,
         }));
         this._loadingTimer = setTimeout(() => {
-            this.setState(state => ({
-                loading: false
+            this.setState((state) => ({
+                loading: false,
             }));
         }, delay);
     }
 
     attemptAutoConnect() {
-        const { autoReconnect, hasReconnected, port, baudrate, controllerType } = this.state;
+        const {
+            autoReconnect,
+            hasReconnected,
+            port,
+            baudrate,
+            controllerType,
+        } = this.state;
         const { ports } = this.props;
 
         if (autoReconnect && !hasReconnected) {
-            this.setState(state => ({
-                hasReconnected: true
+            this.setState((state) => ({
+                hasReconnected: true,
             }));
             this.openPort(port, controllerType, {
-                baudrate: baudrate
+                baudrate: baudrate,
             });
         } else {
-            this.setState(state => ({
+            this.setState((state) => ({
                 alertMessage: '',
-                ports: ports
+                ports: ports,
             }));
         }
     }
@@ -257,8 +270,8 @@ class NavbarConnectionWidget extends PureComponent {
             clearTimeout(this._loadingTimer);
             this._loadingTimer = null;
         }
-        this.setState(state => ({
-            loading: false
+        this.setState((state) => ({
+            loading: false,
         }));
     }
 
@@ -273,34 +286,42 @@ class NavbarConnectionWidget extends PureComponent {
     openPort(port, controllerType, options) {
         const { baudrate } = { ...options };
 
-        this.setState(state => ({
-            connecting: true
+        this.setState((state) => ({
+            connecting: true,
         }));
 
-        controller.openPort(port, controllerType, {
-            baudrate: baudrate,
-            rtscts: this.state.connection.serial.rtscts,
-            ...options
-        }, (err) => {
-            if (err) {
-                this.setState(state => ({
-                    alertMessage: i18n._('Error opening port \'{{- port}}\'', { port: port }),
-                    connecting: false,
-                    connected: false,
-                    scanning: false
-                }));
+        controller.openPort(
+            port,
+            controllerType,
+            {
+                baudrate: baudrate,
+                rtscts: this.state.connection.serial.rtscts,
+                ...options,
+            },
+            (err) => {
+                if (err) {
+                    this.setState((state) => ({
+                        alertMessage: i18n._(
+                            "Error opening port '{{- port}}'",
+                            { port: port },
+                        ),
+                        connecting: false,
+                        connected: false,
+                        scanning: false,
+                    }));
 
-                log.error(err);
-                return;
-            }
-        });
+                    log.error(err);
+                    return;
+                }
+            },
+        );
     }
 
     closePort(port = this.state.port) {
-        this.setState(state => ({
+        this.setState((state) => ({
             connecting: false,
             connected: false,
-            scanning: false
+            scanning: false,
         }));
         controller.closePort(port, (err) => {
             if (err) {
@@ -317,12 +338,12 @@ class NavbarConnectionWidget extends PureComponent {
         const tokens = [
             pubsub.subscribe('autoReconnect:update', (msg, value) => {
                 this.setState({
-                    autoReconnect: value
+                    autoReconnect: value,
                 });
             }),
             pubsub.subscribe('baudrate:update', (msg, value) => {
                 this.setState({
-                    baudrate: value
+                    baudrate: value,
                 });
             }),
         ];
@@ -342,15 +363,13 @@ class NavbarConnectionWidget extends PureComponent {
             ...this.state,
             ports,
             networkPorts,
-            unrecognizedPorts
+            unrecognizedPorts,
         };
         const actions = {
-            ...this.actions
+            ...this.actions,
         };
 
-        return (
-            <NavbarConnection actions={actions} state={state} />
-        );
+        return <NavbarConnection actions={actions} state={state} />;
     }
 }
 
@@ -373,6 +392,6 @@ export default connect((store) => {
         connectedBaudrate,
         unrecognizedPorts,
         networkPorts,
-        state
+        state,
     };
 })(NavbarConnectionWidget);

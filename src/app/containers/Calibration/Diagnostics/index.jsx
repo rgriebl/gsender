@@ -29,7 +29,6 @@ import styles from './index.styl';
 import { collectUserUsageData } from '../../../lib/heatmap';
 import { USAGE_TOOL_NAME } from '../../../constants';
 
-
 const DiagnosticTool = () => {
     useEffect(() => {
         const timeout = setTimeout(() => {

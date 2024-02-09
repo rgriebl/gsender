@@ -33,7 +33,7 @@ import PropTypes from 'prop-types';
 import {
     RENDER_RENDERED,
     VISUALIZER_PRIMARY,
-    VISUALIZER_SECONDARY
+    VISUALIZER_SECONDARY,
 } from 'app/constants';
 import controller from '../../lib/controller';
 import styles from './index.styl';
@@ -54,14 +54,14 @@ class SVGVisualizer extends Component {
         max: {
             x: 0,
             y: 0,
-            z: 0
+            z: 0,
         },
         min: {
             x: 0,
             y: 0,
-            z: 0
-        }
-    }
+            z: 0,
+        },
+    };
 
     theme = store.get('widgets.visualizer');
 
@@ -80,8 +80,14 @@ class SVGVisualizer extends Component {
         const { x: xMax1, y: yMax1, z: zMax1 } = max1;
         const { x: xMin1, y: yMin1, z: zMin1 } = min1;
 
-        if (xMax0 !== xMax1 || yMax0 !== yMax1 || zMax0 !== zMax1 ||
-            xMin0 !== xMin1 || yMin0 !== yMin1 || zMin0 !== zMin1) {
+        if (
+            xMax0 !== xMax1 ||
+            yMax0 !== yMax1 ||
+            zMax0 !== zMax1 ||
+            xMin0 !== xMin1 ||
+            yMin0 !== yMin1 ||
+            zMin0 !== zMin1
+        ) {
             this.bbox = bbox;
             this.updateSVG();
         }
@@ -96,8 +102,10 @@ class SVGVisualizer extends Component {
             pubsub.subscribe('file:load', (msg, data) => {
                 const { isSecondary, activeVisualizer } = this.props;
 
-                const isPrimaryVisualizer = !isSecondary && activeVisualizer === VISUALIZER_PRIMARY;
-                const isSecondaryVisualizer = isSecondary && activeVisualizer === VISUALIZER_SECONDARY;
+                const isPrimaryVisualizer =
+                    !isSecondary && activeVisualizer === VISUALIZER_PRIMARY;
+                const isSecondaryVisualizer =
+                    isSecondary && activeVisualizer === VISUALIZER_SECONDARY;
 
                 if (isPrimaryVisualizer) {
                     this.isSecondaryVisualizer = false;
@@ -126,7 +134,13 @@ class SVGVisualizer extends Component {
         const { state } = this.props;
         const { gcode } = state;
         // reparse file
-        pubsub.publish('reparseGCode', gcode.content, gcode.size, gcode.name, this.props.isSecondary ? VISUALIZER_SECONDARY : VISUALIZER_PRIMARY);
+        pubsub.publish(
+            'reparseGCode',
+            gcode.content,
+            gcode.size,
+            gcode.name,
+            this.props.isSecondary ? VISUALIZER_SECONDARY : VISUALIZER_PRIMARY,
+        );
     }
 
     reloadGCode() {
@@ -135,14 +149,22 @@ class SVGVisualizer extends Component {
         actions.loadGCode('', gcode.visualization);
     }
 
-    async uploadGCodeFile (gcode) {
+    async uploadGCodeFile(gcode) {
         const serializedFile = new File([gcode], 'surfacing.gcode');
-        await api.file.upload(serializedFile, controller.port, VISUALIZER_SECONDARY);
+        await api.file.upload(
+            serializedFile,
+            controller.port,
+            VISUALIZER_SECONDARY,
+        );
     }
 
     updateSVG() {
-        let group = document.getElementById(!this.isSecondaryVisualizer ? 'g' : 'g2');
-        let svg = document.getElementById(!this.isSecondaryVisualizer ? 'svg' : 'svg2');
+        let group = document.getElementById(
+            !this.isSecondaryVisualizer ? 'g' : 'g2',
+        );
+        let svg = document.getElementById(
+            !this.isSecondaryVisualizer ? 'svg' : 'svg2',
+        );
         if (group && svg) {
             const reduxBBox = this.props.bbox;
             let bbox = JSON.parse(JSON.stringify(reduxBBox)); // make shallow copy
@@ -172,12 +194,24 @@ class SVGVisualizer extends Component {
                     - x: the middle of the svg - half the width of the viewbox
                     - y: the middle of the svg + half the width of the viewbox
             */
-            const xZero = xMiddle - ((Math.abs(xLength) + Math.abs(xLength) / 2) / 2);
-            const yZero = (yMiddle + ((Math.abs(yLength) + Math.abs(yLength) / 2) / 2)) * -1; // y is inversed because the svg starts off upside down
+            const xZero =
+                xMiddle - (Math.abs(xLength) + Math.abs(xLength) / 2) / 2;
+            const yZero =
+                (yMiddle + (Math.abs(yLength) + Math.abs(yLength) / 2) / 2) *
+                -1; // y is inversed because the svg starts off upside down
 
             // set the top left corner of the viewbox as the coordinates we calculated,
             // and set its size as the svg size plus a little extra
-            svg.setAttribute('viewBox', xZero + ' ' + yZero + ' ' + (Math.abs(xLength) + Math.abs(xLength) / 2) + ' ' + (Math.abs(yLength) + Math.abs(yLength) / 2));
+            svg.setAttribute(
+                'viewBox',
+                xZero +
+                    ' ' +
+                    yZero +
+                    ' ' +
+                    (Math.abs(xLength) + Math.abs(xLength) / 2) +
+                    ' ' +
+                    (Math.abs(yLength) + Math.abs(yLength) / 2),
+            );
             group.setAttribute('transform', 'translate(0,0) scale(1,-1)');
         }
     }
@@ -186,12 +220,20 @@ class SVGVisualizer extends Component {
         const { paths } = vizualization;
         const { currentTheme } = this.props.state;
 
-        let svg = document.getElementById(!this.isSecondaryVisualizer ? 'svg' : 'svg2');
+        let svg = document.getElementById(
+            !this.isSecondaryVisualizer ? 'svg' : 'svg2',
+        );
         if (svg) {
-            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            const group = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'g',
+            );
             group.setAttribute('id', !this.isSecondaryVisualizer ? 'g' : 'g2');
             paths.map((element, i) => {
-                const node = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const node = document.createElementNS(
+                    'http://www.w3.org/2000/svg',
+                    'path',
+                );
                 const path = element.path;
                 const fill = element.fill;
 
@@ -199,8 +241,11 @@ class SVGVisualizer extends Component {
                 node.setAttribute('fill', fill);
                 // add stroke colour
                 const motion = element.motion;
-                const opacity = (motion === 'G0') ? '0F' : 'FF';
-                const stroke = motion === 'G0' ? currentTheme.get(G0_PART) + opacity : currentTheme.get(G1_PART) + opacity;
+                const opacity = motion === 'G0' ? '0F' : 'FF';
+                const stroke =
+                    motion === 'G0'
+                        ? currentTheme.get(G0_PART) + opacity
+                        : currentTheme.get(G1_PART) + opacity;
                 node.setAttribute('stroke', stroke);
 
                 return group.appendChild(node);
@@ -213,8 +258,8 @@ class SVGVisualizer extends Component {
             reduxStore.dispatch({
                 type: fileActions.UPDATE_FILE_RENDER_STATE,
                 payload: {
-                    state: RENDER_RENDERED
-                }
+                    state: RENDER_RENDERED,
+                },
             });
         }
     }
@@ -227,7 +272,9 @@ class SVGVisualizer extends Component {
     }
 
     unload() {
-        let svg = document.getElementById(!this.isSecondaryVisualizer ? 'svg' : 'svg2');
+        let svg = document.getElementById(
+            !this.isSecondaryVisualizer ? 'svg' : 'svg2',
+        );
         // remove svg
         if (svg) {
             while (svg.firstChild) {
@@ -238,12 +285,14 @@ class SVGVisualizer extends Component {
 
     render() {
         const id = !this.isSecondaryVisualizer ? 'svg' : 'svg2';
-        const viewBox = !this.isSecondaryVisualizer ? '0 0 500 500' : '0 0 470 470';
+        const viewBox = !this.isSecondaryVisualizer
+            ? '0 0 500 500'
+            : '0 0 470 470';
         const { currentTheme } = this.props.state;
         return (
             <div
                 style={{
-                    visibility: this.props.show ? 'visible' : 'hidden'
+                    visibility: this.props.show ? 'visible' : 'hidden',
                 }}
                 className={styles.visualizerContainer}
             >
@@ -253,7 +302,9 @@ class SVGVisualizer extends Component {
                     width="100%"
                     viewBox={viewBox}
                     className={styles.svgContainer}
-                    style={{ backgroundColor: currentTheme.get(BACKGROUND_PART) }}
+                    style={{
+                        backgroundColor: currentTheme.get(BACKGROUND_PART),
+                    }}
                 />
             </div>
         );
@@ -264,13 +315,18 @@ SVGVisualizer.defaultProps = {
     isSecondary: false,
 };
 
-export default connect((store) => {
-    const bbox = _get(store, 'file.bbox');
-    const content = _get(store, 'file.content');
-    const { activeVisualizer } = store.visualizer;
-    return {
-        bbox,
-        content,
-        activeVisualizer
-    };
-}, null, null, { forwardRef: true })(SVGVisualizer);
+export default connect(
+    (store) => {
+        const bbox = _get(store, 'file.bbox');
+        const content = _get(store, 'file.content');
+        const { activeVisualizer } = store.visualizer;
+        return {
+            bbox,
+            content,
+            activeVisualizer,
+        };
+    },
+    null,
+    null,
+    { forwardRef: true },
+)(SVGVisualizer);

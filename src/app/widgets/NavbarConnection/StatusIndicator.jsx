@@ -2,7 +2,12 @@ import React from 'react';
 import cx from 'classnames';
 import styles from './Index.styl';
 
-const renderConnectionStatusIcon = (connected, connecting, scanning, alertMessage) => {
+const renderConnectionStatusIcon = (
+    connected,
+    connecting,
+    scanning,
+    alertMessage,
+) => {
     if (connected) {
         return 'fa fa-check';
     } else if (alertMessage) {
@@ -27,11 +32,18 @@ const getIconState = (connected, connecting, scanning, alertMessage) => {
 };
 
 const StatusIndicator = ({ connected, connecting, scanning, alertMessage }) => {
-    const iconState = getIconState(connected, connecting, scanning, alertMessage);
+    const iconState = getIconState(
+        connected,
+        connecting,
+        scanning,
+        alertMessage,
+    );
 
     return (
         <div className={cx(styles.statusWrapper, styles[iconState])}>
-            <i className={`${renderConnectionStatusIcon(connected, connecting, scanning, alertMessage)}`} />
+            <i
+                className={`${renderConnectionStatusIcon(connected, connecting, scanning, alertMessage)}`}
+            />
         </div>
     );
 };

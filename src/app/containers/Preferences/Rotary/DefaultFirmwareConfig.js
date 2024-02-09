@@ -15,9 +15,10 @@ const DefaultFirmwareConfig = ({ state = {}, actions }) => {
 
     const handleResetToDefault = () => {
         Confirm({
-            content: 'Are you sure you reset the default firmware configuration?',
+            content:
+                'Are you sure you reset the default firmware configuration?',
             title: 'Reset Default Firmware Configuration',
-            onConfirm: actions.rotary.resetDefaultFirmwareSettings
+            onConfirm: actions.rotary.resetDefaultFirmwareSettings,
         });
     };
 
@@ -36,7 +37,12 @@ const DefaultFirmwareConfig = ({ state = {}, actions }) => {
                     <Input
                         label="Y-axis Travel Resolution"
                         value={$101}
-                        onChange={(e) => actions.rotary.updateDefaultFirmwareSetting('$101', e.target.value)}
+                        onChange={(e) =>
+                            actions.rotary.updateDefaultFirmwareSetting(
+                                '$101',
+                                e.target.value,
+                            )
+                        }
                         units="step/mm"
                     />
                 </Tooltip>
@@ -50,7 +56,12 @@ const DefaultFirmwareConfig = ({ state = {}, actions }) => {
                     <Input
                         label="Y-axis Maximum Rate"
                         value={$111}
-                        onChange={(e) => actions.rotary.updateDefaultFirmwareSetting('$111', e.target.value)}
+                        onChange={(e) =>
+                            actions.rotary.updateDefaultFirmwareSetting(
+                                '$111',
+                                e.target.value,
+                            )
+                        }
                         units="mm/min"
                     />
                 </Tooltip>
@@ -62,7 +73,12 @@ const DefaultFirmwareConfig = ({ state = {}, actions }) => {
                     location="default"
                 >
                     <ToggleSwitch
-                        onChange={(value) => actions.rotary.updateDefaultFirmwareSetting('$21', (+value).toString())}
+                        onChange={(value) =>
+                            actions.rotary.updateDefaultFirmwareSetting(
+                                '$21',
+                                (+value).toString(),
+                            )
+                        }
                         checked={$21}
                         label="Hard Limits"
                         size="small"
@@ -76,7 +92,12 @@ const DefaultFirmwareConfig = ({ state = {}, actions }) => {
                     location="default"
                 >
                     <ToggleSwitch
-                        onChange={(value) => actions.rotary.updateFirmwareSetting('$20', (+value).toString())}
+                        onChange={(value) =>
+                            actions.rotary.updateFirmwareSetting(
+                                '$20',
+                                (+value).toString(),
+                            )
+                        }
                         checked={$20}
                         label="Force Soft Limits"
                         size="small"
@@ -84,7 +105,12 @@ const DefaultFirmwareConfig = ({ state = {}, actions }) => {
                 </Tooltip>
             </div>
 
-            <Button style={{ marginBottom: '1rem' }} onClick={handleResetToDefault}>Reset to Default</Button>
+            <Button
+                style={{ marginBottom: '1rem' }}
+                onClick={handleResetToDefault}
+            >
+                Reset to Default
+            </Button>
         </Fieldset>
     );
 };

@@ -30,12 +30,12 @@ class GrblHalLineParserResultVersion {
             return null;
         }
         const payload = {
-            message: r[1]
+            message: r[1],
         };
 
         return {
             type: GrblHalLineParserResultVersion,
-            payload: payload
+            payload: payload,
         };
     }
 }

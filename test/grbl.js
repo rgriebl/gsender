@@ -16,7 +16,7 @@ test('GrblLineParserResultStatus: all zeroes in the mask ($10=0)', (t) => {
         t.same(status, {
             activeState: 'Idle',
             pinState: {},
-            subState: 0
+            subState: 0,
         });
         t.end();
     });
@@ -36,13 +36,13 @@ test('GrblLineParserResultStatus: default ($10=3)', (t) => {
             mpos: {
                 x: '5.529',
                 y: '0.560',
-                z: '7.000'
+                z: '7.000',
             },
             wpos: {
                 x: '1.529',
                 y: '-5.440',
-                z: '-0.000'
-            }
+                z: '-0.000',
+            },
         });
         t.end();
     });
@@ -54,7 +54,10 @@ test('GrblLineParserResultStatus: default ($10=3)', (t) => {
 test('GrblLineParserResultStatus: 6-axis', (t) => {
     const runner = new GrblRunner();
     runner.on('status', ({ raw, ...status }) => {
-        t.equal(raw, '<Idle,MPos:5.529,0.560,7.000,0.100,0.250,0.500,WPos:1.529,-5.440,-0.000,0.100,0.250,0.500>');
+        t.equal(
+            raw,
+            '<Idle,MPos:5.529,0.560,7.000,0.100,0.250,0.500,WPos:1.529,-5.440,-0.000,0.100,0.250,0.500>',
+        );
         t.same(status, {
             activeState: 'Idle',
             subState: 0,
@@ -65,7 +68,7 @@ test('GrblLineParserResultStatus: 6-axis', (t) => {
                 z: '7.000',
                 a: '0.100',
                 b: '0.250',
-                c: '0.500'
+                c: '0.500',
             },
             wpos: {
                 x: '1.529',
@@ -73,43 +76,48 @@ test('GrblLineParserResultStatus: 6-axis', (t) => {
                 z: '-0.000',
                 a: '0.100',
                 b: '0.250',
-                c: '0.500'
-            }
+                c: '0.500',
+            },
         });
         t.end();
     });
 
-    const line = '<Idle,MPos:5.529,0.560,7.000,0.100,0.250,0.500,WPos:1.529,-5.440,-0.000,0.100,0.250,0.500>';
+    const line =
+        '<Idle,MPos:5.529,0.560,7.000,0.100,0.250,0.500,WPos:1.529,-5.440,-0.000,0.100,0.250,0.500>';
     runner.parse(line);
 });
 
 test('GrblLineParserResultStatus: set all bits to 1 ($10=31)', (t) => {
     const runner = new GrblRunner();
     runner.on('status', ({ raw, ...status }) => {
-        t.equal(raw, '<Idle,MPos:5.529,0.560,7.000,WPos:1.529,-5.440,-0.000,Buf:0,RX:0,Lim:000>');
+        t.equal(
+            raw,
+            '<Idle,MPos:5.529,0.560,7.000,WPos:1.529,-5.440,-0.000,Buf:0,RX:0,Lim:000>',
+        );
         t.same(status, {
             activeState: 'Idle',
             subState: 0,
             mpos: {
                 x: '5.529',
                 y: '0.560',
-                z: '7.000'
+                z: '7.000',
             },
             wpos: {
                 x: '1.529',
                 y: '-5.440',
-                z: '-0.000'
+                z: '-0.000',
             },
             buf: {
                 planner: 0,
-                rx: 0
+                rx: 0,
             },
             pinState: {},
         });
         t.end();
     });
 
-    const line = '<Idle,MPos:5.529,0.560,7.000,WPos:1.529,-5.440,-0.000,Buf:0,RX:0,Lim:000>';
+    const line =
+        '<Idle,MPos:5.529,0.560,7.000,WPos:1.529,-5.440,-0.000,Buf:0,RX:0,Lim:000>';
     runner.parse(line);
 });
 
@@ -168,7 +176,7 @@ test('GrblLineParserResultParserState', (t) => {
                 },
                 tool: '0',
                 feedrate: '2540.',
-                spindle: '0.'
+                spindle: '0.',
             });
             t.equal(runner.getTool(), 0);
             t.end();
@@ -197,7 +205,7 @@ test('GrblLineParserResultParserState', (t) => {
                 },
                 tool: '2',
                 feedrate: '2540.',
-                spindle: '0.'
+                spindle: '0.',
             });
             t.equal(runner.getTool(), 2);
             t.end();
@@ -220,7 +228,7 @@ test('GrblLineParserResultParameters:G54,G55,G56,G57,G58,G59,G28,G30,G92', (t) =
         '[G59:0.000,0.000,0.000]',
         '[G28:0.000,0.000,0.000]',
         '[G30:0.000,0.000,0.000]',
-        '[G92:0.000,0.000,0.000]'
+        '[G92:0.000,0.000,0.000]',
     ];
     const runner = new GrblRunner();
     let i = 0;
@@ -262,7 +270,7 @@ test('GrblLineParserResultParameters:G54,G55,G56,G57,G58,G59,G28,G30,G92', (t) =
         }
     });
 
-    lines.forEach(line => {
+    lines.forEach((line) => {
         runner.parse(line);
     });
 });
@@ -293,7 +301,7 @@ test('GrblLineParserResultParameters:PRB', (t) => {
             result: 1,
             x: '0.000',
             y: '0.000',
-            z: '1.492'
+            z: '1.492',
         });
         t.end();
     });
@@ -308,12 +316,12 @@ test('GrblLineParserResultFeedback', (t) => {
         // Sent after an alarm message to tell the user to reset Grbl as an acknowledgement that an alarm has happened.
         '[Reset to continue]',
         // After an alarm and the user has sent a reset,
-        '[\'$H\'|\'$X\' to unlock]',
+        "['$H'|'$X' to unlock]",
         // This feedback message is sent when the user overrides the alarm.
         '[Caution: Unlocked]',
         // $C - Check gcode mode
         '[Enabled]',
-        '[Disabled]'
+        '[Disabled]',
     ];
     const runner = new GrblRunner();
     let i = 0;
@@ -331,7 +339,7 @@ test('GrblLineParserResultFeedback', (t) => {
         }
     });
 
-    lines.forEach(line => {
+    lines.forEach((line) => {
         runner.parse(line);
     });
 });
@@ -367,7 +375,7 @@ test('GrblLineParserResultSettings', (t) => {
         '$122=50.000 (z accel, mm/sec^2)',
         '$130=200.000 (x max travel, mm)',
         '$131=200.000 (y max travel, mm)',
-        '$132=200.000 (z max travel, mm)'
+        '$132=200.000 (z max travel, mm)',
     ];
     const runner = new GrblRunner();
     let i = 0;
@@ -386,7 +394,7 @@ test('GrblLineParserResultSettings', (t) => {
         }
     });
 
-    lines.forEach(line => {
+    lines.forEach((line) => {
         runner.parse(line);
     });
 });
@@ -395,28 +403,28 @@ test('GrblLineParserResultStartup', (t) => {
     t.test('Grbl 0.9j', (t) => {
         const runner = new GrblRunner();
         runner.on('startup', ({ raw, firmware, version, message }) => {
-            t.equal(raw, 'Grbl 0.9j [\'$\' for help]');
+            t.equal(raw, "Grbl 0.9j ['$' for help]");
             t.equal(firmware, 'Grbl');
             t.equal(version, '0.9j');
-            t.equal(message, '[\'$\' for help]');
+            t.equal(message, "['$' for help]");
             t.end();
         });
 
-        const line = 'Grbl 0.9j [\'$\' for help]';
+        const line = "Grbl 0.9j ['$' for help]";
         runner.parse(line);
     });
 
     t.test('Grbl 1.1f', (t) => {
         const runner = new GrblRunner();
         runner.on('startup', ({ raw, firmware, version, message }) => {
-            t.equal(raw, 'Grbl 1.1f [\'$\' for help]');
+            t.equal(raw, "Grbl 1.1f ['$' for help]");
             t.equal(firmware, 'Grbl');
             t.equal(version, '1.1f');
-            t.equal(message, '[\'$\' for help]');
+            t.equal(message, "['$' for help]");
             t.end();
         });
 
-        const line = 'Grbl 1.1f [\'$\' for help]';
+        const line = "Grbl 1.1f ['$' for help]";
         runner.parse(line);
     });
 
@@ -437,42 +445,45 @@ test('GrblLineParserResultStartup', (t) => {
     t.test('Custom firmware build: LongMill build #1', (t) => {
         const runner = new GrblRunner();
         runner.on('startup', ({ raw, firmware, version, message }) => {
-            t.equal(raw, 'Grbl 1.1h: LongMill build [\'$\' for help]');
+            t.equal(raw, "Grbl 1.1h: LongMill build ['$' for help]");
             t.equal(firmware, 'Grbl');
             t.equal(version, '1.1h');
-            t.equal(message, ': LongMill build [\'$\' for help]');
+            t.equal(message, ": LongMill build ['$' for help]");
             t.end();
         });
 
-        const line = 'Grbl 1.1h: LongMill build [\'$\' for help]';
+        const line = "Grbl 1.1h: LongMill build ['$' for help]";
         runner.parse(line);
     });
 
     t.test('Custom firmware build: LongMill build #2', (t) => {
         const runner = new GrblRunner();
         runner.on('startup', ({ raw, firmware, version, message }) => {
-            t.equal(raw, 'Grbl 1.1h [\'$\' for help] LongMill build Feb 25, 2020');
+            t.equal(
+                raw,
+                "Grbl 1.1h ['$' for help] LongMill build Feb 25, 2020",
+            );
             t.equal(firmware, 'Grbl');
             t.equal(version, '1.1h');
-            t.equal(message, '[\'$\' for help] LongMill build Feb 25, 2020');
+            t.equal(message, "['$' for help] LongMill build Feb 25, 2020");
             t.end();
         });
 
-        const line = 'Grbl 1.1h [\'$\' for help] LongMill build Feb 25, 2020';
+        const line = "Grbl 1.1h ['$' for help] LongMill build Feb 25, 2020";
         runner.parse(line);
     });
 
     t.test('Custom firmware build: vCarvin', (t) => {
         const runner = new GrblRunner();
         runner.on('startup', ({ raw, firmware, version, message }) => {
-            t.equal(raw, 'vCarvin 2.0.0 [\'$\' for help]');
+            t.equal(raw, "vCarvin 2.0.0 ['$' for help]");
             t.equal(firmware, 'vCarvin');
             t.equal(version, '2.0.0');
-            t.equal(message, '[\'$\' for help]');
+            t.equal(message, "['$' for help]");
             t.end();
         });
 
-        const line = 'vCarvin 2.0.0 [\'$\' for help]';
+        const line = "vCarvin 2.0.0 ['$' for help]";
         runner.parse(line);
     });
 

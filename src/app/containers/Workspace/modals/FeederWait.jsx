@@ -31,11 +31,7 @@ import controller from 'app/lib/controller';
 import i18n from 'app/lib/i18n';
 
 const FeederWait = (props) => (
-    <Modal
-        size="xs"
-        disableOverlayClick
-        showCloseButton={false}
-    >
+    <Modal size="xs" disableOverlayClick showCloseButton={false}>
         <Modal.Body>
             <ModalTemplate type="warning">
                 <h5>{props.title}</h5>
@@ -45,12 +41,9 @@ const FeederWait = (props) => (
         <Modal.Footer>
             <Button
                 btnStyle="danger"
-                onClick={chainedFunction(
-                    () => {
-                        controller.command('feeder:stop');
-                    },
-                    props.onClose
-                )}
+                onClick={chainedFunction(() => {
+                    controller.command('feeder:stop');
+                }, props.onClose)}
             >
                 {i18n._('Stop')}
             </Button>
@@ -60,7 +53,7 @@ const FeederWait = (props) => (
 
 FeederWait.propTypes = {
     title: PropTypes.string,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
 };
 
 export default FeederWait;

@@ -44,7 +44,6 @@ import { RED, ALARM_RED } from './variables';
 import styles from './index.styl';
 import { UPDATE_TERMINAL_HISTORY } from '../../actions/controllerActions';
 
-
 const LINES_TO_COPY = 50;
 class TerminalWrapper extends PureComponent {
     static propTypes = {
@@ -63,13 +62,14 @@ class TerminalWrapper extends PureComponent {
         cursorBlink: false,
         scrollback: 1000,
         tabStopWidth: 4,
-        onData: () => {}
+        onData: () => {},
     };
 
     state = {
         terminalInputHistory: store.get('workspace.terminal.inputHistory', []), // to store user input from the terminal
-        terminalInputIndex: store.get('workspace.terminal.inputHistory')?.length
-    }
+        terminalInputIndex: store.get('workspace.terminal.inputHistory')
+            ?.length,
+    };
 
     prompt = ' ';
 
@@ -83,9 +83,9 @@ class TerminalWrapper extends PureComponent {
 
     fitAddon = null;
 
-    debounce = debounce
+    debounce = debounce;
 
-    inputRef = React.createRef()
+    inputRef = React.createRef();
 
     eventHandler = {
         onKey: (() => {
@@ -98,7 +98,7 @@ class TerminalWrapper extends PureComponent {
                 }
 
                 // Ctrl-C copy - ctrl + c on windows/linux, meta-c on mac
-                if ((event.ctrlKey || event.metaKey) && (event.code === 'KeyC')) {
+                if ((event.ctrlKey || event.metaKey) && event.code === 'KeyC') {
                     await navigator.clipboard?.writeText(line);
                     return;
                 }
@@ -108,7 +108,11 @@ class TerminalWrapper extends PureComponent {
 
     componentDidMount() {
         const { scrollback, tabStopWidth } = this.props;
-        this.term = new Terminal({ scrollback, tabStopWidth, cursorStyle: 'underline' });
+        this.term = new Terminal({
+            scrollback,
+            tabStopWidth,
+            cursorStyle: 'underline',
+        });
 
         this.fitAddon = new FitAddon();
 
@@ -122,7 +126,10 @@ class TerminalWrapper extends PureComponent {
         this.term.open(el);
         this.term.focus(false);
 
-        this.term.setOption('fontFamily', 'Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif');
+        this.term.setOption(
+            'fontFamily',
+            'Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif',
+        );
         this.term.setOption('fontSize', 14);
 
         this.term.attachCustomKeyEventHandler(this.eventHandler.onKey);
@@ -134,11 +141,14 @@ class TerminalWrapper extends PureComponent {
         const viewportElement = el.querySelector('.xterm-viewport');
         this.verticalScrollbar = new PerfectScrollbar(viewportElement);
 
-        window.addEventListener('resize', this.debounce(() => {
-            if (this.props.active) {
-                this.refitTerminal();
-            }
-        }, 150));
+        window.addEventListener(
+            'resize',
+            this.debounce(() => {
+                if (this.props.active) {
+                    this.refitTerminal();
+                }
+            }, 150),
+        );
     }
 
     componentDidUpdate(_, prevState) {
@@ -154,7 +164,8 @@ class TerminalWrapper extends PureComponent {
             }
 
             this.inputRef.current.focus();
-            this.inputRef.current.value = terminalInputHistory[this.state.terminalInputIndex] || '';
+            this.inputRef.current.value =
+                terminalInputHistory[this.state.terminalInputIndex] || '';
         }
     }
 
@@ -191,10 +202,11 @@ class TerminalWrapper extends PureComponent {
         document.body.appendChild(outer);
         const w1 = inner.offsetWidth;
         outer.style.overflow = 'scroll';
-        const w2 = (w1 === inner.offsetWidth) ? outer.clientWidth : inner.offsetWidth;
+        const w2 =
+            w1 === inner.offsetWidth ? outer.clientWidth : inner.offsetWidth;
         document.body.removeChild(outer);
 
-        return (w1 - w2);
+        return w1 - w2;
     }
 
     refitTerminal() {
@@ -253,12 +265,18 @@ class TerminalWrapper extends PureComponent {
             newTerminalInputHistory.shift();
         }
 
-        store.replace('workspace.terminal.inputHistory', [...newTerminalInputHistory, command]);
+        store.replace('workspace.terminal.inputHistory', [
+            ...newTerminalInputHistory,
+            command,
+        ]);
 
-        this.setState({ terminalInputHistory: [...newTerminalInputHistory, command], terminalInputIndex: newTerminalInputHistory.length + 1 });
+        this.setState({
+            terminalInputHistory: [...newTerminalInputHistory, command],
+            terminalInputIndex: newTerminalInputHistory.length + 1,
+        });
 
         this.inputRef.current.value = '';
-    }
+    };
 
     // updates the terminal history stored in redux for the current session
     // includes every line written to the terminal
@@ -268,12 +286,12 @@ class TerminalWrapper extends PureComponent {
             this.newHistory.shift();
         }
         this.pushUpdatedTerminalHistory();
-    }
+    };
 
     pushUpdatedTerminalHistory = debounce(() => {
         reduxStore.dispatch({
             type: UPDATE_TERMINAL_HISTORY,
-            payload: this.newHistory
+            payload: this.newHistory,
         });
         this.newHistory = [];
     }, 1000);
@@ -291,9 +309,9 @@ class TerminalWrapper extends PureComponent {
 
         Toaster.pop({
             msg: `Copied Last ${selection.length} Lines from the Terminal to Clipboard`,
-            type: TOASTER_INFO
+            type: TOASTER_INFO,
         });
-    }
+    };
 
     updateInputHistoryIndex = (index) => {
         const { terminalInputHistory } = this.state;
@@ -302,18 +320,22 @@ class TerminalWrapper extends PureComponent {
         }
 
         if (index >= terminalInputHistory.length) {
-            this.setState(current => ({ terminalInputIndex: current.terminalInputHistory.length }));
+            this.setState((current) => ({
+                terminalInputIndex: current.terminalInputHistory.length,
+            }));
             this.inputRef.current.value = '';
             return;
         }
 
         this.setState({ terminalInputIndex: index });
-    }
+    };
 
     resetTerminalInputIndex = () => {
-        this.setState(current => ({ terminalInputIndex: current.terminalInputHistory.length }));
+        this.setState((current) => ({
+            terminalInputIndex: current.terminalInputHistory.length,
+        }));
         this.inputRef.current.value = '';
-    }
+    };
 
     render() {
         const { className, style } = this.props;
@@ -326,48 +348,59 @@ class TerminalWrapper extends PureComponent {
                     width: '100%',
                     gridTemplateRows: '11fr 35px',
                     height: '100%',
-                    position: 'absolute'
+                    position: 'absolute',
                 }}
             >
                 <div
-                    ref={node => {
+                    ref={(node) => {
                         this.terminalContainer = node;
                     }}
                     className={cx(className, styles.terminalContainer)}
                     style={style}
                 />
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 18fr 3fr 5fr', alignItems: 'center', textAlign: 'center' }}>
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 18fr 3fr 5fr',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                    }}
+                >
                     <span style={{ opacity: '0.6' }}>&gt;</span>
                     <input
                         onKeyDown={(e) => {
                             switch (e.key) {
-                            case 'Backspace': {
-                                const { value } = e.target;
-                                //If there is only one character left and the user has pressed the backspace,
-                                //this will mean the value is empty now
-                                if (!value || [...value].length === 1) {
-                                    this.resetTerminalInputIndex();
+                                case 'Backspace': {
+                                    const { value } = e.target;
+                                    //If there is only one character left and the user has pressed the backspace,
+                                    //this will mean the value is empty now
+                                    if (!value || [...value].length === 1) {
+                                        this.resetTerminalInputIndex();
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                            case 'Enter': {
-                                this.handleCommandExecute();
-                                break;
-                            }
+                                case 'Enter': {
+                                    this.handleCommandExecute();
+                                    break;
+                                }
 
-                            case 'ArrowUp': {
-                                this.updateInputHistoryIndex(terminalInputIndex - 1);
-                                break;
-                            }
+                                case 'ArrowUp': {
+                                    this.updateInputHistoryIndex(
+                                        terminalInputIndex - 1,
+                                    );
+                                    break;
+                                }
 
-                            case 'ArrowDown': {
-                                this.updateInputHistoryIndex(terminalInputIndex + 1);
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
+                                case 'ArrowDown': {
+                                    this.updateInputHistoryIndex(
+                                        terminalInputIndex + 1,
+                                    );
+                                    break;
+                                }
+                                default: {
+                                    break;
+                                }
                             }
                         }}
                         onChange={(e) => {
@@ -385,7 +418,11 @@ class TerminalWrapper extends PureComponent {
                         placeholder="Enter G-Code Here..."
                     />
 
-                    <TooltipCustom content={`Copy the last ${LINES_TO_COPY} lines from the terminal`} location="top" wrapperStyle={{ height: '100%' }}>
+                    <TooltipCustom
+                        content={`Copy the last ${LINES_TO_COPY} lines from the terminal`}
+                        location="top"
+                        wrapperStyle={{ height: '100%' }}
+                    >
                         <Button
                             onClick={this.handleCopyLines}
                             style={{
@@ -393,7 +430,7 @@ class TerminalWrapper extends PureComponent {
                                 height: '100%',
                                 border: 'none',
                                 borderRadius: '0px',
-                                borderLeft: '1px solid #9ca3af'
+                                borderLeft: '1px solid #9ca3af',
                             }}
                         >
                             <i className="fas fa-copy" />

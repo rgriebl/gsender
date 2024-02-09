@@ -25,10 +25,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Space = ({ tag: Component, width, height, ...props }) => {
-    if ((typeof width === 'string') && width.match(/^\d+$/)) {
+    if (typeof width === 'string' && width.match(/^\d+$/)) {
         width += 'px';
     }
-    if ((typeof height === 'string') && height.match(/^\d+$/)) {
+    if (typeof height === 'string' && height.match(/^\d+$/)) {
         height += 'px';
     }
 
@@ -45,24 +45,13 @@ const Space = ({ tag: Component, width, height, ...props }) => {
         props.style.height = height;
     }
 
-    return (
-        <Component {...props} />
-    );
+    return <Component {...props} />;
 };
 
 Space.propTypes = {
-    tag: PropTypes.oneOfType([
-        PropTypes.node,
-        PropTypes.string
-    ]),
-    width: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-    ]),
-    height: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-    ]),
+    tag: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 Space.defaultProps = {

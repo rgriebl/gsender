@@ -1,7 +1,5 @@
 import config from '../services/configstore';
-import {
-    ERR_INTERNAL_SERVER_ERROR
-} from '../constants';
+import { ERR_INTERNAL_SERVER_ERROR } from '../constants';
 
 const CONFIG_KEY = 'maintenance';
 
@@ -22,7 +20,7 @@ export const update = (req, res) => {
         res.send({ message: 'maintenance tasks saved' });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save settings' + JSON.stringify(maintenance.rcfile)
+            msg: 'Failed to save settings' + JSON.stringify(maintenance.rcfile),
         });
     }
 };

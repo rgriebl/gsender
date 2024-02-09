@@ -13,7 +13,8 @@ const Mask = ({ value, bits, numBits, requiredBit, onChange }) => {
         }
         return settings;
     };
-    const [bitShiftSettings, setBitShiftSettings] = useState(getInitialSettings());
+    const [bitShiftSettings, setBitShiftSettings] =
+        useState(getInitialSettings());
 
     useEffect(() => {
         initializeSettings();
@@ -51,16 +52,24 @@ const Mask = ({ value, bits, numBits, requiredBit, onChange }) => {
     return (
         <div className={styles.maskWrapperOutside}>
             <div className={styles.maskWrapper}>
-                {
-                    bitShiftSettings.map((setting, index) => {
-                        return (
-                            <div key={uniqueId()} className={styles.controlRow}>
-                                <div className={styles.maskTwoTitles}>{bits[index]}</div>
-                                <ToggleSwitch disabled={requiredBit !== undefined && index !== requiredBit && !bitShiftSettings[requiredBit]} checked={setting} onChange={(value) => handleSwitch(value, index)} />
+                {bitShiftSettings.map((setting, index) => {
+                    return (
+                        <div key={uniqueId()} className={styles.controlRow}>
+                            <div className={styles.maskTwoTitles}>
+                                {bits[index]}
                             </div>
-                        );
-                    })
-                }
+                            <ToggleSwitch
+                                disabled={
+                                    requiredBit !== undefined &&
+                                    index !== requiredBit &&
+                                    !bitShiftSettings[requiredBit]
+                                }
+                                checked={setting}
+                                onChange={(value) => handleSwitch(value, index)}
+                            />
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );

@@ -7,7 +7,8 @@ import { Container } from './styled';
 import { SurfacingContext } from '../Surfacing/Context';
 
 const Actions = () => {
-    const { canLoad, runGenerate, loadGcode, isDisabled } = useContext(SurfacingContext);
+    const { canLoad, runGenerate, loadGcode, isDisabled } =
+        useContext(SurfacingContext);
 
     return (
         <Container>

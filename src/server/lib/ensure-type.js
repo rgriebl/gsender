@@ -26,7 +26,7 @@ export const ensureBoolean = (value, defaultValue = false) => {
         return Boolean(defaultValue);
     }
 
-    return (typeof value === 'boolean') ? value : Boolean(value);
+    return typeof value === 'boolean' ? value : Boolean(value);
 };
 
 export const ensureString = (value, defaultValue = '') => {
@@ -34,7 +34,7 @@ export const ensureString = (value, defaultValue = '') => {
         return String(defaultValue);
     }
 
-    return (typeof value === 'string') ? value : String(value);
+    return typeof value === 'string' ? value : String(value);
 };
 
 export const ensureNumber = (value, defaultValue = 0) => {
@@ -42,5 +42,5 @@ export const ensureNumber = (value, defaultValue = 0) => {
         return Number(defaultValue);
     }
 
-    return (typeof value === 'number') ? value : Number(value);
+    return typeof value === 'number' ? value : Number(value);
 };

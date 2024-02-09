@@ -38,7 +38,7 @@ import {
     ERR_NOT_FOUND,
     ERR_CONFLICT,
     ERR_PRECONDITION_FAILED,
-    ERR_INTERNAL_SERVER_ERROR
+    ERR_INTERNAL_SERVER_ERROR,
 } from '../constants';
 
 const log = logger('api:users');
@@ -49,7 +49,7 @@ const CONFIG_KEY = 'users';
 // Note. Do not use password and other sensitive fields in the payload
 const generateAccessToken = (payload, secret = settings.secret) => {
     const token = jwt.sign(payload, secret, {
-        expiresIn: settings.accessTokenLifetime
+        expiresIn: settings.accessTokenLifetime,
     });
 
     return token;
@@ -90,7 +90,7 @@ const getSanitizedRecords = () => {
 export const signin = (req, res) => {
     const { token = '', name = '', password = '' } = { ...req.body };
     const users = getSanitizedRecords();
-    const enabledUsers = users.filter(user => {
+    const enabledUsers = users.filter((user) => {
         return user.enabled;
     });
 
@@ -101,7 +101,7 @@ export const signin = (req, res) => {
         res.send({
             enabled: false, // session is disabled
             token: token,
-            name: user.name // empty name
+            name: user.name, // empty name
         });
         return;
     }
@@ -112,20 +112,20 @@ export const signin = (req, res) => {
 
         if (!valid) {
             res.status(ERR_UNAUTHORIZED).send({
-                msg: 'Authentication failed'
+                msg: 'Authentication failed',
             });
             return;
         }
 
         const payload = {
             id: user.id,
-            name: user.name
+            name: user.name,
         };
         const token = generateAccessToken(payload, settings.secret); // generate access token
         res.send({
             enabled: true, // session is enabled
             token: token, // new token
-            name: user.name
+            name: user.name,
         });
         return;
     }
@@ -133,19 +133,21 @@ export const signin = (req, res) => {
     jwt.verify(token, settings.secret, (err, user) => {
         if (err) {
             res.status(ERR_INTERNAL_SERVER_ERROR).send({
-                msg: 'Internal server error'
+                msg: 'Internal server error',
             });
             return;
         }
 
         const iat = new Date(user.iat * 1000).toISOString();
         const exp = new Date(user.exp * 1000).toISOString();
-        log.debug(`jwt.verify: user.id=${user.id}, user.name=${user.name}, user.iat=${iat}, user.exp=${exp}`);
+        log.debug(
+            `jwt.verify: user.id=${user.id}, user.name=${user.name}, user.iat=${iat}, user.exp=${exp}`,
+        );
 
         user = find(enabledUsers, { id: user.id, name: user.name });
         if (!user) {
             res.status(ERR_UNAUTHORIZED).send({
-                msg: 'Authentication failed'
+                msg: 'Authentication failed',
             });
             return;
         }
@@ -153,7 +155,7 @@ export const signin = (req, res) => {
         res.send({
             enabled: true, // session is enabled
             token: token, // old token
-            name: user.name
+            name: user.name,
         });
     });
 };
@@ -172,40 +174,36 @@ export const fetch = (req, res) => {
             pagination: {
                 page: Number(page),
                 pageLength: Number(pageLength),
-                totalRecords: Number(totalRecords)
+                totalRecords: Number(totalRecords),
             },
-            records: pagedRecords.map(record => {
+            records: pagedRecords.map((record) => {
                 const { id, mtime, enabled, name } = { ...record };
                 return { id, mtime, enabled, name };
-            })
+            }),
         });
     } else {
         res.send({
-            records: records.map(record => {
+            records: records.map((record) => {
                 const { id, mtime, enabled, name } = { ...record };
                 return { id, mtime, enabled, name };
-            })
+            }),
         });
     }
 };
 
 export const create = (req, res) => {
-    const {
-        enabled = true,
-        name = '',
-        password = ''
-    } = { ...req.body };
+    const { enabled = true, name = '', password = '' } = { ...req.body };
 
     if (!name) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "name" parameter must not be empty'
+            msg: 'The "name" parameter must not be empty',
         });
         return;
     }
 
     if (!password) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "password" parameter must not be empty'
+            msg: 'The "password" parameter must not be empty',
         });
         return;
     }
@@ -213,7 +211,7 @@ export const create = (req, res) => {
     const records = getSanitizedRecords();
     if (find(records, { name: name })) {
         res.status(ERR_CONFLICT).send({
-            msg: 'The specified user already exists'
+            msg: 'The specified user already exists',
         });
         return;
     }
@@ -227,7 +225,7 @@ export const create = (req, res) => {
             mtime: new Date().getTime(),
             enabled: enabled,
             name: name,
-            password: hash
+            password: hash,
         };
 
         records.push(record);
@@ -236,7 +234,7 @@ export const create = (req, res) => {
         res.send({ id: record.id, mtime: record.mtime });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -248,7 +246,7 @@ export const read = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -264,7 +262,7 @@ export const update = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -273,15 +271,18 @@ export const update = (req, res) => {
         enabled = record.enabled,
         name = record.name,
         oldPassword = '',
-        newPassword = ''
+        newPassword = '',
     } = { ...req.body };
     const willChangePassword = oldPassword && newPassword;
 
     // Skip validation for "enabled" and "name"
 
-    if (willChangePassword && !bcrypt.compareSync(oldPassword, record.password)) {
+    if (
+        willChangePassword &&
+        !bcrypt.compareSync(oldPassword, record.password)
+    ) {
         res.status(ERR_PRECONDITION_FAILED).send({
-            msg: 'Incorrect password'
+            msg: 'Incorrect password',
         });
         return;
     }
@@ -291,7 +292,7 @@ export const update = (req, res) => {
     };
     if (some(records, inuse)) {
         res.status(ERR_CONFLICT).send({
-            msg: 'The specified user already exists'
+            msg: 'The specified user already exists',
         });
         return;
     }
@@ -312,7 +313,7 @@ export const update = (req, res) => {
         res.send({ id: record.id, mtime: record.mtime });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -324,13 +325,13 @@ export const __delete = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
 
     try {
-        const filteredRecords = records.filter(record => {
+        const filteredRecords = records.filter((record) => {
             return record.id !== id;
         });
         config.set(CONFIG_KEY, filteredRecords);
@@ -338,7 +339,7 @@ export const __delete = (req, res) => {
         res.send({ id: record.id });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };

@@ -63,7 +63,10 @@ export const toggleCollectData = (req, res) => {
 };
 
 export const getCollectDataStatus = (_, res) => {
-    const collectUserDataStatus = config.get(`${CONFIG_KEY}.collectUserData`, USER_DATA_COLLECTION.INITIAL);
+    const collectUserDataStatus = config.get(
+        `${CONFIG_KEY}.collectUserData`,
+        USER_DATA_COLLECTION.INITIAL,
+    );
 
     res.json({ collectUserDataStatus });
 };
@@ -91,7 +94,9 @@ export const sendData = async (req, res) => {
     const internetConnectivity = await isOnline();
 
     if (!internetConnectivity) {
-        res.status(ERR_BAD_REQUEST).send({ msg: 'Not Connected to the Internet' });
+        res.status(ERR_BAD_REQUEST).send({
+            msg: 'Not Connected to the Internet',
+        });
         return;
     }
 
@@ -100,7 +105,9 @@ export const sendData = async (req, res) => {
 
         res.status(201).json(metricsRes.data);
     } catch (error) {
-        log.debug(`Error Sending Usage Data for ${payload.userID}. API Might Be Offline.`);
+        log.debug(
+            `Error Sending Usage Data for ${payload.userID}. API Might Be Offline.`,
+        );
         res.status(ERR_INTERNAL_SERVER_ERROR).json({ error });
     }
 };
@@ -131,7 +138,9 @@ export const sendUsageData = async (req, res) => {
     const internetConnectivity = await isOnline();
 
     if (!internetConnectivity) {
-        res.status(ERR_BAD_REQUEST).send({ msg: 'Not Connected to the Internet' });
+        res.status(ERR_BAD_REQUEST).send({
+            msg: 'Not Connected to the Internet',
+        });
         return;
     }
 
@@ -140,7 +149,9 @@ export const sendUsageData = async (req, res) => {
 
         res.status(201).json(usageRes.data);
     } catch (error) {
-        log.debug(`Error Sending Usage Data for ${payload.userID}. API Might Be Offline.`);
+        log.debug(
+            `Error Sending Usage Data for ${payload.userID}. API Might Be Offline.`,
+        );
         res.status(ERR_INTERNAL_SERVER_ERROR).json({ error });
     }
 };

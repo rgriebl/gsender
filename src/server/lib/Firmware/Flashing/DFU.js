@@ -11,7 +11,7 @@ import delay from 'server/lib/delay';
 const log = logger('DFU');
 
 class DFU {
-    IDS = [1155, 57105] // 0x0483 VID 0xDF11 PID for usb in DFU mode
+    IDS = [1155, 57105]; // 0x0483 VID 0xDF11 PID for usb in DFU mode
     // DFU request commands
     DETACH = 0x00;
     DNLOAD = 0x01;
@@ -63,23 +63,33 @@ class DFU {
         // Char to value multiplier
         const sectorMultipliers = {
             ' ': 1,
-            'B': 1,
-            'K': 1024,
-            'M': 1048576
+            B: 1,
+            K: 1024,
+            M: 1048576,
         };
 
-        let contiguousSegmentRegex = /\/\s*(0x[0-9a-fA-F]{1,8})\s*\/(\s*[0-9]+\s*\*\s*[0-9]+\s?[ BKM]\s*[abcdefg]\s*,?\s*)+/g;
+        let contiguousSegmentRegex =
+            /\/\s*(0x[0-9a-fA-F]{1,8})\s*\/(\s*[0-9]+\s*\*\s*[0-9]+\s?[ BKM]\s*[abcdefg]\s*,?\s*)+/g;
         let contiguousSegmentMatch;
 
-        while (contiguousSegmentMatch = contiguousSegmentRegex.exec(segmentString)) {
-            let segmentRegex = /([0-9]+)\s*\*\s*([0-9]+)\s?([ BKM])\s*([abcdefg])\s*,?\s*/g;
+        while (
+            (contiguousSegmentMatch =
+                contiguousSegmentRegex.exec(segmentString))
+        ) {
+            let segmentRegex =
+                /([0-9]+)\s*\*\s*([0-9]+)\s?([ BKM])\s*([abcdefg])\s*,?\s*/g;
             let startAddress = parseInt(contiguousSegmentMatch[1], 16);
             let segmentMatch;
-            while (segmentMatch = segmentRegex.exec(contiguousSegmentMatch[0])) {
+            while (
+                (segmentMatch = segmentRegex.exec(contiguousSegmentMatch[0]))
+            ) {
                 let segment = {};
                 let sectorCount = parseInt(segmentMatch[1], 10);
-                let sectorSize = parseInt(segmentMatch[2], 10) * sectorMultipliers[segmentMatch[3]];
-                let properties = segmentMatch[4].charCodeAt(0) - 'a'.charCodeAt(0) + 1;
+                let sectorSize =
+                    parseInt(segmentMatch[2], 10) *
+                    sectorMultipliers[segmentMatch[3]];
+                let properties =
+                    segmentMatch[4].charCodeAt(0) - 'a'.charCodeAt(0) + 1;
                 segment.start = startAddress;
                 segment.sectorSize = sectorSize;
                 segment.end = startAddress + sectorSize * sectorCount;
@@ -94,7 +104,7 @@ class DFU {
 
         this.segments = {
             name,
-            segments
+            segments,
         };
 
         return this.segments;
@@ -132,10 +142,17 @@ class DFU {
                 const alternate = this.interface.alternates[0];
                 this.parseMemorySegments(alternate.interfaceName);
 
-                await this.device.selectConfiguration(this.configurations[0].configurationValue);
-                await this.device.claimInterface(this.interface.interfaceNumber);
+                await this.device.selectConfiguration(
+                    this.configurations[0].configurationValue,
+                );
+                await this.device.claimInterface(
+                    this.interface.interfaceNumber,
+                );
 
-                await this.device.selectAlternateInterface(0, alternate.alternateSetting);
+                await this.device.selectAlternateInterface(
+                    0,
+                    alternate.alternateSetting,
+                );
                 log.info('Device opened');
             } catch (e) {
                 log.error(e);
@@ -148,33 +165,44 @@ class DFU {
     }
 
     requestIn(bRequest, wLength, wValue = 0) {
-        return this.device.controlTransferIn({
-            requestType: 'class',
-            recipient: 'interface',
-            request: bRequest,
-            value: wValue,
-            index: this.interface.interfaceNumber
-        }, wLength)
-            .then((result) => {
-                if (result.status === 'ok') {
-                    return Promise.resolve(result.data);
-                } else {
-                    return Promise.resolve(result.status);
-                }
-            }, (err) => {
-                log.error(err);
-                return Promise.reject(`requestIn Fail: ${err}`);
-            });
+        return this.device
+            .controlTransferIn(
+                {
+                    requestType: 'class',
+                    recipient: 'interface',
+                    request: bRequest,
+                    value: wValue,
+                    index: this.interface.interfaceNumber,
+                },
+                wLength,
+            )
+            .then(
+                (result) => {
+                    if (result.status === 'ok') {
+                        return Promise.resolve(result.data);
+                    } else {
+                        return Promise.resolve(result.status);
+                    }
+                },
+                (err) => {
+                    log.error(err);
+                    return Promise.reject(`requestIn Fail: ${err}`);
+                },
+            );
     }
 
     requestOut(bRequest, data, wValue = 0) {
-        return this.device.controlTransferOut({
-            requestType: 'class',
-            recipient: 'interface',
-            request: bRequest,
-            value: wValue,
-            index: 0
-        }, data)
+        return this.device
+            .controlTransferOut(
+                {
+                    requestType: 'class',
+                    recipient: 'interface',
+                    request: bRequest,
+                    value: wValue,
+                    index: 0,
+                },
+                data,
+            )
             .then(
                 (result) => {
                     log.info(result);
@@ -187,13 +215,13 @@ class DFU {
                 (err) => {
                     log.error(err);
                     return Promise.reject(`requestOut Fail: ${err}`);
-                }
+                },
             );
     }
 
     async close() {
         try {
-            this.device && await this.device.close();
+            this.device && (await this.device.close());
         } catch (err) {
             log.err(err);
         }
@@ -201,19 +229,20 @@ class DFU {
 
     getStatus() {
         return this.requestIn(this.GETSTATUS, 6).then(
-            data => Promise.resolve({
-                status: data.getUint8(0),
-                pollTimeout: data.getUint32(1, true) & 0xFFFFFF,
-                state: data.getUint8(4)
-            }),
-            error => Promise.reject(`DFU GETSTATUS failed: ${error}`)
+            (data) =>
+                Promise.resolve({
+                    status: data.getUint8(0),
+                    pollTimeout: data.getUint32(1, true) & 0xffffff,
+                    state: data.getUint8(4),
+                }),
+            (error) => Promise.reject(`DFU GETSTATUS failed: ${error}`),
         );
     }
 
     getState() {
         return this.requestIn(this.GETSTATE, 1).then(
-            data => Promise.resolve(data.getUint8(0)),
-            error => Promise.reject(`DFU getState error: ${error}`)
+            (data) => Promise.resolve(data.getUint8(0)),
+            (error) => Promise.reject(`DFU getState error: ${error}`),
         );
     }
 
@@ -221,7 +250,10 @@ class DFU {
         let dfuStatus = await this.getStatus();
         log.info(dfuStatus);
 
-        while (!predicate(dfuStatus.state) && dfuStatus.state !== this.dfuERROR) {
+        while (
+            !predicate(dfuStatus.state) &&
+            dfuStatus.state !== this.dfuERROR
+        ) {
             await delay(dfuStatus.pollTimeout);
             dfuStatus = await this.getStatus();
         }
@@ -229,7 +261,7 @@ class DFU {
     }
 
     pollUntilIdle(idle_state) {
-        return this.pollUntil(state => (state === idle_state));
+        return this.pollUntil((state) => state === idle_state);
     }
 
     abort() {

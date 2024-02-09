@@ -27,7 +27,6 @@ import { connect } from 'react-redux';
 import CoolantControls from 'app/widgets/Coolant/CoolantControls';
 import CoolantActiveIndicator from 'app/widgets/Coolant/CoolantActiveIndicator';
 
-
 const CoolantWidget = ({ widgetId, embedded }) => {
     return (
         <Widget>
@@ -41,7 +40,7 @@ const CoolantWidget = ({ widgetId, embedded }) => {
                         width: '100%',
                         left: '0',
                         top: '0',
-                        padding: '0 1rem 0 1rem'
+                        padding: '0 1rem 0 1rem',
                     }}
                 >
                     <CoolantActiveIndicator />

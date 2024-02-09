@@ -24,7 +24,9 @@ const JogControlArea = ({ actions, jog, disabled = false }) => {
                 className={styles.btnUp}
                 disabled={disabled}
                 jog={() => actions.jog({ A: aStep, F: feedrate })}
-                continuousJog={() => actions.startContinuousJog({ A: 1 }, feedrate)}
+                continuousJog={() =>
+                    actions.startContinuousJog({ A: 1 }, feedrate)
+                }
                 stopContinuousJog={() => actions.stopContinuousJog()}
             >
                 <KeypadText>A</KeypadText>
@@ -34,7 +36,9 @@ const JogControlArea = ({ actions, jog, disabled = false }) => {
                 className={styles.btnDown}
                 disabled={disabled}
                 jog={() => actions.jog({ A: -aStep, F: feedrate })}
-                continuousJog={() => actions.startContinuousJog({ A: -1 }, feedrate)}
+                continuousJog={() =>
+                    actions.startContinuousJog({ A: -1 }, feedrate)
+                }
                 stopContinuousJog={() => actions.stopContinuousJog()}
             >
                 <KeypadText>A</KeypadText>

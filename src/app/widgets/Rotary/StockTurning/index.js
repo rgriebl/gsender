@@ -26,7 +26,10 @@ import Visualizer from './components/Visualizer';
 import { StockTurningGenerator } from './Generator';
 
 const StockTurning = () => {
-    const { state: { activeDialog, stockTurning, }, dispatch } = useContext(RotaryContext);
+    const {
+        state: { activeDialog, stockTurning },
+        dispatch,
+    } = useContext(RotaryContext);
 
     useEffect(() => {
         const units = store.get('workspace.units');
@@ -43,10 +46,16 @@ const StockTurning = () => {
             }
 
             if (units === 'mm') {
-                store.replace('widgets.rotary.stockTurning.options', stockTurning.options);
+                store.replace(
+                    'widgets.rotary.stockTurning.options',
+                    stockTurning.options,
+                );
             }
 
-            reduxStore.dispatch({ type: SET_CURRENT_VISUALIZER, payload: VISUALIZER_PRIMARY });
+            reduxStore.dispatch({
+                type: SET_CURRENT_VISUALIZER,
+                payload: VISUALIZER_PRIMARY,
+            });
 
             dispatch({ type: SET_ACTIVE_STOCK_TURNING_TAB, payload: 0 });
         };
@@ -65,23 +74,34 @@ const StockTurning = () => {
     };
 
     const runGenerate = () => {
-        reduxStore.dispatch({ type: SET_CURRENT_VISUALIZER, payload: VISUALIZER_SECONDARY });
+        reduxStore.dispatch({
+            type: SET_CURRENT_VISUALIZER,
+            payload: VISUALIZER_SECONDARY,
+        });
 
         dispatch({ type: SET_ACTIVE_STOCK_TURNING_TAB, payload: 0 });
 
-        const stockTurningGenerator = new StockTurningGenerator(stockTurning.options);
+        const stockTurningGenerator = new StockTurningGenerator(
+            stockTurning.options,
+        );
 
         stockTurningGenerator.generate();
 
-        dispatch({ type: SET_STOCK_TURNING_OUTPUT, payload: stockTurningGenerator.gcode });
+        dispatch({
+            type: SET_STOCK_TURNING_OUTPUT,
+            payload: stockTurningGenerator.gcode,
+        });
 
-        const serializedFile = new File([stockTurningGenerator.gcode], 'rotary_surfacing.gcode');
+        const serializedFile = new File(
+            [stockTurningGenerator.gcode],
+            'rotary_surfacing.gcode',
+        );
 
         const payload = {
             content: stockTurningGenerator.gcode,
             size: serializedFile.size,
             name: serializedFile.name,
-            visualizer: VISUALIZER_SECONDARY
+            visualizer: VISUALIZER_SECONDARY,
         };
 
         pubsub.publish('visualizer:load', payload);
@@ -131,7 +151,12 @@ const StockTurning = () => {
                     <TabArea
                         tabs={tabs}
                         currentTab={activeTab}
-                        onTabChange={(index) => dispatch({ type: SET_ACTIVE_STOCK_TURNING_TAB, payload: index })}
+                        onTabChange={(index) =>
+                            dispatch({
+                                type: SET_ACTIVE_STOCK_TURNING_TAB,
+                                payload: index,
+                            })
+                        }
                         mountAllTabs
                     />
                 </div>

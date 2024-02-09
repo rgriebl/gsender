@@ -35,7 +35,7 @@ import { getPagingRange } from './paging';
 import {
     ERR_BAD_REQUEST,
     ERR_NOT_FOUND,
-    ERR_INTERNAL_SERVER_ERROR
+    ERR_INTERNAL_SERVER_ERROR,
 } from '../constants';
 
 const log = logger('api:machines');
@@ -70,7 +70,14 @@ const getSanitizedRecords = () => {
 
 const ensureMachineProfile = (payload) => {
     const { id, name, limits } = { ...payload };
-    const { xmin = 0, xmax = 0, ymin = 0, ymax = 0, zmin = 0, zmax = 0 } = { ...limits };
+    const {
+        xmin = 0,
+        xmax = 0,
+        ymin = 0,
+        ymax = 0,
+        zmin = 0,
+        zmax = 0,
+    } = { ...limits };
 
     return {
         id,
@@ -82,7 +89,7 @@ const ensureMachineProfile = (payload) => {
             ymax: ensureNumber(ymax) || 0,
             zmin: ensureNumber(zmin) || 0,
             zmax: ensureNumber(zmax) || 0,
-        }
+        },
     };
 };
 
@@ -100,13 +107,13 @@ export const fetch = (req, res) => {
             pagination: {
                 page: Number(page),
                 pageLength: Number(pageLength),
-                totalRecords: Number(totalRecords)
+                totalRecords: Number(totalRecords),
             },
-            records: pagedRecords.map(record => ensureMachineProfile(record))
+            records: pagedRecords.map((record) => ensureMachineProfile(record)),
         });
     } else {
         res.send({
-            records: records.map(record => ensureMachineProfile(record))
+            records: records.map((record) => ensureMachineProfile(record)),
         });
     }
 };
@@ -116,7 +123,7 @@ export const create = (req, res) => {
 
     if (!record.name) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "name" parameter must not be empty'
+            msg: 'The "name" parameter must not be empty',
         });
         return;
     }
@@ -129,7 +136,7 @@ export const create = (req, res) => {
         res.send({ id: record.id });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -141,7 +148,7 @@ export const read = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -156,7 +163,7 @@ export const update = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -164,7 +171,8 @@ export const update = (req, res) => {
     try {
         const nextRecord = req.body;
 
-        [ // [key, ensureType]
+        [
+            // [key, ensureType]
             ['name', ensureString],
             ['limits.xmin', ensureNumber],
             ['limits.xmax', ensureNumber],
@@ -172,12 +180,16 @@ export const update = (req, res) => {
             ['limits.ymax', ensureNumber],
             ['limits.zmin', ensureNumber],
             ['limits.zmax', ensureNumber],
-        ].forEach(it => {
+        ].forEach((it) => {
             const [key, ensureType] = it;
             const defaultValue = _get(record, key);
             const value = _get(nextRecord, key, defaultValue);
 
-            _set(record, key, (typeof ensureType === 'function') ? ensureType(value) : value);
+            _set(
+                record,
+                key,
+                typeof ensureType === 'function' ? ensureType(value) : value,
+            );
         });
 
         config.set(CONFIG_KEY, records);
@@ -185,7 +197,7 @@ export const update = (req, res) => {
         res.send({ id: record.id });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -197,13 +209,13 @@ export const __delete = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
 
     try {
-        const filteredRecords = records.filter(record => {
+        const filteredRecords = records.filter((record) => {
             return record.id !== id;
         });
         config.set(CONFIG_KEY, filteredRecords);
@@ -211,7 +223,7 @@ export const __delete = (req, res) => {
         res.send({ id: record.id });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };

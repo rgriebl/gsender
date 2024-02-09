@@ -8,11 +8,7 @@ const ScreenAwake = ({ children }) => {
         device.preventSleeping();
     }, []);
 
-    return (
-        <>
-            { children }
-        </>
-    );
+    return <>{children}</>;
 };
 
 export default ScreenAwake;

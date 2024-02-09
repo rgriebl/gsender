@@ -29,7 +29,10 @@ const Sortable = (props) => {
     const { className, style } = props;
 
     return (
-        <div className={classNames(className, styles.widgetSortable)} style={style} />
+        <div
+            className={classNames(className, styles.widgetSortable)}
+            style={style}
+        />
     );
 };
 

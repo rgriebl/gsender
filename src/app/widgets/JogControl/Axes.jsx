@@ -69,7 +69,7 @@ const Axes = (props) => {
 
 Axes.propTypes = {
     state: PropTypes.object,
-    actions: PropTypes.object
+    actions: PropTypes.object,
 };
 
 export default Axes;

@@ -27,7 +27,14 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import styles from './index.styl';
 
-const NavSidebarLink = ({ label, url = '#', icon, onClick, className, disabled = false }) => {
+const NavSidebarLink = ({
+    label,
+    url = '#',
+    icon,
+    onClick,
+    className,
+    disabled = false,
+}) => {
     return (
         <button
             onClick={onClick}
@@ -45,7 +52,7 @@ NavSidebarLink.propTypes = {
     icon: PropTypes.string.isRequired,
     onClick: PropTypes.func,
     className: PropTypes.string,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
 };
 
 export default NavSidebarLink;

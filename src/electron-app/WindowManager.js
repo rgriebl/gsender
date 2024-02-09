@@ -47,16 +47,13 @@ class WindowManager {
         app.on('activate', (e) => {
             const window = this.getWindow();
             if (!window) {
-                this.openWindow(
-                    this.url,
-                    {
-                        title: this.title,
-                        width: this.width || 500,
-                        height: this.height || 400,
-                        minWidth: 1024,
-                        minHeight: 768,
-                    },
-                );
+                this.openWindow(this.url, {
+                    title: this.title,
+                    width: this.width || 500,
+                    height: this.height || 400,
+                    minWidth: 1024,
+                    minHeight: 768,
+                });
             }
         });
 
@@ -86,7 +83,13 @@ class WindowManager {
         });
     }
 
-    async openWindow(url, options, splashScreen, shouldMaximize = true, isChild = false /*, data = null*/) {
+    async openWindow(
+        url,
+        options,
+        splashScreen,
+        shouldMaximize = true,
+        isChild = false /*, data = null*/,
+    ) {
         const window = new BrowserWindow({
             ...options,
             show: false,
@@ -95,8 +98,8 @@ class WindowManager {
                 enableRemoteModule: true,
                 sandbox: false,
                 contextIsolation: false,
-                preload: path.join(__dirname, 'preload.js')
-            }
+                preload: path.join(__dirname, 'preload.js'),
+            },
         });
         const webContents = window.webContents;
         // Enable remote API
@@ -160,7 +163,7 @@ class WindowManager {
 
     createSplashScreen(options) {
         const splashScreen = new BrowserWindow({
-            ...options
+            ...options,
         });
 
         return splashScreen;

@@ -30,7 +30,7 @@ import Modal from 'app/components/Modal';
 class RunMacro extends PureComponent {
     static propTypes = {
         state: PropTypes.object,
-        actions: PropTypes.object
+        actions: PropTypes.object,
     };
 
     render() {
@@ -40,13 +40,13 @@ class RunMacro extends PureComponent {
         return (
             <Modal disableOverlayClick size="md" onClose={actions.closeModal}>
                 <Modal.Header>
-                    <Modal.Title>
-                        {i18n._('Run Macro')}
-                    </Modal.Title>
+                    <Modal.Title>{i18n._('Run Macro')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div style={{ marginBottom: 10 }}>
-                        <label><strong>{name}</strong></label>
+                        <label>
+                            <strong>{name}</strong>
+                        </label>
                         <textarea
                             readOnly
                             rows="10"
@@ -56,9 +56,7 @@ class RunMacro extends PureComponent {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button
-                        onClick={actions.closeModal}
-                    >
+                    <Button onClick={actions.closeModal}>
                         {i18n._('Cancel')}
                     </Button>
                     <Button

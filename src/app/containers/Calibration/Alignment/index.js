@@ -31,7 +31,7 @@ const Alignment = ({ onClose }) => {
                 label: '',
                 hasTop: true,
                 hasBottom: false,
-                show: false
+                show: false,
             },
             {
                 id: 1,
@@ -39,7 +39,7 @@ const Alignment = ({ onClose }) => {
                 label: '',
                 hasTop: true,
                 hasBottom: false,
-                show: false
+                show: false,
             },
             {
                 id: 2,
@@ -76,36 +76,54 @@ const Alignment = ({ onClose }) => {
     });
 
     const highlightShapes = () => {
-        const foundAction = actions.find(action => action.id === Number(currentAction));
+        const foundAction = actions.find(
+            (action) => action.id === Number(currentAction),
+        );
 
         if (foundAction && foundAction.shapeActions) {
             for (const action of foundAction.shapeActions) {
-                const { shapeType, shapeID, isActive, show, clearPrevious, label } = action;
+                const {
+                    shapeType,
+                    shapeID,
+                    isActive,
+                    show,
+                    clearPrevious,
+                    label,
+                } = action;
 
                 const foundShapeType = shapes[shapeType];
 
                 if (foundShapeType) {
                     if (clearPrevious) {
                         setShapes((prev) => {
-                            const updated = prev[shapeType].map(shape => (
+                            const updated = prev[shapeType].map((shape) =>
                                 shape.id === shapeID
                                     ? { ...shape, label, isActive, show }
-                                    : { ...shape, isActive: false }
-                            ));
-                            return ({
+                                    : { ...shape, isActive: false },
+                            );
+                            return {
                                 ...prev,
-                                arrows: prev.arrows.map(arrow => ({ ...arrow, isActive: false })),
-                                circlePoints: prev.circlePoints.map(point => ({ ...point, isActive: false })),
+                                arrows: prev.arrows.map((arrow) => ({
+                                    ...arrow,
+                                    isActive: false,
+                                })),
+                                circlePoints: prev.circlePoints.map(
+                                    (point) => ({ ...point, isActive: false }),
+                                ),
                                 [shapeType]: updated,
-                            });
+                            };
                         });
                     } else {
                         setShapes((prev) => {
-                            const updated = prev[shapeType].map(shape => (shape.id === shapeID ? { ...shape, label, isActive, show } : shape));
-                            return ({
+                            const updated = prev[shapeType].map((shape) =>
+                                shape.id === shapeID
+                                    ? { ...shape, label, isActive, show }
+                                    : shape,
+                            );
+                            return {
                                 ...prev,
                                 [shapeType]: updated,
-                            });
+                            };
                         });
                     }
                 }
@@ -113,8 +131,14 @@ const Alignment = ({ onClose }) => {
         } else {
             setShapes((prev) => ({
                 ...prev,
-                circlePoints: prev.circlePoints.map(point => ({ ...point, isActive: false })),
-                arrows: prev.arrows.map(arrow => ({ ...arrow, isActive: false })),
+                circlePoints: prev.circlePoints.map((point) => ({
+                    ...point,
+                    isActive: false,
+                })),
+                arrows: prev.arrows.map((arrow) => ({
+                    ...arrow,
+                    isActive: false,
+                })),
             }));
         }
     };
@@ -142,7 +166,7 @@ const Alignment = ({ onClose }) => {
     }, [actions]);
 
     const onChange = ({ id, checked, axis, value }) => {
-        const foundAction = actions.find(action => action.id === Number(id));
+        const foundAction = actions.find((action) => action.id === Number(id));
 
         if (foundAction && foundAction.hasBeenChanged) {
             return;
@@ -152,18 +176,18 @@ const Alignment = ({ onClose }) => {
             setJogValues((prev) => ({ ...prev, [axis]: Number(value) }));
         }
 
-        const updatedActions = actions.map(action => (
+        const updatedActions = actions.map((action) =>
             action.id === id
-                ? ({ ...action, checked, hasBeenChanged: true })
-                : action
-        ));
+                ? { ...action, checked, hasBeenChanged: true }
+                : action,
+        );
         setCurrentAction(id + 1);
 
         setActions(updatedActions);
     };
 
     const handleTriangleChange = ({ id, value }) => {
-        setTriangle(prev => ({ ...prev, [id]: value }));
+        setTriangle((prev) => ({ ...prev, [id]: value }));
     };
 
     const next = () => {
@@ -198,11 +222,10 @@ const Alignment = ({ onClose }) => {
         setIntroComplete(true);
     };
 
-    const actionData = actions.find(action => action.id === currentAction);
+    const actionData = actions.find((action) => action.id === currentAction);
 
     const prevDisabled = !!steps[currentStep - 1];
     const nextDisabled = stepFinished;
-
 
     if (isFullyComplete) {
         return (
@@ -218,68 +241,82 @@ const Alignment = ({ onClose }) => {
     return (
         <ReduxProvider store={reduxStore}>
             <div className={styles.alignmentContainer}>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    {
-                        !introComplete && <ToolIntroduction readyHandler={startTool} />
-                    }
-                    {
-                        introComplete && (
-                            <>
-                                <Step
-                                    actions={actions}
-                                    onChange={onChange}
-                                    currentAction={currentAction}
-                                />
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    {!introComplete && (
+                        <ToolIntroduction readyHandler={startTool} />
+                    )}
+                    {introComplete && (
+                        <>
+                            <Step
+                                actions={actions}
+                                onChange={onChange}
+                                currentAction={currentAction}
+                            />
 
-                                <NavigationButtons
-                                    onNext={next}
-                                    onPrevious={prev}
-                                    prevDisabled={prevDisabled}
-                                    nextDisabled={nextDisabled}
-                                    onShowJogControls={() => setShowKeypad(true)}
-                                />
-                            </>
-                        )
-                    }
+                            <NavigationButtons
+                                onNext={next}
+                                onPrevious={prev}
+                                prevDisabled={prevDisabled}
+                                nextDisabled={nextDisabled}
+                                onShowJogControls={() => setShowKeypad(true)}
+                            />
+                        </>
+                    )}
                 </div>
 
-                <div style={{
-                    justifyContent: 'space-between',
-                    padding: '3rem',
-                    display: 'flex',
-                    gap: '1rem',
-                    flexDirection: 'column',
-                    width: '100%',
-                    backgroundColor: 'white'
-                }}
+                <div
+                    style={{
+                        justifyContent: 'space-between',
+                        padding: '3rem',
+                        display: 'flex',
+                        gap: '1rem',
+                        flexDirection: 'column',
+                        width: '100%',
+                        backgroundColor: 'white',
+                    }}
                 >
-                    {
-                        introComplete
-                            ? (
-                                <>
-                                    <TriangleDiagram
-                                        circlePoints={shapes.circlePoints}
-                                        arrows={shapes.arrows}
-                                        triangle={triangle}
-                                        onTriangleChange={handleTriangleChange}
-                                    />
-                                    <p style={{ width: '100%', fontWeight: 'bold' }}>{stepFinished ? 'Proceed to the Next Step' : actionData?.description}</p>
-                                </>
-                            )
-                            : (
-                                <>
-                                    <img src={introImage} alt="Introduction Diagram" style={{ width: '75%', margin: 'auto' }} />
-                                    <p style={{ width: '100%', fontWeight: 'bold' }}>
-                                        Since many CNCs run on two independent rails in the Y-axis,
-                                        misalignment between these rails can cause your cutting to become skewed.
-                                    </p>
-                                </>
-                            )
-                    }
+                    {introComplete ? (
+                        <>
+                            <TriangleDiagram
+                                circlePoints={shapes.circlePoints}
+                                arrows={shapes.arrows}
+                                triangle={triangle}
+                                onTriangleChange={handleTriangleChange}
+                            />
+                            <p style={{ width: '100%', fontWeight: 'bold' }}>
+                                {stepFinished
+                                    ? 'Proceed to the Next Step'
+                                    : actionData?.description}
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <img
+                                src={introImage}
+                                alt="Introduction Diagram"
+                                style={{ width: '75%', margin: 'auto' }}
+                            />
+                            <p style={{ width: '100%', fontWeight: 'bold' }}>
+                                Since many CNCs run on two independent rails in
+                                the Y-axis, misalignment between these rails can
+                                cause your cutting to become skewed.
+                            </p>
+                        </>
+                    )}
                 </div>
             </div>
 
-            <Modal size="xs" show={showKeypad} onClose={() => setShowKeypad(false)}>
+            <Modal
+                size="xs"
+                show={showKeypad}
+                onClose={() => setShowKeypad(false)}
+            >
                 <Modal.Header>
                     <Modal.Title>Jog Control Keypad</Modal.Title>
                 </Modal.Header>
@@ -291,6 +328,7 @@ const Alignment = ({ onClose }) => {
             </Modal>
         </ReduxProvider>
     );
-}; Alignment.propTypes = { step: PropTypes.object };
+};
+Alignment.propTypes = { step: PropTypes.object };
 
 export default Alignment;

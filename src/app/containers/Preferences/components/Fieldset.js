@@ -29,7 +29,10 @@ import styles from '../index.styl';
 
 const Fieldset = ({ children, legend, className, style }) => {
     return (
-        <fieldset className={classnames(styles.fieldset, className)} style={style}>
+        <fieldset
+            className={classnames(styles.fieldset, className)}
+            style={style}
+        >
             <legend className={styles.fieldsetLegend}>{legend}</legend>
             {children}
         </fieldset>

@@ -26,7 +26,15 @@ import React from 'react';
 
 const Margin = ({ style, ...props }) => {
     style = { ...style };
-    const { v = 0, h = 0, top = 0, right = 0, bottom = 0, left = 0, ...others } = { ...props };
+    const {
+        v = 0,
+        h = 0,
+        top = 0,
+        right = 0,
+        bottom = 0,
+        left = 0,
+        ...others
+    } = { ...props };
 
     if (v > 0) {
         style.marginTop = v;
@@ -49,9 +57,7 @@ const Margin = ({ style, ...props }) => {
         style.marginLeft = left;
     }
 
-    return (
-        <div style={style} {...others} />
-    );
+    return <div style={style} {...others} />;
 };
 
 Margin.propTypes = {
@@ -60,7 +66,7 @@ Margin.propTypes = {
     top: PropTypes.number,
     right: PropTypes.number,
     bottom: PropTypes.number,
-    left: PropTypes.number
+    left: PropTypes.number,
 };
 
 export default Margin;

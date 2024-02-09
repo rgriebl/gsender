@@ -38,11 +38,11 @@ class ControlArea extends Component {
         super(props);
         this.state = {
             showWarning: false,
-            $20: 0
+            $20: 0,
         };
     }
 
-    pubsubTokens = []
+    pubsubTokens = [];
 
     componentDidMount() {
         this.subscribe();
@@ -79,23 +79,22 @@ class ControlArea extends Component {
         const { softLimitsEnabled } = this.props;
         return (
             <div className={classnames(styles['control-area'])}>
-                {
-                    this.state.showWarning && softLimitsEnabled
-                        ? (
-                            <div className={styles['status-message']}>
-                                Warning: Cut will leave soft limits!
-                            </div>
-                        )
-                        : <div />
-                }
+                {this.state.showWarning && softLimitsEnabled ? (
+                    <div className={styles['status-message']}>
+                        Warning: Cut will leave soft limits!
+                    </div>
+                ) : (
+                    <div />
+                )}
             </div>
         );
     }
 }
 
 export default connect((store) => {
-    const softLimitsEnabled = get(store, 'controller.settings.settings.$20') === '1';
+    const softLimitsEnabled =
+        get(store, 'controller.settings.settings.$20') === '1';
     return {
-        softLimitsEnabled
+        softLimitsEnabled,
     };
 })(ControlArea);

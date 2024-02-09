@@ -38,10 +38,7 @@ import store from '../../store';
 import config from '../configstore';
 import taskRunner from '../taskrunner';
 import FlashingFirmware from '../../lib/Firmware/Flashing/firmwareflashing';
-import {
-    GrblController,
-    GrblHalController
-} from '../../controllers';
+import { GrblController, GrblHalController } from '../../controllers';
 import { GRBL } from '../../controllers/Grbl/constants';
 import { GRBLHAL } from '../../controllers/Grblhal/constants';
 import {
@@ -63,12 +60,11 @@ const caseInsensitiveEquals = (str1, str2) => {
     return str1 === str2;
 };
 
-const isValidController = (controller) => (
+const isValidController = (controller) =>
     // Standard GRBL
     caseInsensitiveEquals(GRBL, controller) ||
     // GrblHal
-    caseInsensitiveEquals(GRBLHAL, controller)
-);
+    caseInsensitiveEquals(GRBLHAL, controller);
 
 class CNCEngine {
     controllerClass = {};
@@ -93,7 +89,7 @@ class CNCEngine {
             if (this.io) {
                 this.io.emit('config:change', ...args);
             }
-        }
+        },
     };
 
     server = null;
@@ -111,7 +107,9 @@ class CNCEngine {
 
     // Event Trigger
     event = new EventTrigger((event, trigger, commands) => {
-        log.debug(`EventTrigger: event="${event}", trigger="${trigger}", commands="${commands}"`);
+        log.debug(
+            `EventTrigger: event="${event}", trigger="${trigger}", commands="${commands}"`,
+        );
         if (trigger === 'system') {
             taskRunner.run(commands);
         }
@@ -135,7 +133,9 @@ class CNCEngine {
         }
 
         if (Object.keys(this.controllerClass).length === 0) {
-            throw new Error(`No valid CNC controller specified (${controller})`);
+            throw new Error(
+                `No valid CNC controller specified (${controller})`,
+            );
         }
 
         const loadedControllers = Object.keys(this.controllerClass);
@@ -157,7 +157,7 @@ class CNCEngine {
             path: '/socket.io',
             pingTimeout: 60000,
             pingInterval: 25000,
-            maxHttpBufferSize: 40e6
+            maxHttpBufferSize: 40e6,
         });
 
         this.io.use(async (socket, next) => {
@@ -182,7 +182,9 @@ class CNCEngine {
             this.networkDevices = [];
             const address = socket.handshake.address;
             const user = socket.decoded_token || {};
-            log.debug(`New connection from ${address}: id=${socket.id}, user.id=${user.id}, user.name=${user.name}`);
+            log.debug(
+                `New connection from ${address}: id=${socket.id}, user.id=${user.id}, user.name=${user.name}`,
+            );
 
             // Add to the socket pool
             this.sockets.push(socket);
@@ -193,27 +195,33 @@ class CNCEngine {
                 // User-defined baud rates and ports
                 baudrates: ensureArray(config.get('baudrates', [])),
                 ports: ensureArray(config.get('ports', [])),
-                socketsLength: this.sockets.length
+                socketsLength: this.sockets.length,
             });
 
             socket.on('newConnection', () => {
                 // if the sockets include more than the original desktop client
                 // check if electron app is defined
                 if (this.sockets.length > 1 && app) {
-                    const userDataPath = path.join(app.getPath('userData'), 'preferences.json');
+                    const userDataPath = path.join(
+                        app.getPath('userData'),
+                        'preferences.json',
+                    );
 
                     if (fs.existsSync(userDataPath)) {
-                        const content = fs.readFileSync(userDataPath, 'utf8') || '{}';
+                        const content =
+                            fs.readFileSync(userDataPath, 'utf8') || '{}';
                         socket.emit('connection:new', content);
                     }
                 }
             });
 
             socket.on('disconnect', () => {
-                log.debug(`Disconnected from ${address}: id=${socket.id}, user.id=${user.id}, user.name=${user.name}`);
+                log.debug(
+                    `Disconnected from ${address}: id=${socket.id}, user.id=${user.id}, user.name=${user.name}`,
+                );
 
                 const controllers = store.get('controllers', {});
-                Object.keys(controllers).forEach(port => {
+                Object.keys(controllers).forEach((port) => {
                     const controller = controllers[port];
                     if (!controller) {
                         return;
@@ -233,7 +241,9 @@ class CNCEngine {
                     this.io.emit('task:error', message);
                     return;
                 }
-                log.info(`Reconnecting to open controller on port ${port} with socket ID ${socket.id}`);
+                log.info(
+                    `Reconnecting to open controller on port ${port} with socket ID ${socket.id}`,
+                );
                 controller.addConnection(socket);
                 log.info(`Controller state: ${controller.isOpen()}`);
                 if (controller.isOpen()) {
@@ -247,10 +257,14 @@ class CNCEngine {
             socket.on('addclient', (port) => {
                 let controller = store.get(`controllers["${port}"]`);
                 if (!controller) {
-                    log.info(`No controller found on port ${port} to reconnect to`);
+                    log.info(
+                        `No controller found on port ${port} to reconnect to`,
+                    );
                     return;
                 }
-                log.info(`Adding new client to controller on port ${port} with socket ID ${socket.id}`);
+                log.info(
+                    `Adding new client to controller on port ${port} with socket ID ${socket.id}`,
+                );
                 controller.addConnection(socket);
                 log.info(`Controller state: ${controller.isOpen()}`);
             });
@@ -260,33 +274,70 @@ class CNCEngine {
                 log.debug(`socket.list(): id=${socket.id}`);
 
                 SerialPort.list()
-                    .then(ports => {
-                        ports = ports.concat(ensureArray(config.get('ports', [])));
+                    .then((ports) => {
+                        ports = ports.concat(
+                            ensureArray(config.get('ports', [])),
+                        );
 
                         const controllers = store.get('controllers', {});
-                        const portsInUse =
-                            Object.keys(controllers).filter(port => {
+                        const portsInUse = Object.keys(controllers).filter(
+                            (port) => {
                                 const controller = controllers[port];
                                 return controller && controller.isOpen();
-                            });
+                            },
+                        );
 
                         // Filter ports by productId to avoid non-arduino devices from appearing
-                        const validProductIDs = ['6015', '6001', '606D', '003D', '0042', '0043', '2341', '7523', 'EA60', '2303', '2145', '0AD8', '08D8', '5740', '0FA7'];
-                        const validVendorIDs = ['1D50', '0403', '2341', '0042', '1A86', '10C4', '067B', '03EB', '16D0', '0483'];
-                        let [recognizedPorts, unrecognizedPorts] = partition(ports, (port) => {
-                            return validProductIDs.includes(port.productId) && validVendorIDs.includes(port.vendorId);
-                        });
+                        const validProductIDs = [
+                            '6015',
+                            '6001',
+                            '606D',
+                            '003D',
+                            '0042',
+                            '0043',
+                            '2341',
+                            '7523',
+                            'EA60',
+                            '2303',
+                            '2145',
+                            '0AD8',
+                            '08D8',
+                            '5740',
+                            '0FA7',
+                        ];
+                        const validVendorIDs = [
+                            '1D50',
+                            '0403',
+                            '2341',
+                            '0042',
+                            '1A86',
+                            '10C4',
+                            '067B',
+                            '03EB',
+                            '16D0',
+                            '0483',
+                        ];
+                        let [recognizedPorts, unrecognizedPorts] = partition(
+                            ports,
+                            (port) => {
+                                return (
+                                    validProductIDs.includes(port.productId) &&
+                                    validVendorIDs.includes(port.vendorId)
+                                );
+                            },
+                        );
 
                         const portInfoMapFn = (port) => {
                             return {
                                 port: port.path,
                                 manufacturer: port.manufacturer,
-                                inuse: portsInUse.indexOf(port.path) >= 0
+                                inuse: portsInUse.indexOf(port.path) >= 0,
                             };
                         };
 
                         recognizedPorts = recognizedPorts.map(portInfoMapFn);
-                        unrecognizedPorts = unrecognizedPorts.map(portInfoMapFn);
+                        unrecognizedPorts =
+                            unrecognizedPorts.map(portInfoMapFn);
                         const networkPorts = this.networkDevices.map((port) => {
                             return {
                                 port: port.ip,
@@ -304,9 +355,14 @@ class CNCEngine {
                             inuse: false
                         }];*/
 
-                        socket.emit('serialport:list', recognizedPorts, unrecognizedPorts, networkPorts);
+                        socket.emit(
+                            'serialport:list',
+                            recognizedPorts,
+                            unrecognizedPorts,
+                            networkPorts,
+                        );
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         log.error(err);
                     });
             });
@@ -332,73 +388,87 @@ class CNCEngine {
             });
 
             // Open serial port
-            socket.on('open', (port, controllerType = GRBL, options, callback = noop) => {
-                //const numClients = this.io.sockets.adapter.rooms.get(port)?.size || 0;
-                if (typeof callback !== 'function') {
-                    callback = noop;
-                }
+            socket.on(
+                'open',
+                (port, controllerType = GRBL, options, callback = noop) => {
+                    //const numClients = this.io.sockets.adapter.rooms.get(port)?.size || 0;
+                    if (typeof callback !== 'function') {
+                        callback = noop;
+                    }
 
-                log.debug(`socket.open("${port}", ${JSON.stringify(options)}): id=${socket.id}`);
+                    log.debug(
+                        `socket.open("${port}", ${JSON.stringify(options)}): id=${socket.id}`,
+                    );
 
-                let controller = store.get(`controllers["${port}"]`);
-                if (!controller) {
-                    let { baudrate, rtscts, network } = { ...options };
+                    let controller = store.get(`controllers["${port}"]`);
+                    if (!controller) {
+                        let { baudrate, rtscts, network } = { ...options };
 
+                        const Controller = this.controllerClass[controllerType];
+                        if (!Controller) {
+                            const err = `Not supported controller: ${controllerType}`;
+                            log.error(err);
+                            callback(new Error(err));
+                            return;
+                        }
 
-                    const Controller = this.controllerClass[controllerType];
-                    if (!Controller) {
-                        const err = `Not supported controller: ${controllerType}`;
-                        log.error(err);
-                        callback(new Error(err));
+                        const engine = this;
+                        controller = new Controller(engine, {
+                            port: port,
+                            baudrate: baudrate,
+                            rtscts: !!rtscts,
+                            network,
+                        });
+                    }
+
+                    controller.addConnection(socket);
+                    // Load file to controller if it exists
+                    if (this.hasFileLoaded()) {
+                        controller.loadFile(this.gcode, this.meta);
+                        socket.emit(
+                            'file:load',
+                            this.gcode,
+                            this.meta.size,
+                            this.meta.name,
+                        );
+                    } else {
+                        log.debug('No file in CNCEngine to load to sender');
+                    }
+
+                    if (controller.isOpen()) {
+                        // Join the room
+                        socket.join(port);
+
+                        callback(null);
                         return;
                     }
 
-                    const engine = this;
-                    controller = new Controller(engine, {
-                        port: port,
-                        baudrate: baudrate,
-                        rtscts: !!rtscts,
-                        network
+                    controller.open((err = null) => {
+                        if (err) {
+                            callback(err);
+                            return;
+                        }
+
+                        // System Trigger: Open a serial port
+                        this.event.trigger('port:open');
+
+                        if (store.get(`controllers["${port}"]`)) {
+                            log.error(
+                                `Serial port "${port}" was not properly closed`,
+                            );
+                        }
+                        store.set(
+                            `controllers[${JSON.stringify(port)}]`,
+                            controller,
+                        );
+
+                        // Join the room
+                        socket.join(port);
+
+                        callback(null);
                     });
-                }
-
-                controller.addConnection(socket);
-                // Load file to controller if it exists
-                if (this.hasFileLoaded()) {
-                    controller.loadFile(this.gcode, this.meta);
-                    socket.emit('file:load', this.gcode, this.meta.size, this.meta.name);
-                } else {
-                    log.debug('No file in CNCEngine to load to sender');
-                }
-
-                if (controller.isOpen()) {
-                    // Join the room
-                    socket.join(port);
-
-                    callback(null);
-                    return;
-                }
-
-                controller.open((err = null) => {
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
-
-                    // System Trigger: Open a serial port
-                    this.event.trigger('port:open');
-
-                    if (store.get(`controllers["${port}"]`)) {
-                        log.error(`Serial port "${port}" was not properly closed`);
-                    }
-                    store.set(`controllers[${JSON.stringify(port)}]`, controller);
-
-                    // Join the room
-                    socket.join(port);
-
-                    callback(null);
-                });
-            });
+                },
+            );
 
             // Close serial port
             socket.on('close', (port, callback = noop) => {
@@ -423,8 +493,9 @@ class CNCEngine {
                 // Leave the room
                 socket.leave(port);
 
-                if (numClients <= 1) { // if only this one was connected
-                    controller.close(err => {
+                if (numClients <= 1) {
+                    // if only this one was connected
+                    controller.close((err) => {
                         // Remove controller from store
                         store.unset(`controllers[${JSON.stringify(port)}]`);
 
@@ -441,7 +512,9 @@ class CNCEngine {
             });
 
             socket.on('command', (port, cmd, ...args) => {
-                log.debug(`socket.command("${port}", "${cmd}"): id=${socket.id}`);
+                log.debug(
+                    `socket.command("${port}", "${cmd}"): id=${socket.id}`,
+                );
                 const controller = store.get(`controllers["${port}"]`);
                 if (!controller || controller.isClose()) {
                     log.error(`Serial port "${port}" not accessible`);
@@ -451,64 +524,82 @@ class CNCEngine {
                 controller.command.apply(controller, [cmd].concat(args));
             });
 
-            socket.on('flash:start', (flashPort, imageType, isHal = false, data = null) => {
-                log.debug('flash-start called');
-                if (!flashPort) {
-                    log.error('task:error', 'No port specified - make sure you connect to you device at least once before attempting flashing');
-                    return;
-                }
-                let halFlasher;
-                if (isHal) {
-                    halFlasher = new DFUFlasher({
-                        image: imageType,
-                        isHal,
-                        hex: data
-                    });
-
-                    halFlasher.on('error', (err) => {
-                        this.emit('flash:message', { type: 'Error', content: err });
-                    });
-
-                    halFlasher.on('info', (msg) => {
-                        this.emit('flash:message', { type: 'Info', content: msg });
-                    });
-
-                    halFlasher.on('end', () => {
-                        this.emit('flash:end');
-                    });
-                    halFlasher.on('progress', (amount, total) => {
-                        this.emit('flash:progress', amount, total);
-                    });
-                }
-
-                //Close the controller for flasher utility to take over the port
-                const controller = store.get('controllers["' + flashPort + '"]');
-                if (controller) {
-                    // handle HAL behaviour - send DFU command
-                    if (isHal) {
-                        // Do hal flash
-                        controller.writeln('$DFU');
-                        store.unset(`controllers[${JSON.stringify(flashPort)}]`);
-                        delay(1500).then(() => {
-                            console.log('Flash started for HAL');
-                            halFlasher.flash(data);
-                        });
+            socket.on(
+                'flash:start',
+                (flashPort, imageType, isHal = false, data = null) => {
+                    log.debug('flash-start called');
+                    if (!flashPort) {
+                        log.error(
+                            'task:error',
+                            'No port specified - make sure you connect to you device at least once before attempting flashing',
+                        );
                         return;
                     }
-                    // Normal flash - close port then flash using AVRgirl
-                    controller.close(
-                        () => {
-                            FlashingFirmware(flashPort, imageType, socket);
-                        }
+                    let halFlasher;
+                    if (isHal) {
+                        halFlasher = new DFUFlasher({
+                            image: imageType,
+                            isHal,
+                            hex: data,
+                        });
+
+                        halFlasher.on('error', (err) => {
+                            this.emit('flash:message', {
+                                type: 'Error',
+                                content: err,
+                            });
+                        });
+
+                        halFlasher.on('info', (msg) => {
+                            this.emit('flash:message', {
+                                type: 'Info',
+                                content: msg,
+                            });
+                        });
+
+                        halFlasher.on('end', () => {
+                            this.emit('flash:end');
+                        });
+                        halFlasher.on('progress', (amount, total) => {
+                            this.emit('flash:progress', amount, total);
+                        });
+                    }
+
+                    //Close the controller for flasher utility to take over the port
+                    const controller = store.get(
+                        'controllers["' + flashPort + '"]',
                     );
-                    store.unset(`controllers[${JSON.stringify(flashPort)}]`);
-                } else {
-                    FlashingFirmware(flashPort, imageType, socket);
-                }
-            });
+                    if (controller) {
+                        // handle HAL behaviour - send DFU command
+                        if (isHal) {
+                            // Do hal flash
+                            controller.writeln('$DFU');
+                            store.unset(
+                                `controllers[${JSON.stringify(flashPort)}]`,
+                            );
+                            delay(1500).then(() => {
+                                console.log('Flash started for HAL');
+                                halFlasher.flash(data);
+                            });
+                            return;
+                        }
+                        // Normal flash - close port then flash using AVRgirl
+                        controller.close(() => {
+                            FlashingFirmware(flashPort, imageType, socket);
+                        });
+                        store.unset(
+                            `controllers[${JSON.stringify(flashPort)}]`,
+                        );
+                    } else {
+                        FlashingFirmware(flashPort, imageType, socket);
+                    }
+                },
+            );
 
             socket.on('write', (port, data, context = {}) => {
-                log.debug(`socket.write("${port}", "${data}", ${JSON.stringify(context)}): id=${socket.id}`);
+                log.debug(
+                    `socket.write("${port}", "${data}", ${JSON.stringify(context)}): id=${socket.id}`,
+                );
 
                 const controller = store.get(`controllers["${port}"]`);
                 if (!controller || controller.isClose()) {
@@ -520,7 +611,9 @@ class CNCEngine {
             });
 
             socket.on('writeln', (port, data, context = {}) => {
-                log.debug(`socket.writeln("${port}", "${data}", ${JSON.stringify(context)}): id=${socket.id}`);
+                log.debug(
+                    `socket.writeln("${port}", "${data}", ${JSON.stringify(context)}): id=${socket.id}`,
+                );
                 store.set('inAppConsoleInput', data);
                 const controller = store.get(`controllers["${port}"]`);
                 if (!controller || controller.isClose()) {
@@ -532,7 +625,9 @@ class CNCEngine {
             });
 
             socket.on('hPing', () => {
-                log.debug(`Health check received at ${new Date().toLocaleTimeString()}`);
+                log.debug(
+                    `Health check received at ${new Date().toLocaleTimeString()}`,
+                );
                 socket.emit('hPong');
             });
 
@@ -551,7 +646,7 @@ class CNCEngine {
                 const options = {
                     target: target,
                     port: port,
-                    banner: true
+                    banner: true,
                 };
 
                 const scan = new Evilscan(options);
@@ -560,10 +655,15 @@ class CNCEngine {
                     // fired when item is matching options
                     // only take open devices
                     //log.debug(device);
-                    if (device.banner.includes(GRBL) || device.banner.includes(GRBLHAL)) {
+                    if (
+                        device.banner.includes(GRBL) ||
+                        device.banner.includes(GRBLHAL)
+                    ) {
                         this.networkDevices.push({
                             ...device,
-                            controllerType: device.banner.includes(GRBL) ? GRBL : GRBLHAL,
+                            controllerType: device.banner.includes(GRBL)
+                                ? GRBL
+                                : GRBLHAL,
                         });
                     }
                 });

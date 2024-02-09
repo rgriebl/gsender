@@ -31,25 +31,25 @@ export default {
     assets: {
         app: {
             routes: [
-                '' // empty path
+                '', // empty path
             ],
             path: path.resolve(__dirname, '..', '..', 'app'),
-            maxAge: maxAge
-        }
+            maxAge: maxAge,
+        },
     },
     backend: {
         enable: true,
         host: 'localhost',
         port: 80,
-        route: 'api/'
+        route: 'api/',
     },
     cluster: {
         // note. node-inspector cannot debug child (forked) process
         enable: false,
-        maxWorkers: os.cpus().length || 1
+        maxWorkers: os.cpus().length || 1,
     },
     winston: {
         // https://github.com/winstonjs/winston#logging-levels
-        level: 'debug'
-    }
+        level: 'debug',
+    },
 };

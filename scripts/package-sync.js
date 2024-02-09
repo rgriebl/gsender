@@ -11,10 +11,7 @@ const findImports = require('find-imports');
 const pkg = require('../package.json');
 const pkgApp = require('../src/package.json');
 
-const files = [
-    'src/*.js',
-    'src/server/**/*.{js,jsx}'
-];
+const files = ['src/*.js', 'src/server/**/*.{js,jsx}'];
 
 const resolvedImports = findImports(files, {
     flatten: true,
@@ -29,9 +26,8 @@ const deps = _uniq([
     '@sentry/node',
     'regenerator-runtime',
     'debug',
-    ...resolvedImports.map(x => x.split('/')[0]),
+    ...resolvedImports.map((x) => x.split('/')[0]),
 ]).sort();
-
 
 //pkgApp.name = pkg.name; // Exclude the name field
 pkgApp.version = pkg.version;
@@ -51,22 +47,25 @@ fs.writeFileSync(target, content + '\n', 'utf8');
 try {
     const releaseTarget = path.resolve(
         __dirname,
-        '../src/app/containers/Preferences/About/releases.json'
+        '../src/app/containers/Preferences/About/releases.json',
     );
 
     const getLatestPatchNotes = (data, notesStart) => {
         const patchNotes = data.split(notesStart)[1];
         let headerCount = 0;
 
-        return patchNotes.split('\n').filter(line => {
-            if (line.includes('###')) {
-                headerCount++;
-            }
-            if (line.length < 2) {
-                return false;
-            }
-            return headerCount < 4;
-        }).map(line => line.trim());
+        return patchNotes
+            .split('\n')
+            .filter((line) => {
+                if (line.includes('###')) {
+                    headerCount++;
+                }
+                if (line.length < 2) {
+                    return false;
+                }
+                return headerCount < 4;
+            })
+            .map((line) => line.trim());
     };
     let readme = fs.readFileSync(path.resolve('README.md'), 'utf8');
     const releases = getLatestPatchNotes(readme, '## 🕣 Development History');

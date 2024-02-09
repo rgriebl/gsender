@@ -55,11 +55,11 @@ export default class MacroItem extends Component {
         onEdit: PropTypes.func,
         onDelete: PropTypes.func,
         disabled: PropTypes.bool,
-    }
+    };
 
     state = {
         display: 'name',
-    }
+    };
 
     /**
      * Function to handle mouse enter on the wrapper div
@@ -68,7 +68,7 @@ export default class MacroItem extends Component {
         if (this.state.display !== 'running') {
             this.setState({ display: 'icon' });
         }
-    }
+    };
 
     /**
      * Function to handle mouse leave on the wrapper div
@@ -77,7 +77,7 @@ export default class MacroItem extends Component {
         if (this.state.display !== 'running') {
             this.setState({ display: 'name' });
         }
-    }
+    };
 
     onMacroRun = () => {
         const { macro, onRun, disabled } = this.props;
@@ -89,14 +89,14 @@ export default class MacroItem extends Component {
         onRun(macro);
         Toaster.pop({
             msg: `Started running macro '${macro.name}'!`,
-            type: TOASTER_INFO
+            type: TOASTER_INFO,
         });
         this.setState({ display: 'running' });
 
         setTimeout(() => {
             this.setState({ display: 'name' });
         }, 4000);
-    }
+    };
 
     render() {
         const { macro, onEdit, onDelete, disabled } = this.props;
@@ -112,7 +112,8 @@ export default class MacroItem extends Component {
                     tabIndex={-1}
                     role="button"
                 >
-                    <i className="fas fa-edit" style={{ color: '#3e85c7' }} /><span>Edit</span>
+                    <i className="fas fa-edit" style={{ color: '#3e85c7' }} />
+                    <span>Edit</span>
                 </div>
 
                 <div
@@ -122,7 +123,11 @@ export default class MacroItem extends Component {
                     tabIndex={-1}
                     role="button"
                 >
-                    <i className="fas fa-trash-alt" style={{ color: '#dc2626' }} /> <span>Delete</span>
+                    <i
+                        className="fas fa-trash-alt"
+                        style={{ color: '#dc2626' }}
+                    />{' '}
+                    <span>Delete</span>
                 </div>
             </div>
         );
@@ -138,30 +143,49 @@ export default class MacroItem extends Component {
                     onKeyDown={null}
                     role="button"
                     tabIndex={-1}
-                    className={styles[disabled ? 'macro-item-control-disabled' : 'macro-item-control']}
-                >
-                    {
-                        disabled
-                            ? <div> {macro.name} </div>
-                            : (
-                                <>
-                                    { display === 'name' && (
-                                        <div style={{ padding: '0 0.75rem' }}> {macro.name} </div>)
-                                    }
-
-                                    { display === 'running' && <div style={{ padding: 0 }} className={styles['glowing-background']}>Running...</div>}
-
-                                    { display === 'icon' && (
-                                        <div style={{ padding: '0 0.75rem' }}>
-                                            <i
-                                                className="fa fa-play"
-                                                style={{ fontSize: '1rem', color: '#059669', outline: 'none' }}
-                                            /> Run <strong>{macro.name}</strong>
-                                        </div>
-                                    )}
-                                </>
-                            )
+                    className={
+                        styles[
+                            disabled
+                                ? 'macro-item-control-disabled'
+                                : 'macro-item-control'
+                        ]
                     }
+                >
+                    {disabled ? (
+                        <div> {macro.name} </div>
+                    ) : (
+                        <>
+                            {display === 'name' && (
+                                <div style={{ padding: '0 0.75rem' }}>
+                                    {' '}
+                                    {macro.name}{' '}
+                                </div>
+                            )}
+
+                            {display === 'running' && (
+                                <div
+                                    style={{ padding: 0 }}
+                                    className={styles['glowing-background']}
+                                >
+                                    Running...
+                                </div>
+                            )}
+
+                            {display === 'icon' && (
+                                <div style={{ padding: '0 0.75rem' }}>
+                                    <i
+                                        className="fa fa-play"
+                                        style={{
+                                            fontSize: '1rem',
+                                            color: '#059669',
+                                            outline: 'none',
+                                        }}
+                                    />{' '}
+                                    Run <strong>{macro.name}</strong>
+                                </div>
+                            )}
+                        </>
+                    )}
                 </div>
 
                 <Dropdown

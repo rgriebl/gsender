@@ -16,7 +16,7 @@ const DroppableColumn = ({ droppableId, macros, actions, disabled }) => {
     });
 
     const getItemStyle = (isDragging, draggableStyle) => ({
-        ...draggableStyle
+        ...draggableStyle,
     });
 
     const handleRunMacro = (macro) => {
@@ -42,7 +42,9 @@ const DroppableColumn = ({ droppableId, macros, actions, disabled }) => {
             content: (
                 <>
                     <p>Are you sure you want to delete this macro?</p>
-                    <p><strong>{name}</strong></p>
+                    <p>
+                        <strong>{name}</strong>
+                    </p>
                 </>
             ),
             confirmLabel: 'Delete',
@@ -51,9 +53,7 @@ const DroppableColumn = ({ droppableId, macros, actions, disabled }) => {
     };
 
     return (
-        <Droppable
-            droppableId={droppableId}
-        >
+        <Droppable droppableId={droppableId}>
             {(provided, snapshot) => (
                 <div
                     {...provided.droppableProps}
@@ -71,33 +71,45 @@ const DroppableColumn = ({ droppableId, macros, actions, disabled }) => {
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                                    style={getItemStyle(
+                                        snapshot.isDragging,
+                                        provided.draggableProps.style,
+                                    )}
                                 >
-                                    {
-                                        macro.description
-                                            ? (
-                                                <TooltipCustom content={macro.description} location="default">
-                                                    <MacroItem
-                                                        key={macro.id}
-                                                        macro={macro}
-                                                        onRun={handleRunMacro}
-                                                        onEdit={handleEditMacro}
-                                                        onDelete={() => onDeleteClick({ name: macro.name, id: macro.id })}
-                                                        disabled={disabled}
-                                                    />
-                                                </TooltipCustom>
-                                            )
-                                            : (
-                                                <MacroItem
-                                                    key={macro.id}
-                                                    macro={macro}
-                                                    onRun={handleRunMacro}
-                                                    onEdit={handleEditMacro}
-                                                    onDelete={() => onDeleteClick({ name: macro.name, id: macro.id })}
-                                                    disabled={disabled}
-                                                />
-                                            )
-                                    }
+                                    {macro.description ? (
+                                        <TooltipCustom
+                                            content={macro.description}
+                                            location="default"
+                                        >
+                                            <MacroItem
+                                                key={macro.id}
+                                                macro={macro}
+                                                onRun={handleRunMacro}
+                                                onEdit={handleEditMacro}
+                                                onDelete={() =>
+                                                    onDeleteClick({
+                                                        name: macro.name,
+                                                        id: macro.id,
+                                                    })
+                                                }
+                                                disabled={disabled}
+                                            />
+                                        </TooltipCustom>
+                                    ) : (
+                                        <MacroItem
+                                            key={macro.id}
+                                            macro={macro}
+                                            onRun={handleRunMacro}
+                                            onEdit={handleEditMacro}
+                                            onDelete={() =>
+                                                onDeleteClick({
+                                                    name: macro.name,
+                                                    id: macro.id,
+                                                })
+                                            }
+                                            disabled={disabled}
+                                        />
+                                    )}
                                 </div>
                             )}
                         </Draggable>

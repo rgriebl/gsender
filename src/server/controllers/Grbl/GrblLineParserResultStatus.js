@@ -50,8 +50,8 @@ class GrblLineParserResultStatus {
         const params = r[1].match(pattern);
         const result = {};
 
-
-        { // Active State (v0.9, v1.1)
+        {
+            // Active State (v0.9, v1.1)
             // * Valid states types: Idle, Run, Hold, Jog, Alarm, Door, Check, Home, Sleep
             // * Sub-states may be included via : a colon delimiter and numeric code.
             // * Current sub-states are:
@@ -151,10 +151,10 @@ class GrblLineParserResultStatus {
         if (_.has(result, 'Lim')) {
             const value = Number(_.get(result, 'Lim[0]', 0));
             payload.pinState = [
-                (value & (1 << 0)) ? 'X' : '',
-                (value & (1 << 1)) ? 'Y' : '',
-                (value & (1 << 2)) ? 'Z' : '',
-                (value & (1 << 2)) ? 'A' : ''
+                value & (1 << 0) ? 'X' : '',
+                value & (1 << 1) ? 'Y' : '',
+                value & (1 << 2) ? 'Z' : '',
+                value & (1 << 2) ? 'A' : '',
             ].join('');
         }
 
@@ -170,7 +170,7 @@ class GrblLineParserResultStatus {
         if (_.has(result, 'Pn')) {
             const pins = _.get(result, 'Pn[0]', '');
             payload.pinState = {};
-            pins.split('').forEach(pin => {
+            pins.split('').forEach((pin) => {
                 payload.pinState[pin] = true;
             });
         }
@@ -178,7 +178,7 @@ class GrblLineParserResultStatus {
         // Override Values (v1.1)
         // Ov:100,100,100 indicates current override values in percent of programmed values for feed, rapids, and spindle speed, respectively.
         if (_.has(result, 'Ov')) {
-            payload.ov = _.get(result, 'Ov', []).map(v => Number(v));
+            payload.ov = _.get(result, 'Ov', []).map((v) => Number(v));
         }
 
         // Accessory State (v1.1)
@@ -194,7 +194,7 @@ class GrblLineParserResultStatus {
 
         return {
             type: GrblLineParserResultStatus,
-            payload: payload
+            payload: payload,
         };
     }
 }

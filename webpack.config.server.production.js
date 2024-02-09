@@ -12,7 +12,7 @@ const babelConfig = require('./babel.config');
 const pkg = require('./package.json');
 
 dotenv.config({
-    path: path.resolve('webpack.config.server.production.env')
+    path: path.resolve('webpack.config.server.production.env'),
 });
 
 const USE_ESLINT_LOADER = boolean(process.env.USE_ESLINT_LOADER);
@@ -35,39 +35,35 @@ module.exports = {
     target: 'node', // ignore built-in modules like path, fs, etc.
     context: path.resolve(__dirname, 'src/server'),
     entry: {
-        index: [
-            './index.js'
-        ]
+        index: ['./index.js'],
     },
     output: {
         path: path.resolve(__dirname, 'dist/gsender/server'),
         filename: '[name].js',
-        libraryTarget: 'commonjs2'
+        libraryTarget: 'commonjs2',
     },
     optimization: {
-        minimizer: [
-            USE_TERSER_PLUGIN && (
-                new TerserPlugin()
-            ),
-        ].filter(Boolean)
+        minimizer: [USE_TERSER_PLUGIN && new TerserPlugin()].filter(Boolean),
     },
     plugins: [
         new webpack.DefinePlugin({
             'global.NODE_ENV': JSON.stringify('production'),
             'global.PUBLIC_PATH': JSON.stringify(publicPath),
             'global.BUILD_VERSION': JSON.stringify(buildVersion),
-            'global.METRICS_ENDPOINT': JSON.stringify(process.env.METRICS_ENDPOINT),
+            'global.METRICS_ENDPOINT': JSON.stringify(
+                process.env.METRICS_ENDPOINT,
+            ),
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: path.resolve(__dirname, 'index.html'),
-            chunksSortMode: 'dependency' // Sort chunks by dependency
+            chunksSortMode: 'dependency', // Sort chunks by dependency
         }),
         sentryWebpackPlugin({
             org: process.env.SENTRY_ORG,
             project: process.env.SENTRY_PROJECT,
             authToken: process.env.SENTRY_AUTH_TOKEN,
-            telemetry: false
+            telemetry: false,
         }),
     ],
     module: {
@@ -76,55 +72,52 @@ module.exports = {
                 test: /\.jsx?$/,
                 loader: 'eslint-loader',
                 enforce: 'pre',
-                exclude: /node_modules/
+                exclude: /node_modules/,
             },
             {
                 test: /\.hex$/,
-                loader: 'file-loader'
+                loader: 'file-loader',
             },
             {
                 test: /\.hex$/,
                 loader: 'file-loader',
                 include: [
-                    path.resolve(__dirname, 'src/server/lib/Firmware/Flashing')
-                ]
+                    path.resolve(__dirname, 'src/server/lib/Firmware/Flashing'),
+                ],
             },
             {
                 test: /\.hex$/,
-                loader: 'raw-loader'
+                loader: 'raw-loader',
             },
             {
                 test: /\.hex$/,
                 loader: 'raw-loader',
                 include: [
-                    path.resolve(__dirname, 'src/server/lib/Firmware/Flashing')
-                ]
+                    path.resolve(__dirname, 'src/server/lib/Firmware/Flashing'),
+                ],
             },
             {
                 test: /\.txt$/,
-                loader: 'file-loader'
+                loader: 'file-loader',
             },
             {
                 test: /\.txt$/,
                 loader: 'raw-loader',
                 include: [
-                    path.resolve(__dirname, 'src/server/lib/Firmware/Flashing')
-                ]
+                    path.resolve(__dirname, 'src/server/lib/Firmware/Flashing'),
+                ],
             },
             {
                 test: /\.jsx?$/,
                 loader: 'babel-loader',
                 options: babelConfig,
-                exclude: /node_modules/
-            }
-        ].filter(Boolean)
+                exclude: /node_modules/,
+            },
+        ].filter(Boolean),
     },
     externals: [nodeExternals()], // ignore all modules in node_modules folder
     resolve: {
-        modules: [
-            path.resolve(__dirname, 'src'),
-            'node_modules'
-        ],
+        modules: [path.resolve(__dirname, 'src'), 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
         alias: {
             // Alias paths so that e.g. "../../components/File" becomes "Components/File"
@@ -143,13 +136,11 @@ module.exports = {
             Styles: path.resolve(__dirname, './src/app/styles'),
             Types: path.resolve(__dirname, './src/app/types'),
             Utils: path.resolve(__dirname, './src/app/utils'),
-            Views: path.resolve(__dirname, './src/app/views')
-        }
+            Views: path.resolve(__dirname, './src/app/views'),
+        },
     },
     resolveLoader: {
-        modules: [
-            path.resolve(__dirname, 'node_modules')
-        ]
+        modules: [path.resolve(__dirname, 'node_modules')],
     },
     node: {
         console: true,
@@ -158,6 +149,6 @@ module.exports = {
         Buffer: true,
         __filename: true, // Use relative path
         __dirname: true, // Use relative path
-        setImmediate: true
-    }
+        setImmediate: true,
+    },
 };

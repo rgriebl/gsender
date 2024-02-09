@@ -28,11 +28,22 @@ import classNames from 'classnames';
 import ShowTooltip from '../ShowTooltip';
 import { InputLabelStyled, InputStyled, InputWrapperStyled } from './styled';
 
-const Input = ({ value, label, units, onChange, additionalProps, className, style, tooltip }) => {
+const Input = ({
+    value,
+    label,
+    units,
+    onChange,
+    additionalProps,
+    className,
+    style,
+    tooltip,
+}) => {
     return (
         <ShowTooltip tooltip={tooltip}>
             <InputWrapperStyled hasTwoColumns={!!label}>
-                {label && <InputLabelStyled htmlFor="">{label}</InputLabelStyled>}
+                {label && (
+                    <InputLabelStyled htmlFor="">{label}</InputLabelStyled>
+                )}
                 <div className="input-group">
                     <InputStyled
                         {...additionalProps}
@@ -43,7 +54,9 @@ const Input = ({ value, label, units, onChange, additionalProps, className, styl
                         type="number"
                         className={classNames('form-control')}
                     />
-                    {units && <span className="input-group-addon">{units}</span>}
+                    {units && (
+                        <span className="input-group-addon">{units}</span>
+                    )}
                 </div>
             </InputWrapperStyled>
         </ShowTooltip>
@@ -54,14 +67,11 @@ Input.propTypes = {
     label: PropTypes.string,
     units: PropTypes.string,
     onChange: PropTypes.func,
-    value: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     additionalProps: PropTypes.object,
     className: PropTypes.string,
     style: PropTypes.object,
-    tooltip: PropTypes.object
+    tooltip: PropTypes.object,
 };
 
 Input.defaultProps = {

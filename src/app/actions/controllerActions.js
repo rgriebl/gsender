@@ -49,17 +49,23 @@ export const {
     'UPDATE_PARTIAL_CONTROLLER_SETTINGS',
     'UPDATE_TERMINAL_HISTORY',
     'UPDATE_SETTINGS_DESCRIPTIONS',
-    'UPDATE_ALARM_DESCRIPTIONS'
+    'UPDATE_ALARM_DESCRIPTIONS',
 ]);
 
 export const updateControllerState = createAction(UPDATE_CONTROLLER_STATE);
-export const updateControllerSettings = createAction(UPDATE_CONTROLLER_SETTINGS);
+export const updateControllerSettings = createAction(
+    UPDATE_CONTROLLER_SETTINGS,
+);
 export const updateFeederStatus = createAction(UPDATE_FEEDER_STATUS);
 export const updateSenderStatus = createAction(UPDATE_SENDER_STATUS);
 export const updateWorkflowState = createAction(UPDATE_WORKFLOW_STATE);
 export const toolChange = createAction(TOOL_CHANGE);
 export const updateHomingFlag = createAction(UPDATE_HOMING_FLAG);
 export const resetHoming = createAction(RESET_HOMING);
-export const partialSettingsUpdate = createAction(UPDATE_PARTIAL_CONTROLLER_SETTINGS);
+export const partialSettingsUpdate = createAction(
+    UPDATE_PARTIAL_CONTROLLER_SETTINGS,
+);
 export const updateTerminalHistory = createAction(UPDATE_TERMINAL_HISTORY);
-export const updateSettingsDescriptions = createAction(UPDATE_SETTINGS_DESCRIPTIONS);
+export const updateSettingsDescriptions = createAction(
+    UPDATE_SETTINGS_DESCRIPTIONS,
+);

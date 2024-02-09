@@ -13,16 +13,22 @@ const actions = {
         }
     },
     saveSettings: async (headlessSettings) => {
-        await api.remoteSetting.update(headlessSettings).then(() => {
-            //App restart logic goes here
-            if (isElectron()) {
-            //call the event that handles app restart with remote settings
-                window.ipcRenderer.send('remoteMode-restart', headlessSettings);
-            }
-        }).catch((error) => {
-            console.log(error.message);
-        });
-    }
+        await api.remoteSetting
+            .update(headlessSettings)
+            .then(() => {
+                //App restart logic goes here
+                if (isElectron()) {
+                    //call the event that handles app restart with remote settings
+                    window.ipcRenderer.send(
+                        'remoteMode-restart',
+                        headlessSettings,
+                    );
+                }
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    },
 };
 
 export default actions;

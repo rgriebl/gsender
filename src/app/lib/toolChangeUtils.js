@@ -7,7 +7,10 @@ export const getProbeSettings = () => {
     const probeSettings = store.get('widgets.probe');
     const probeType = store.get('workspace.probeProfile.touchplateType');
 
-    const probeThickness = (probeType === TOUCHPLATE_TYPE_AUTOZERO) ? '5' : probeSettings.zProbeDistance;
+    const probeThickness =
+        probeType === TOUCHPLATE_TYPE_AUTOZERO
+            ? '5'
+            : probeSettings.zProbeDistance;
 
     return {
         slowSpeed: probeSettings.probeFeedrate,
@@ -17,7 +20,6 @@ export const getProbeSettings = () => {
         zProbeThickness: probeThickness,
     };
 };
-
 
 export const getToolString = () => {
     const state = reduxStore.getState();

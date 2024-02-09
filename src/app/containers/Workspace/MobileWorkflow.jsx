@@ -41,7 +41,8 @@ import {
     WORKFLOW_STATE_IDLE,
     WORKFLOW_STATE_PAUSED,
     WORKFLOW_STATE_RUNNING,
-    METRIC_UNITS, IMPERIAL_UNITS,
+    METRIC_UNITS,
+    IMPERIAL_UNITS,
 } from '../../constants';
 import { RadioButton, RadioGroup } from 'Components/Radio';
 import pubsub from 'pubsub-js';
@@ -61,15 +62,25 @@ class WorkflowControl extends PureComponent {
         },
         handleRun: (type) => {
             const { workflowState, activeState } = this.props;
-            console.assert(includes([WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED], workflowState) || activeState === GRBL_ACTIVE_STATE_HOLD);
-            this.setState((prev) => ({ invalidGcode: { ...prev.invalidGcode, showModal: false } }));
+            console.assert(
+                includes(
+                    [WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED],
+                    workflowState,
+                ) || activeState === GRBL_ACTIVE_STATE_HOLD,
+            );
+            this.setState((prev) => ({
+                invalidGcode: { ...prev.invalidGcode, showModal: false },
+            }));
 
             if (workflowState === WORKFLOW_STATE_IDLE) {
                 controller.command('gcode:start');
                 return;
             }
 
-            if (workflowState === WORKFLOW_STATE_PAUSED || activeState === GRBL_ACTIVE_STATE_HOLD) {
+            if (
+                workflowState === WORKFLOW_STATE_PAUSED ||
+                activeState === GRBL_ACTIVE_STATE_HOLD
+            ) {
                 controller.command('gcode:resume', type);
             }
         },
@@ -83,10 +94,10 @@ class WorkflowControl extends PureComponent {
             console.log(value);
 
             this.setState({
-                units: value
+                units: value,
             });
             pubsub.publish('units:change', value);
-        }
+        },
     };
 
     getInitialState() {
@@ -104,15 +115,21 @@ class WorkflowControl extends PureComponent {
                 needsRecovery: false,
                 value: 0,
                 waitForHoming: false,
-                safeHeight: store.get('workspace.units', METRIC_UNITS) === METRIC_UNITS ? 10 : 0.4,
-                defaultSafeHeight: store.get('workspace.units', METRIC_UNITS) === METRIC_UNITS ? 10 : 0.4
+                safeHeight:
+                    store.get('workspace.units', METRIC_UNITS) === METRIC_UNITS
+                        ? 10
+                        : 0.4,
+                defaultSafeHeight:
+                    store.get('workspace.units', METRIC_UNITS) === METRIC_UNITS
+                        ? 10
+                        : 0.4,
             },
         };
     }
 
     canRun() {
-        const { isConnected, fileLoaded, workflowState, activeState } = this.props;
-
+        const { isConnected, fileLoaded, workflowState, activeState } =
+            this.props;
 
         if (!isConnected) {
             return false;
@@ -121,20 +138,35 @@ class WorkflowControl extends PureComponent {
             return false;
         }
 
-        if ([GRBL_ACTIVE_STATE_HOLD, GRBL_ACTIVE_STATE_JOG].includes(activeState)) {
+        if (
+            [GRBL_ACTIVE_STATE_HOLD, GRBL_ACTIVE_STATE_JOG].includes(
+                activeState,
+            )
+        ) {
             return true;
         }
 
-        if (!includes([WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED], workflowState)) {
+        if (
+            !includes(
+                [WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED],
+                workflowState,
+            )
+        ) {
             return false;
         }
         const states = [
             GRBL_ACTIVE_STATE_IDLE,
             GRBL_ACTIVE_STATE_HOLD,
-            GRBL_ACTIVE_STATE_CHECK
+            GRBL_ACTIVE_STATE_CHECK,
         ];
 
-        if (includes([GRBL_ACTIVE_STATE_CHECK], activeState) && !includes([WORKFLOW_STATE_PAUSED, WORKFLOW_STATE_IDLE], workflowState)) {
+        if (
+            includes([GRBL_ACTIVE_STATE_CHECK], activeState) &&
+            !includes(
+                [WORKFLOW_STATE_PAUSED, WORKFLOW_STATE_IDLE],
+                workflowState,
+            )
+        ) {
             return false;
         }
 
@@ -148,12 +180,18 @@ class WorkflowControl extends PureComponent {
 
         const { received } = senderStatus;
         handleStop();
-        reduxStore.dispatch({ type: UPDATE_JOB_OVERRIDES, payload: { isChecked: false, toggleStatus: 'jobStatus' } });
-        this.setState(prev => ({ runHasStarted: false, startFromLine: { ...prev.startFromLine, value: received } }));
+        reduxStore.dispatch({
+            type: UPDATE_JOB_OVERRIDES,
+            payload: { isChecked: false, toggleStatus: 'jobStatus' },
+        });
+        this.setState((prev) => ({
+            runHasStarted: false,
+            startFromLine: { ...prev.startFromLine, value: received },
+        }));
         if (status.activeState === 'Check') {
             controller.command('gcode', '$C');
         }
-    }
+    };
 
     startRun = () => {
         const { activeState } = this.props;
@@ -166,24 +204,46 @@ class WorkflowControl extends PureComponent {
         }
         this.setState({ fileLoaded: true });
         this.setState({ runHasStarted: true });
-        reduxStore.dispatch({ type: UPDATE_JOB_OVERRIDES, payload: { isChecked: true, toggleStatus: 'overrides' } });
+        reduxStore.dispatch({
+            type: UPDATE_JOB_OVERRIDES,
+            payload: { isChecked: true, toggleStatus: 'overrides' },
+        });
         this.actions.onRunClick();
-    }
+    };
 
     render() {
         const { handleOnStop } = this;
         const { runHasStarted, units } = this.state;
-        const { fileLoaded, workflowState, isConnected, senderInHold, activeState } = this.props;
+        const {
+            fileLoaded,
+            workflowState,
+            isConnected,
+            senderInHold,
+            activeState,
+        } = this.props;
         const canClick = !!isConnected;
         const isReady = canClick && fileLoaded;
         const canRun = this.canRun();
-        const canPause = isReady && activeState !== GRBL_ACTIVE_STATE_HOLD && activeState !== GRBL_ACTIVE_STATE_CHECK &&
+        const canPause =
+            isReady &&
+            activeState !== GRBL_ACTIVE_STATE_HOLD &&
+            activeState !== GRBL_ACTIVE_STATE_CHECK &&
             includes([WORKFLOW_STATE_RUNNING], workflowState);
-        const canStop = isReady && includes([WORKFLOW_STATE_RUNNING, WORKFLOW_STATE_PAUSED], workflowState);
+        const canStop =
+            isReady &&
+            includes(
+                [WORKFLOW_STATE_RUNNING, WORKFLOW_STATE_PAUSED],
+                workflowState,
+            );
         const activeHold = activeState === GRBL_ACTIVE_STATE_HOLD;
-        const workflowPaused = runHasStarted && (workflowState === WORKFLOW_STATE_PAUSED || senderInHold || activeHold);
+        const workflowPaused =
+            runHasStarted &&
+            (workflowState === WORKFLOW_STATE_PAUSED ||
+                senderInHold ||
+                activeHold);
 
-        return (// if it's not in remote mode, none of these will be true
+        return (
+            // if it's not in remote mode, none of these will be true
             <div>
                 <div className={styles.widgetHeaderMobile}>
                     <div className={styles.widgetTitleMobile}>
@@ -199,55 +259,87 @@ class WorkflowControl extends PureComponent {
                         size="small"
                     >
                         <div>
-                            <RadioButton className={styles.prefferedradio} label="Inches" value={IMPERIAL_UNITS} />
-                            <RadioButton className={styles.prefferedradio} label="Millimeters" value={METRIC_UNITS} />
+                            <RadioButton
+                                className={styles.prefferedradio}
+                                label="Inches"
+                                value={IMPERIAL_UNITS}
+                            />
+                            <RadioButton
+                                className={styles.prefferedradio}
+                                label="Millimeters"
+                                value={METRIC_UNITS}
+                            />
                         </div>
                     </RadioGroup>
                     <div className={styles.workflowControlMobile}>
-                        <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem', flexWrap: 'wrap' }}>
-                            {
-                                canRun && (
-                                    <div className={styles.relativeWrapper}>
-                                        <button
-                                            type="button"
-                                            className={styles['workflow-button-play']}
-                                            title={workflowPaused ? i18n._('Resume') : i18n._('Run')}
-                                            onClick={this.startRun}
-                                            disabled={!isConnected}
-                                        >
-                                            {i18n._(`${workflowPaused ? 'Resume' : 'Start'} Job`)} <i className="fa fa-play" style={{ writingMode: 'horizontal-tb', marginLeft: '5px' }} />
-                                        </button>
-                                    </div>
-                                )
-                            }
-
-                            {
-                                canPause && (
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                gap: '1rem',
+                                flexWrap: 'wrap',
+                            }}
+                        >
+                            {canRun && (
+                                <div className={styles.relativeWrapper}>
                                     <button
                                         type="button"
-                                        className={styles['workflow-button-pause']}
-                                        title={i18n._('Pause')}
-                                        onClick={this.actions.handlePause}
-                                        disabled={!canPause}
+                                        className={
+                                            styles['workflow-button-play']
+                                        }
+                                        title={
+                                            workflowPaused
+                                                ? i18n._('Resume')
+                                                : i18n._('Run')
+                                        }
+                                        onClick={this.startRun}
+                                        disabled={!isConnected}
                                     >
-                                        {i18n._('Pause Job')} <i className="fa fa-pause" style={{ writingMode: 'vertical-lr' }} />
+                                        {i18n._(
+                                            `${workflowPaused ? 'Resume' : 'Start'} Job`,
+                                        )}{' '}
+                                        <i
+                                            className="fa fa-play"
+                                            style={{
+                                                writingMode: 'horizontal-tb',
+                                                marginLeft: '5px',
+                                            }}
+                                        />
                                     </button>
-                                )
-                            }
+                                </div>
+                            )}
 
-                            {
-                                canStop && (
-                                    <button
-                                        type="button"
-                                        className={styles['workflow-button-stop']}
-                                        title={i18n._('Stop')}
-                                        onClick={handleOnStop}
-                                        disabled={!canStop}
-                                    >
-                                        {i18n._('Stop Job')} <i className="fa fa-stop" style={{ writingMode: 'vertical-lr' }} />
-                                    </button>
-                                )
-                            }
+                            {canPause && (
+                                <button
+                                    type="button"
+                                    className={styles['workflow-button-pause']}
+                                    title={i18n._('Pause')}
+                                    onClick={this.actions.handlePause}
+                                    disabled={!canPause}
+                                >
+                                    {i18n._('Pause Job')}{' '}
+                                    <i
+                                        className="fa fa-pause"
+                                        style={{ writingMode: 'vertical-lr' }}
+                                    />
+                                </button>
+                            )}
+
+                            {canStop && (
+                                <button
+                                    type="button"
+                                    className={styles['workflow-button-stop']}
+                                    title={i18n._('Stop')}
+                                    onClick={handleOnStop}
+                                    disabled={!canStop}
+                                >
+                                    {i18n._('Stop Job')}{' '}
+                                    <i
+                                        className="fa fa-stop"
+                                        style={{ writingMode: 'vertical-lr' }}
+                                    />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -256,21 +348,26 @@ class WorkflowControl extends PureComponent {
     }
 }
 
-export default connect((store) => {
-    const fileLoaded = get(store, 'file.fileLoaded', false);
-    const isConnected = get(store, 'connection.isConnected', false);
-    const senderInHold = get(store, 'controller.sender.status.hold', false);
-    const senderStatus = get(store, 'controller.sender.status');
-    const workflowState = get(store, 'controller.workflow.state');
-    const activeState = get(store, 'controller.state.status.activeState');
-    const controllerState = get(store, 'controller.state');
-    return {
-        fileLoaded,
-        isConnected,
-        senderInHold,
-        workflowState,
-        activeState,
-        senderStatus,
-        controllerState,
-    };
-}, null, null, { forwardRef: true })(WorkflowControl);
+export default connect(
+    (store) => {
+        const fileLoaded = get(store, 'file.fileLoaded', false);
+        const isConnected = get(store, 'connection.isConnected', false);
+        const senderInHold = get(store, 'controller.sender.status.hold', false);
+        const senderStatus = get(store, 'controller.sender.status');
+        const workflowState = get(store, 'controller.workflow.state');
+        const activeState = get(store, 'controller.state.status.activeState');
+        const controllerState = get(store, 'controller.state');
+        return {
+            fileLoaded,
+            isConnected,
+            senderInHold,
+            workflowState,
+            activeState,
+            senderStatus,
+            controllerState,
+        };
+    },
+    null,
+    null,
+    { forwardRef: true },
+)(WorkflowControl);

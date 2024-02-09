@@ -39,11 +39,11 @@ class ControlArea extends Component {
     static propTypes = {
         state: PropTypes.object,
         actions: PropTypes.object,
-    }
+    };
 
     state = {
         currentAlarmIcon: 'fa-lock',
-    }
+    };
 
     unlock = () => {
         const { alarmCode } = this.props;
@@ -57,7 +57,7 @@ class ControlArea extends Component {
             controller.command('reset');
         }
         controller.command('unlock');
-    }
+    };
 
     render() {
         const { layoutIsReversed } = this.props.state;
@@ -85,9 +85,13 @@ class ControlArea extends Component {
                     return (
                         <div className={styles['machine-status-wrapper']}>
                             <div className={styles['machine-Alarm']}>
-                                {activeState} ({alarmCode})<AlarmDescriptionIcon code={alarmCode} />
+                                {activeState} ({alarmCode})
+                                <AlarmDescriptionIcon code={alarmCode} />
                             </div>
-                            <UnlockAlarmButton onClick={this.unlock} alarmCode={alarmCode} />
+                            <UnlockAlarmButton
+                                onClick={this.unlock}
+                                alarmCode={alarmCode}
+                            />
                         </div>
                     );
                 } else if (activeState === 'Check') {
@@ -98,22 +102,34 @@ class ControlArea extends Component {
                             </div>
                         </div>
                     );
-                } {
-                    return activeState
-                        ? (
-                            <div className={styles[`machine-${activeState}`]}>
-                                { message[activeState] }
-                            </div>
-                        )
-                        : <div className={styles['machine-Disconnected']}>Disconnected</div>;
+                }
+                {
+                    return activeState ? (
+                        <div className={styles[`machine-${activeState}`]}>
+                            {message[activeState]}
+                        </div>
+                    ) : (
+                        <div className={styles['machine-Disconnected']}>
+                            Disconnected
+                        </div>
+                    );
                 }
             } else {
-                return <div className={styles['machine-Disconnected']}>Disconnected</div>;
+                return (
+                    <div className={styles['machine-Disconnected']}>
+                        Disconnected
+                    </div>
+                );
             }
         };
 
         return (
-            <div className={classnames(styles['control-area'], layoutIsReversed ? styles.inverted : '')}>
+            <div
+                className={classnames(
+                    styles['control-area'],
+                    layoutIsReversed ? styles.inverted : '',
+                )}
+            >
                 <div />
                 {machineStateRender()}
                 <div />
@@ -131,6 +147,6 @@ export default connect((store) => {
         $22,
         alarmCode,
         activeState,
-        isConnected
+        isConnected,
     };
 })(ControlArea);

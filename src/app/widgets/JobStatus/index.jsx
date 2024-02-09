@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2021 Sienci Labs Inc.
  *
@@ -34,13 +33,13 @@ import WidgetConfig from '../WidgetConfig';
 import JobStatus from './JobStatus';
 import {
     IMPERIAL_UNITS,
-    METRIC_UNITS, SPINDLE_MODE,
+    METRIC_UNITS,
+    SPINDLE_MODE,
     WORKFLOW_STATE_IDLE,
-    WORKFLOW_STATE_PAUSED
+    WORKFLOW_STATE_PAUSED,
 } from '../../constants';
 import FileProcessingLoader from './components/FileProcessingLoader';
 import styles from './index.styl';
-
 
 class JobStatusWidget extends PureComponent {
     static propTypes = {
@@ -65,7 +64,7 @@ class JobStatusWidget extends PureComponent {
             const { minimized, isFullscreen } = this.state;
             this.setState({
                 minimized: isFullscreen ? minimized : false,
-                isFullscreen: !isFullscreen
+                isFullscreen: !isFullscreen,
             });
         },
         toggleMinimized: () => {
@@ -85,14 +84,16 @@ class JobStatusWidget extends PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const {
-            minimized,
-            spindleSpeed,
-        } = this.state;
+        const { minimized, spindleSpeed } = this.state;
         const prevSenderStatus = prevProps.senderStatus;
         const { senderStatus } = this.props;
 
-        if (senderStatus && prevSenderStatus && prevSenderStatus.finishTime !== senderStatus.finishTime && senderStatus.finishTime > 0) {
+        if (
+            senderStatus &&
+            prevSenderStatus &&
+            prevSenderStatus.finishTime !== senderStatus.finishTime &&
+            senderStatus.finishTime > 0
+        ) {
             this.updateLastFileDetails();
         }
 
@@ -141,12 +142,12 @@ class JobStatusWidget extends PureComponent {
         const tokens = [
             pubsub.subscribe('units:change', (msg, units) => {
                 this.setState({
-                    units: units
+                    units: units,
                 });
             }),
             pubsub.subscribe('spindle:mode', (msg, mode) => {
                 this.setState({
-                    spindleOverrideLabel: this.getSpindleOverrideLabel()
+                    spindleOverrideLabel: this.getSpindleOverrideLabel(),
                 });
             }),
         ];
@@ -173,7 +174,14 @@ class JobStatusWidget extends PureComponent {
 
     render() {
         const { units } = this.state;
-        const { workflow, isConnected, senderStatus, bbox, fileProcessing, fileModal } = this.props;
+        const {
+            workflow,
+            isConnected,
+            senderStatus,
+            bbox,
+            fileProcessing,
+            fileModal,
+        } = this.props;
         const state = {
             ...this.state,
             fileModal,
@@ -186,24 +194,20 @@ class JobStatusWidget extends PureComponent {
                     return mapPositionToUnits(pos, units);
                 });
             }),
-            isConnected
+            isConnected,
         };
 
         const actions = {
-            ...this.actions
+            ...this.actions,
         };
 
         return (
             <div className={styles['job-status-wrapper']}>
-                {fileProcessing
-                    ? <FileProcessingLoader />
-                    : (
-                        <JobStatus
-                            state={state}
-                            actions={actions}
-                        />
-                    )
-                }
+                {fileProcessing ? (
+                    <FileProcessingLoader />
+                ) : (
+                    <JobStatus state={state} actions={actions} />
+                )}
             </div>
         );
     }
@@ -216,13 +220,13 @@ export default connect((store) => {
     const bbox = get(store, 'file.bbox');
     const fileProcessing = get(store, 'file.fileProcessing');
     let fileModal = get(store, 'file.fileModal');
-    fileModal = (fileModal === 'G21' ? METRIC_UNITS : IMPERIAL_UNITS);
+    fileModal = fileModal === 'G21' ? METRIC_UNITS : IMPERIAL_UNITS;
     return {
         workflow,
         senderStatus,
         isConnected,
         bbox,
         fileProcessing,
-        fileModal
+        fileModal,
     };
 })(JobStatusWidget);

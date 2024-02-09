@@ -24,5 +24,6 @@
 import '@trendmicro/react-notifications/dist/react-notifications.css';
 
 export {
-    Notification, ToastNotification
+    Notification,
+    ToastNotification,
 } from '@trendmicro/react-notifications';

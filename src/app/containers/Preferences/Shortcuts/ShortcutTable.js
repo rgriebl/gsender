@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import store from '../../../store';
 import styles from './shortcutTable.styl';
 
-
 function ShortcutTable({ forwardRef }) {
     const [shortcuts, setShortcuts] = useState([{}]);
 
@@ -12,10 +11,7 @@ function ShortcutTable({ forwardRef }) {
     }, []);
 
     return (
-        <div
-            className={styles.shortcutWrapper}
-            ref={forwardRef}
-        >
+        <div className={styles.shortcutWrapper} ref={forwardRef}>
             <div className={styles.table}>
                 <table>
                     <thead>
@@ -34,9 +30,7 @@ function ShortcutTable({ forwardRef }) {
                                     <td>{keys || '-'}</td>
                                     <td>{category || '-'}</td>
                                 </tr>
-                            ) : (
-                                null
-                            );
+                            ) : null;
                         })}
                     </tbody>
                 </table>

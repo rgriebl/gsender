@@ -33,17 +33,17 @@ const settings = {
     error: {
         // The flag is set to true if the workspace settings have become corrupted or invalid.
         // @see store/index.js
-        corruptedWorkspaceSettings: false
+        corruptedWorkspaceSettings: false,
     },
     name: pkg.name,
     productName: pkg.productName,
     version: pkg.version,
     webroot: webroot,
     log: {
-        level: 'warn' // trace, debug, info, warn, error
+        level: 'warn', // trace, debug, info, warn, error
     },
     analytics: {
-        trackingId: process.env.TRACKING_ID
+        trackingId: process.env.TRACKING_ID,
     },
     i18next: {
         lowerCaseLng: true,
@@ -58,7 +58,7 @@ const settings = {
         ns: [
             'controller', // Grbl|Smoothie|TinyG
             'gcode', // G-code
-            'resource' // default
+            'resource', // default
         ],
         // default namespace used if not passed to translation function
         defaultNS: 'resource',
@@ -83,7 +83,7 @@ const settings = {
 
         interpolation: {
             prefix: '{{',
-            suffix: '}}'
+            suffix: '}}',
         },
 
         // options for language detection
@@ -98,7 +98,7 @@ const settings = {
             lookupLocalStorage: 'lang',
 
             // cache user language on
-            caches: ['localStorage', 'cookie']
+            caches: ['localStorage', 'cookie'],
         },
         // options for backend
         // https://github.com/i18next/i18next-xhr-backend
@@ -114,12 +114,15 @@ const settings = {
             allowMultiLoading: false,
 
             // parse data after it has been fetched
-            parse: function(data, url) {
+            parse: function (data, url) {
                 log.debug(`Loading resource: url="${url}"`);
 
                 // gcode.json
                 // resource.json
-                if (endsWith(url, '/gcode.json') || endsWith(url, '/resource.json')) {
+                if (
+                    endsWith(url, '/gcode.json') ||
+                    endsWith(url, '/resource.json')
+                ) {
                     return mapKeys(JSON.parse(data), (value, key) => sha1(key));
                 }
 
@@ -127,9 +130,9 @@ const settings = {
             },
 
             // allow cross domain requests
-            crossDomain: false
-        }
-    }
+            crossDomain: false,
+        },
+    },
 };
 
 export default settings;

@@ -5,10 +5,19 @@ import reduxStore from 'app/store/redux';
 import { GRBLHAL } from 'app/constants';
 import Tooltip from 'app/components/TooltipCustom/ToolTip';
 import ToolModalButton from 'app/components/ToolModalButton/ToolModalButton';
-import { Toaster, TOASTER_INFO, TOASTER_DANGER } from 'app/lib/toaster/ToasterLib';
+import {
+    Toaster,
+    TOASTER_INFO,
+    TOASTER_DANGER,
+} from 'app/lib/toaster/ToasterLib';
 
 import styles from '../../index.styl';
-import { applyNewSettings, FirmwareContext, importFirmwareSettings, exportFirmwareSettings } from '../../utils';
+import {
+    applyNewSettings,
+    FirmwareContext,
+    importFirmwareSettings,
+    exportFirmwareSettings,
+} from '../../utils';
 import Notifications from './Notifications';
 
 const ActionArea = () => {
@@ -21,13 +30,14 @@ const ActionArea = () => {
         canSendSettings,
         setSettings,
         settingsToApply,
-        setSettingsToApply
+        setSettingsToApply,
     } = useContext(FirmwareContext);
     const inputRef = useRef();
     const controllerType = get(reduxStore.getState(), 'controller.type');
-    const tooltipContent = controllerType === GRBLHAL ?
-        'Flashing is disabled for grblHAL. We are unable to detect what chip is being used and therefore cannot flash it.'
-        : 'Flash your Arduino board to GRBL default values';
+    const tooltipContent =
+        controllerType === GRBLHAL
+            ? 'Flashing is disabled for grblHAL. We are unable to detect what chip is being used and therefore cannot flash it.'
+            : 'Flash your Arduino board to GRBL default values';
 
     const openSettingsFile = (e) => {
         const file = e.target.files[0];
@@ -38,14 +48,19 @@ const ActionArea = () => {
 
                 Toaster.pop({
                     msg: 'Settings Imported From File',
-                    type: TOASTER_INFO
+                    type: TOASTER_INFO,
                 });
 
-                setSettings(prev => prev.map(item => ({ ...item, value: uploadedSettings[item.setting] ?? item.value })));
+                setSettings((prev) =>
+                    prev.map((item) => ({
+                        ...item,
+                        value: uploadedSettings[item.setting] ?? item.value,
+                    })),
+                );
             } catch (error) {
                 Toaster.pop({
                     msg: 'Unable to Load Settings From File',
-                    type: TOASTER_DANGER
+                    type: TOASTER_DANGER,
                 });
             }
 
@@ -68,19 +83,37 @@ const ActionArea = () => {
             <div className={styles.buttonsContainer}>
                 <div>
                     <Tooltip content={tooltipContent} location="default">
-                        <ToolModalButton icon="fas fa-bolt" onClick={() => setInitiateFlashing(true, controllerType === GRBLHAL)}>
+                        <ToolModalButton
+                            icon="fas fa-bolt"
+                            onClick={() =>
+                                setInitiateFlashing(
+                                    true,
+                                    controllerType === GRBLHAL,
+                                )
+                            }
+                        >
                             Flash GRBL
                         </ToolModalButton>
                     </Tooltip>
                 </div>
 
                 <div className={styles.buttonsMiddle}>
-                    <Tooltip content="Import your GRBL settings file" location="default">
-                        <ToolModalButton icon="fas fa-file-import" onClick={() => inputRef.current?.click()} disabled={!canSendSettings}>
+                    <Tooltip
+                        content="Import your GRBL settings file"
+                        location="default"
+                    >
+                        <ToolModalButton
+                            icon="fas fa-file-import"
+                            onClick={() => inputRef.current?.click()}
+                            disabled={!canSendSettings}
+                        >
                             Import Settings
                         </ToolModalButton>
                     </Tooltip>
-                    <Tooltip content="Save your current GRBL settings to your device" location="default">
+                    <Tooltip
+                        content="Save your current GRBL settings to your device"
+                        location="default"
+                    >
                         <ToolModalButton
                             icon="fas fa-file-export"
                             onClick={exportSettings}
@@ -89,7 +122,10 @@ const ActionArea = () => {
                             Export Settings
                         </ToolModalButton>
                     </Tooltip>
-                    <Tooltip content="Restore the settings for your current machine profile" location="default">
+                    <Tooltip
+                        content="Restore the settings for your current machine profile"
+                        location="default"
+                    >
                         <ToolModalButton
                             icon="fas fa-undo"
                             onClick={() => setShouldRestoreDefault(true)}
@@ -100,13 +136,28 @@ const ActionArea = () => {
                     </Tooltip>
                 </div>
 
-                <Tooltip content="Apply your new changes to the settings" location="default">
+                <Tooltip
+                    content="Apply your new changes to the settings"
+                    location="default"
+                >
                     <ToolModalButton
                         icon="fas fa-tasks"
                         style={{ margin: 0 }}
-                        disabled={isDefault || !canSendSettings || !settingsToApply}
-                        className={(isDefault || !settingsToApply) ? `${styles.firmwareButtonDisabled}` : `${styles.applySettingsButton}`}
-                        onClick={() => applyNewSettings(settings, eeprom, setSettingsToApply)}
+                        disabled={
+                            isDefault || !canSendSettings || !settingsToApply
+                        }
+                        className={
+                            isDefault || !settingsToApply
+                                ? `${styles.firmwareButtonDisabled}`
+                                : `${styles.applySettingsButton}`
+                        }
+                        onClick={() =>
+                            applyNewSettings(
+                                settings,
+                                eeprom,
+                                setSettingsToApply,
+                            )
+                        }
                     >
                         Apply New Settings
                     </ToolModalButton>

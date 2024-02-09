@@ -5,7 +5,6 @@ import MemoryMap from 'nrf-intel-hex';
 import logger from '../../logger';
 import events from 'events';
 
-
 //const VALID_VENDOR_IDS = [0x0483];
 //const VALID_DEVICE_ID = [0x441];
 //const START_ADDRESS = 0x08000000;
@@ -46,9 +45,11 @@ class DFUFlasher extends events.EventEmitter {
         this.map = this.parseHex(this.hex);
         let startAddress = null;
 
-
         for (let [address, dataBlock] of this.map) {
-            this.emit('info', `Writing block of size ${dataBlock.byteLength} at address 0x${address.toString(16)}`);
+            this.emit(
+                'info',
+                `Writing block of size ${dataBlock.byteLength} at address 0x${address.toString(16)}`,
+            );
             if (!startAddress) {
                 startAddress = address;
             }
@@ -61,7 +62,7 @@ class DFUFlasher extends events.EventEmitter {
         log.info(status);
         await this.dfu.download(new ArrayBuffer(0), 0);
         try {
-            await this.dfu.pollUntil(state => (state === this.dfu.dfuMANIFEST));
+            await this.dfu.pollUntil((state) => state === this.dfu.dfuMANIFEST);
         } catch (error) {
             this.emit('error', error);
         }
@@ -103,10 +104,18 @@ class DFUFlasher extends events.EventEmitter {
                 await this.sendDFUCommand(this.SET_ADDRESS, address, 4);
                 const status = await this.dfu.getStatus();
                 log.info(status);
-                bytesWritten = await this.dfu.download(data.slice(bytesSent, bytesSent + chunkSize), 2);
+                bytesWritten = await this.dfu.download(
+                    data.slice(bytesSent, bytesSent + chunkSize),
+                    2,
+                );
                 log.info(`Sent ${bytesWritten} bytes`);
-                this.emit('info', `Wrote chunk ${chunks} with size ${bytesWritten}b`);
-                dfuStatus = await this.dfu.pollUntilIdle(this.dfu.dfuDNLOAD_IDLE);
+                this.emit(
+                    'info',
+                    `Wrote chunk ${chunks} with size ${bytesWritten}b`,
+                );
+                dfuStatus = await this.dfu.pollUntilIdle(
+                    this.dfu.dfuDNLOAD_IDLE,
+                );
                 address += chunkSize;
                 chunks += 1;
             } catch (e) {
@@ -115,7 +124,10 @@ class DFUFlasher extends events.EventEmitter {
             }
 
             if (dfuStatus.status !== this.dfu.STATUS_OK) {
-                this.emit('error', `DFU DOWNLOAD failed state=${dfuStatus.state}, status=${dfuStatus.status}`);
+                this.emit(
+                    'error',
+                    `DFU DOWNLOAD failed state=${dfuStatus.state}, status=${dfuStatus.status}`,
+                );
             }
 
             bytesSent += bytesWritten;
@@ -134,12 +146,16 @@ class DFUFlasher extends events.EventEmitter {
     }
 
     getSectorStart(addr, segment) {
-        const sectorIndex = Math.floor((addr - segment.start) / segment.sectorSize);
+        const sectorIndex = Math.floor(
+            (addr - segment.start) / segment.sectorSize,
+        );
         return segment.start + sectorIndex * segment.sectorSize;
     }
 
     getSectorEnd(addr, segment) {
-        const sectorIndex = Math.floor((addr - segment.start) / segment.sectorSize);
+        const sectorIndex = Math.floor(
+            (addr - segment.start) / segment.sectorSize,
+        );
         return segment.start + (sectorIndex + 1) * segment.sectorSize;
     }
 
@@ -165,12 +181,17 @@ class DFUFlasher extends events.EventEmitter {
                 segment = this.getSegment(addr);
             }
             if (!segment.eraseable) {
-                bytesErased = Math.min(bytesErased - segment.end - addr, bytesToErase);
+                bytesErased = Math.min(
+                    bytesErased - segment.end - addr,
+                    bytesToErase,
+                );
                 addr = segment.end;
                 this.logProgress(bytesErased, bytesToErase);
                 continue;
             }
-            const sectorIndex = Math.floor((addr - segment.start) / segment.sectorSize);
+            const sectorIndex = Math.floor(
+                (addr - segment.start) / segment.sectorSize,
+            );
             const sectorAddr = segment.start + sectorIndex * segment.sectorSize;
             // eslint-disable-next-line no-await-in-loop
             await this.sendDFUCommand(this.ERASE_PAGE, sectorAddr, 4);
@@ -192,7 +213,10 @@ class DFUFlasher extends events.EventEmitter {
         } else if (len === 4) {
             dv.setUint32(1, param, true);
         } else {
-            this.emit('error', `Invalid length of ${len} specified - must be 1 or 4`);
+            this.emit(
+                'error',
+                `Invalid length of ${len} specified - must be 1 or 4`,
+            );
             return;
         }
 
@@ -206,7 +230,9 @@ class DFUFlasher extends events.EventEmitter {
 
         // Poll status
         log.info('Poll status');
-        let status = await this.dfu.pollUntil(state => (state !== DFU.dfuDNBUSY));
+        let status = await this.dfu.pollUntil(
+            (state) => state !== DFU.dfuDNBUSY,
+        );
         if (status.status !== this.dfu.STATUS_OK) {
             this.emit('error', 'Special DfuSe command ' + command + ' failed');
         }

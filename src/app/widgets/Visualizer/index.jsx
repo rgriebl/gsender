@@ -32,7 +32,10 @@ import store from 'app/store';
 import reduxStore from 'app/store/redux';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { UPDATE_FILE_INFO, UPDATE_FILE_PROCESSING } from 'app/actions/fileInfoActions';
+import {
+    UPDATE_FILE_INFO,
+    UPDATE_FILE_PROCESSING,
+} from 'app/actions/fileInfoActions';
 import Anchor from 'app/components/Anchor';
 import { Button } from 'app/components/Buttons';
 import ModalTemplate from 'app/components/ModalTemplate';
@@ -43,7 +46,11 @@ import i18n from 'app/lib/i18n';
 import log from 'app/lib/log';
 import portal from 'app/lib/portal';
 import * as WebGL from 'app/lib/three/WebGL';
-import { Toaster, TOASTER_LONG, TOASTER_WARNING } from 'app/lib/toaster/ToasterLib';
+import {
+    Toaster,
+    TOASTER_LONG,
+    TOASTER_WARNING,
+} from 'app/lib/toaster/ToasterLib';
 import WidgetConfig from '../WidgetConfig';
 import PrimaryVisualizer from './PrimaryVisualizer';
 
@@ -73,7 +80,8 @@ import {
     GRBL_ACTIVE_STATE_CHECK,
     CARVING_CATEGORY,
     GENERAL_CATEGORY,
-    VISUALIZER_CATEGORY, OVERRIDES_CATEGORY,
+    VISUALIZER_CATEGORY,
+    OVERRIDES_CATEGORY,
 } from '../../constants';
 import {
     CAMERA_MODE_PAN,
@@ -83,7 +91,7 @@ import {
     DARK_THEME,
     DARK_THEME_VALUES,
     CUSTOMIZABLE_THEMES,
-    PARTS_LIST
+    PARTS_LIST,
 } from './constants';
 import SecondaryVisualizer from './SecondaryVisualizer';
 import useKeybinding from '../../lib/useKeybinding';
@@ -93,34 +101,38 @@ const displayWebGLErrorMessage = () => {
     portal(({ onClose }) => (
         <Modal disableOverlayClick size="xs" onClose={onClose}>
             <Modal.Header>
-                <Modal.Title>
-                    WebGL Error Message
-                </Modal.Title>
+                <Modal.Title>WebGL Error Message</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <ModalTemplate type="warning">
                     {window.WebGLRenderingContext && (
                         <div>
-                            Your graphics card does not seem to support <Anchor href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation">WebGL</Anchor>.
+                            Your graphics card does not seem to support{' '}
+                            <Anchor href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation">
+                                WebGL
+                            </Anchor>
+                            .
                             <br />
-                            Find out how to get it <Anchor href="http://get.webgl.org/">here</Anchor>.
+                            Find out how to get it{' '}
+                            <Anchor href="http://get.webgl.org/">here</Anchor>.
                         </div>
                     )}
                     {!window.WebGLRenderingContext && (
                         <div>
-                            Your browser does not seem to support <Anchor href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation">WebGL</Anchor>.
+                            Your browser does not seem to support{' '}
+                            <Anchor href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation">
+                                WebGL
+                            </Anchor>
+                            .
                             <br />
-                            Find out how to get it <Anchor href="http://get.webgl.org/">here</Anchor>.
+                            Find out how to get it{' '}
+                            <Anchor href="http://get.webgl.org/">here</Anchor>.
                         </div>
                     )}
                 </ModalTemplate>
             </Modal.Body>
             <Modal.Footer>
-                <Button
-                    onClick={onClose}
-                >
-                    {i18n._('OK')}
-                </Button>
+                <Button onClick={onClose}>{i18n._('OK')}</Button>
             </Modal.Footer>
         </Modal>
     ));
@@ -142,24 +154,24 @@ class VisualizerWidget extends PureComponent {
                 notification: {
                     ...state.notification,
                     type: '',
-                    data: ''
-                }
+                    data: '',
+                },
             }));
         },
         openModal: (name = '', params = {}) => {
             this.setState((state) => ({
                 modal: {
                     name: name,
-                    params: params
-                }
+                    params: params,
+                },
             }));
         },
         closeModal: () => {
             this.setState((state) => ({
                 modal: {
                     name: '',
-                    params: {}
-                }
+                    params: {},
+                },
             }));
         },
         updateModalParams: (params = {}) => {
@@ -168,9 +180,9 @@ class VisualizerWidget extends PureComponent {
                     ...state.modal,
                     params: {
                         ...state.modal.params,
-                        ...params
-                    }
-                }
+                        ...params,
+                    },
+                },
             }));
         },
         // Load file from watch directory
@@ -180,8 +192,8 @@ class VisualizerWidget extends PureComponent {
                     ...state.gcode,
                     loading: true,
                     rendering: false,
-                    ready: false
-                }
+                    ready: false,
+                },
             }));
 
             controller.command('watchdir:load', file, (err, data) => {
@@ -191,8 +203,8 @@ class VisualizerWidget extends PureComponent {
                             ...state.gcode,
                             loading: false,
                             rendering: false,
-                            ready: false
-                        }
+                            ready: false,
+                        },
                     }));
 
                     log.error(err);
@@ -207,8 +219,11 @@ class VisualizerWidget extends PureComponent {
             // Send toolchange context on file load
             const hooks = store.get('workspace.toolChangeHooks', {});
             const context = {
-                toolChangeOption: store.get('workspace.toolChangeOption', 'Ignore'),
-                ...hooks
+                toolChangeOption: store.get(
+                    'workspace.toolChangeOption',
+                    'Ignore',
+                ),
+                ...hooks,
             };
 
             const { port, filename } = this.state;
@@ -219,7 +234,7 @@ class VisualizerWidget extends PureComponent {
 
             reduxStore.dispatch({
                 type: UPDATE_FILE_PROCESSING,
-                payload: { value: true }
+                payload: { value: true },
             });
 
             this.setState((state) => ({
@@ -227,8 +242,8 @@ class VisualizerWidget extends PureComponent {
                     ...state.gcode,
                     loading: true,
                     rendering: false,
-                    ready: false
-                }
+                    ready: false,
+                },
             }));
 
             //If we aren't connected to a device, only load the gcode
@@ -239,31 +254,37 @@ class VisualizerWidget extends PureComponent {
                 return;
             }
 
-            controller.command('gcode:load', name, gcode, context, (err, data) => {
-                if (err) {
-                    this.setState((state) => ({
-                        gcode: {
-                            ...state.gcode,
-                            loading: false,
-                            rendering: false,
-                            ready: false
-                        }
-                    }));
+            controller.command(
+                'gcode:load',
+                name,
+                gcode,
+                context,
+                (err, data) => {
+                    if (err) {
+                        this.setState((state) => ({
+                            gcode: {
+                                ...state.gcode,
+                                loading: false,
+                                rendering: false,
+                                ready: false,
+                            },
+                        }));
 
-                    log.error(err);
-                    return;
-                }
+                        log.error(err);
+                        return;
+                    }
 
-                log.debug(data);
-            });
+                    log.debug(data);
+                },
+            );
         },
         loadGCode: (name, vizualization, size) => {
             const capable = {
-                view3D: !!this.visualizer
+                view3D: !!this.visualizer,
             };
 
             const updater = (state) => {
-                return ({
+                return {
                     gcode: {
                         ...state.gcode,
                         loading: false,
@@ -273,17 +294,17 @@ class VisualizerWidget extends PureComponent {
                             min: {
                                 x: 0,
                                 y: 0,
-                                z: 0
+                                z: 0,
                             },
                             max: {
                                 x: 0,
                                 y: 0,
-                                z: 0
-                            }
+                                z: 0,
+                            },
                         },
                         name: name,
-                    }
-                });
+                    },
+                };
             };
             const callback = () => {
                 // Clear gcode bounding box
@@ -294,7 +315,7 @@ class VisualizerWidget extends PureComponent {
                     ymin: 0,
                     ymax: 0,
                     zmin: 0,
-                    zmax: 0
+                    zmax: 0,
                 };
 
                 if (!capable.view3D) {
@@ -311,7 +332,7 @@ class VisualizerWidget extends PureComponent {
                             ymin: bbox.min.y,
                             ymax: bbox.max.y,
                             zmin: bbox.min.z,
-                            zmax: bbox.max.z
+                            zmax: bbox.max.z,
                         };
 
                         const { port } = this.state;
@@ -326,7 +347,7 @@ class VisualizerWidget extends PureComponent {
                                 loadedBeforeConnection: !port,
                             },
                             filename: name,
-                            fileSize: size
+                            fileSize: size,
                         }));
                     });
                 }, 0);
@@ -343,7 +364,6 @@ class VisualizerWidget extends PureComponent {
                 visualizer.unload();
             }
 
-
             // Clear gcode bounding box
             controller.context = {
                 ...controller.context,
@@ -352,7 +372,7 @@ class VisualizerWidget extends PureComponent {
                 ymin: 0,
                 ymax: 0,
                 zmin: 0,
-                zmax: 0
+                zmax: 0,
             };
 
             this.setState((state) => ({
@@ -366,16 +386,16 @@ class VisualizerWidget extends PureComponent {
                         min: {
                             x: 0,
                             y: 0,
-                            z: 0
+                            z: 0,
                         },
                         max: {
                             x: 0,
                             y: 0,
-                            z: 0
-                        }
+                            z: 0,
+                        },
                     },
-                    visualization: {}
-                }
+                    visualization: {},
+                },
             }));
         },
         onRunClick: (type) => {
@@ -383,15 +403,25 @@ class VisualizerWidget extends PureComponent {
         },
         handleRun: (type) => {
             const { workflow, activeState } = this.props;
-            console.assert(includes([WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED], workflow.state) || activeState === GRBL_ACTIVE_STATE_HOLD);
-            this.setState((prev) => ({ invalidGcode: { ...prev.invalidGcode, showModal: false } }));
+            console.assert(
+                includes(
+                    [WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED],
+                    workflow.state,
+                ) || activeState === GRBL_ACTIVE_STATE_HOLD,
+            );
+            this.setState((prev) => ({
+                invalidGcode: { ...prev.invalidGcode, showModal: false },
+            }));
 
             if (workflow.state === WORKFLOW_STATE_IDLE) {
                 controller.command('gcode:start');
                 return;
             }
 
-            if (workflow.state === WORKFLOW_STATE_PAUSED || activeState === GRBL_ACTIVE_STATE_HOLD) {
+            if (
+                workflow.state === WORKFLOW_STATE_PAUSED ||
+                activeState === GRBL_ACTIVE_STATE_HOLD
+            ) {
                 controller.command('gcode:resume', type);
             }
         },
@@ -413,8 +443,8 @@ class VisualizerWidget extends PureComponent {
             this.setState((state) => ({
                 gcode: {
                     ...state.gcode,
-                    bbox: bbox
-                }
+                    bbox: bbox,
+                },
             }));
         },
         toggle3DView: () => {
@@ -424,25 +454,25 @@ class VisualizerWidget extends PureComponent {
             }
 
             this.setState((state) => ({
-                disabled: !state.disabled
+                disabled: !state.disabled,
             }));
         },
         toPerspectiveProjection: (projection) => {
             this.setState((state) => ({
-                projection: 'perspective'
+                projection: 'perspective',
             }));
         },
         toOrthographicProjection: (projection) => {
             this.setState((state) => ({
-                projection: 'orthographic'
+                projection: 'orthographic',
             }));
         },
         toggleGCodeFilename: () => {
             this.setState((state) => ({
                 gcode: {
                     ...state.gcode,
-                    displayName: !state.gcode.displayName
-                }
+                    displayName: !state.gcode.displayName,
+                },
             }));
         },
         toggleLimitsVisibility: () => {
@@ -451,9 +481,9 @@ class VisualizerWidget extends PureComponent {
                     ...state.objects,
                     limits: {
                         ...state.objects.limits,
-                        visible: !state.objects.limits.visible
-                    }
-                }
+                        visible: !state.objects.limits.visible,
+                    },
+                },
             }));
         },
         toggleCoordinateSystemVisibility: () => {
@@ -462,9 +492,9 @@ class VisualizerWidget extends PureComponent {
                     ...state.objects,
                     coordinateSystem: {
                         ...state.objects.coordinateSystem,
-                        visible: !state.objects.coordinateSystem.visible
-                    }
-                }
+                        visible: !state.objects.coordinateSystem.visible,
+                    },
+                },
             }));
         },
         toggleGridLineNumbersVisibility: () => {
@@ -473,9 +503,9 @@ class VisualizerWidget extends PureComponent {
                     ...state.objects,
                     gridLineNumbers: {
                         ...state.objects.gridLineNumbers,
-                        visible: !state.objects.gridLineNumbers.visible
-                    }
-                }
+                        visible: !state.objects.gridLineNumbers.visible,
+                    },
+                },
             }));
         },
         toggleCuttingToolVisibility: () => {
@@ -484,20 +514,20 @@ class VisualizerWidget extends PureComponent {
                     ...state.objects,
                     cuttingTool: {
                         ...state.objects.cuttingTool,
-                        visible: !state.objects.cuttingTool.visible
-                    }
-                }
+                        visible: !state.objects.cuttingTool.visible,
+                    },
+                },
             }));
         },
         camera: {
             toRotateMode: () => {
                 this.setState((state) => ({
-                    cameraMode: CAMERA_MODE_ROTATE
+                    cameraMode: CAMERA_MODE_ROTATE,
                 }));
             },
             toPanMode: () => {
                 this.setState((state) => ({
-                    cameraMode: CAMERA_MODE_PAN
+                    cameraMode: CAMERA_MODE_PAN,
                 }));
             },
             zoomFit: () => {
@@ -557,7 +587,7 @@ class VisualizerWidget extends PureComponent {
             },
             toFreeView: () => {
                 this.setState({ cameraPosition: 'Free' });
-            }
+            },
         },
         handleLiteModeToggle: () => {
             const { liteMode } = this.state;
@@ -566,7 +596,7 @@ class VisualizerWidget extends PureComponent {
 
             this.setState({
                 liteMode: newLiteModeValue,
-                minimizeRenders: newLiteModeValue
+                minimizeRenders: newLiteModeValue,
             });
 
             // instead of calling loadGCode right away,
@@ -576,20 +606,24 @@ class VisualizerWidget extends PureComponent {
         },
         lineWarning: {
             onContinue: () => {
-                this.setState(prev => ({ invalidLine: { ...prev.invalidLine, show: false, line: '', } }));
+                this.setState((prev) => ({
+                    invalidLine: { ...prev.invalidLine, show: false, line: '' },
+                }));
                 this.actions.handleRun();
             },
             onIgnoreWarning: () => {
-                this.setState(prev => ({
+                this.setState((prev) => ({
                     invalidLine: {
                         ...prev.invalidLine,
                         show: false,
-                        line: ''
-                    }
+                        line: '',
+                    },
                 }));
 
                 store.set('widgets.visualizer.showLineWarnings', false);
-                controller.command('settings:updated', { showLineWarnings: false });
+                controller.command('settings:updated', {
+                    showLineWarnings: false,
+                });
                 this.actions.handleRun();
             },
             onCancel: () => this.actions.reset(),
@@ -601,7 +635,7 @@ class VisualizerWidget extends PureComponent {
                     loading: false,
                     rendering: false,
                     ready: true,
-                }
+                },
             }));
         },
         reset: () => {
@@ -612,27 +646,26 @@ class VisualizerWidget extends PureComponent {
             pubsub.publish('gcode:unload');
             Toaster.pop({
                 msg: 'G-code File Closed',
-                icon: 'fa-exclamation'
+                icon: 'fa-exclamation',
             });
-        }
+        },
     };
 
     pubsubTokens = [];
 
     onProcessedGcode = ({ data }) => {
-        const {
-            total,
-            invalidGcode,
-        } = data;
+        const { total, invalidGcode } = data;
 
         if (invalidGcode.size > 0) {
-            this.setState(prev => ({ invalidGcode: { ...prev.invalidGcode, list: invalidGcode } }));
+            this.setState((prev) => ({
+                invalidGcode: { ...prev.invalidGcode, list: invalidGcode },
+            }));
             if (this.state.invalidGcode.shouldShow) {
                 Toaster.pop({
                     msg: `Found ${invalidGcode.size} line(s) of non-GRBL-supported G-Code in this file.  Your job may not run properly.`,
                     type: TOASTER_WARNING,
                     duration: TOASTER_LONG,
-                    icon: 'fa-exclamation-triangle'
+                    icon: 'fa-exclamation-triangle',
                 });
             }
         }
@@ -641,19 +674,17 @@ class VisualizerWidget extends PureComponent {
 
         const reduxPayload = {
             ...data,
-            content: this.state.gcode.content
+            content: this.state.gcode.content,
         };
 
         // Emit events on response with relevant data from processor worker
         reduxStore.dispatch({
             type: UPDATE_FILE_INFO,
-            payload: reduxPayload
+            payload: reduxPayload,
         });
-    }
-
-    processGCode = (gcode, name, size) => {
-
     };
+
+    processGCode = (gcode, name, size) => {};
 
     unsubscribe() {
         this.pubsubTokens.forEach((token) => {
@@ -680,13 +711,16 @@ class VisualizerWidget extends PureComponent {
 
             setTimeout(() => {
                 this.setState((state) => ({
-                    disabled: true
+                    disabled: true,
                 }));
             }, 0);
         }
 
         gamepad.on('gamepad:button', (event) => {
-            runAction({ event, shuttleControlEvents: this.shuttleControlEvents });
+            runAction({
+                event,
+                shuttleControlEvents: this.shuttleControlEvents,
+            });
         });
     }
 
@@ -709,17 +743,41 @@ class VisualizerWidget extends PureComponent {
         if (this.state.gcode.displayName !== prevState.gcode.displayName) {
             this.config.set('gcode.displayName', this.state.gcode.displayName);
         }
-        if (this.state.objects.limits.visible !== prevState.objects.limits.visible) {
-            this.config.set('objects.limits.visible', this.state.objects.limits.visible);
+        if (
+            this.state.objects.limits.visible !==
+            prevState.objects.limits.visible
+        ) {
+            this.config.set(
+                'objects.limits.visible',
+                this.state.objects.limits.visible,
+            );
         }
-        if (this.state.objects.coordinateSystem.visible !== prevState.objects.coordinateSystem.visible) {
-            this.config.set('objects.coordinateSystem.visible', this.state.objects.coordinateSystem.visible);
+        if (
+            this.state.objects.coordinateSystem.visible !==
+            prevState.objects.coordinateSystem.visible
+        ) {
+            this.config.set(
+                'objects.coordinateSystem.visible',
+                this.state.objects.coordinateSystem.visible,
+            );
         }
-        if (this.state.objects.gridLineNumbers.visible !== prevState.objects.gridLineNumbers.visible) {
-            this.config.set('objects.gridLineNumbers.visible', this.state.objects.gridLineNumbers.visible);
+        if (
+            this.state.objects.gridLineNumbers.visible !==
+            prevState.objects.gridLineNumbers.visible
+        ) {
+            this.config.set(
+                'objects.gridLineNumbers.visible',
+                this.state.objects.gridLineNumbers.visible,
+            );
         }
-        if (this.state.objects.cuttingTool.visible !== prevState.objects.cuttingTool.visible) {
-            this.config.set('objects.cuttingTool.visible', this.state.objects.cuttingTool.visible);
+        if (
+            this.state.objects.cuttingTool.visible !==
+            prevState.objects.cuttingTool.visible
+        ) {
+            this.config.set(
+                'objects.cuttingTool.visible',
+                this.state.objects.cuttingTool.visible,
+            );
         }
         if (this.state.liteMode !== prevState.liteMode) {
             this.config.set('liteMode', this.state.liteMode);
@@ -731,27 +789,32 @@ class VisualizerWidget extends PureComponent {
             port: controller.port,
             units: store.get('workspace.units', METRIC_UNITS),
             theme: this.config.get('theme'),
-            showSoftLimitsWarning: this.config.get('showSoftLimitsWarning', false),
+            showSoftLimitsWarning: this.config.get(
+                'showSoftLimitsWarning',
+                false,
+            ),
             workflow: {
-                state: controller.workflow.state
+                state: controller.workflow.state,
             },
             notification: {
                 type: '',
-                data: ''
+                data: '',
             },
             modal: {
                 name: '',
-                params: {}
+                params: {},
             },
-            machinePosition: { // Machine position
+            machinePosition: {
+                // Machine position
                 x: '0.000',
                 y: '0.000',
-                z: '0.000'
+                z: '0.000',
             },
-            workPosition: { // Work position
+            workPosition: {
+                // Work position
                 x: '0.000',
                 y: '0.000',
-                z: '0.000'
+                z: '0.000',
             },
             gcode: {
                 displayName: this.config.get('gcode.displayName', true),
@@ -763,13 +826,13 @@ class VisualizerWidget extends PureComponent {
                     min: {
                         x: 0,
                         y: 0,
-                        z: 0
+                        z: 0,
                     },
                     max: {
                         x: 0,
                         y: 0,
-                        z: 0
-                    }
+                        z: 0,
+                    },
                 },
                 // Updates by the "sender:status" event
                 name: '',
@@ -778,7 +841,7 @@ class VisualizerWidget extends PureComponent {
                 sent: 0,
                 received: 0,
                 loadedBeforeConnection: false,
-                visualization: {}
+                visualization: {},
             },
             disabled: this.config.get('disabled', false),
             disabledLite: this.config.get('disabledLite'),
@@ -787,26 +850,47 @@ class VisualizerWidget extends PureComponent {
             projection: this.config.get('projection', 'orthographic'),
             objects: {
                 limits: {
-                    visible: this.config.get('objects.limits.visible', true)
+                    visible: this.config.get('objects.limits.visible', true),
                 },
                 coordinateSystem: {
-                    visible: this.config.get('objects.coordinateSystem.visible', true)
+                    visible: this.config.get(
+                        'objects.coordinateSystem.visible',
+                        true,
+                    ),
                 },
                 gridLineNumbers: {
-                    visible: this.config.get('objects.gridLineNumbers.visible', true)
+                    visible: this.config.get(
+                        'objects.gridLineNumbers.visible',
+                        true,
+                    ),
                 },
                 cuttingTool: {
-                    visible: this.config.get('objects.cuttingTool.visible', true),
-                    visibleLite: this.config.get('objects.cuttingTool.visibleLite', true)
+                    visible: this.config.get(
+                        'objects.cuttingTool.visible',
+                        true,
+                    ),
+                    visibleLite: this.config.get(
+                        'objects.cuttingTool.visibleLite',
+                        true,
+                    ),
                 },
                 cuttingToolAnimation: {
-                    visible: this.config.get('objects.cuttingToolAnimation.visible', true),
-                    visibleLite: this.config.get('objects.cuttingToolAnimation.visibleLite', true)
+                    visible: this.config.get(
+                        'objects.cuttingToolAnimation.visible',
+                        true,
+                    ),
+                    visibleLite: this.config.get(
+                        'objects.cuttingToolAnimation.visibleLite',
+                        true,
+                    ),
                 },
                 cutPath: {
                     visible: this.config.get('objects.cutPath.visible', true),
-                    visibleLite: this.config.get('objects.cutPath.visibleLite', true)
-                }
+                    visibleLite: this.config.get(
+                        'objects.cutPath.visibleLite',
+                        true,
+                    ),
+                },
             },
             cameraMode: this.config.get('cameraMode', CAMERA_MODE_PAN),
             cameraPosition: '3D', // 'Top', '3D', 'Front', 'Left', 'Right'
@@ -831,55 +915,59 @@ class VisualizerWidget extends PureComponent {
         };
     }
 
-    showToast = _.throttle(() => {
-        Toaster.pop({
-            msg: 'Unable to activate GrblHAL ONLY shortcut',
-            type: TOASTER_WARNING,
-            duration: 3000
-        });
-    }, 3000, { trailing: false });
+    showToast = _.throttle(
+        () => {
+            Toaster.pop({
+                msg: 'Unable to activate GrblHAL ONLY shortcut',
+                type: TOASTER_WARNING,
+                duration: 3000,
+            });
+        },
+        3000,
+        { trailing: false },
+    );
 
     shuttleControlFunctions = {
         FEEDRATE_OVERRIDE: (_, { amount }) => {
             switch (Number(amount)) {
-            case 1:
-                controller.write('\x93');
-                break;
-            case -1:
-                controller.write('\x94');
-                break;
-            case 10:
-                controller.write('\x91');
-                break;
-            case -10:
-                controller.write('\x92');
-                break;
-            case 0:
-                controller.write('\x90');
-                break;
-            default:
-                return;
+                case 1:
+                    controller.write('\x93');
+                    break;
+                case -1:
+                    controller.write('\x94');
+                    break;
+                case 10:
+                    controller.write('\x91');
+                    break;
+                case -10:
+                    controller.write('\x92');
+                    break;
+                case 0:
+                    controller.write('\x90');
+                    break;
+                default:
+                    return;
             }
         },
         SPINDLE_OVERRIDE: (_, { amount }) => {
             switch (Number(amount)) {
-            case 1:
-                controller.write('\x9C');
-                break;
-            case -1:
-                controller.write('\x9D');
-                break;
-            case 10:
-                controller.write('\x9A');
-                break;
-            case -10:
-                controller.write('\x9B');
-                break;
-            case 0:
-                controller.write('\x99');
-                break;
-            default:
-                return;
+                case 1:
+                    controller.write('\x9C');
+                    break;
+                case -1:
+                    controller.write('\x9D');
+                    break;
+                case 10:
+                    controller.write('\x9A');
+                    break;
+                case -10:
+                    controller.write('\x9B');
+                    break;
+                case 0:
+                    controller.write('\x99');
+                    break;
+                default:
+                    return;
             }
         },
         START_JOB: (_, { type }) => {
@@ -920,7 +1008,7 @@ class VisualizerWidget extends PureComponent {
                 default: () => {
                     const { cameraPosition } = this.getInitialState();
                     this.setState({ cameraPosition });
-                }
+                },
             }[type];
 
             changeCamera();
@@ -943,7 +1031,9 @@ class VisualizerWidget extends PureComponent {
                 'Default',
             ];
 
-            let currIndex = cameraViews.findIndex(view => view === this.state.cameraPosition);
+            let currIndex = cameraViews.findIndex(
+                (view) => view === this.state.cameraPosition,
+            );
 
             if (currIndex + 1 >= cameraViews.length) {
                 currIndex = 0;
@@ -955,14 +1045,14 @@ class VisualizerWidget extends PureComponent {
 
             const changeCamera = {
                 '3D': to3DView,
-                'Top': toTopView,
-                'Front': toFrontView,
-                'Right': toRightSideView,
-                'Left': toLeftSideView,
-                'Default': () => {
+                Top: toTopView,
+                Front: toFrontView,
+                Right: toRightSideView,
+                Left: toLeftSideView,
+                Default: () => {
                     const { cameraPosition } = this.getInitialState();
                     this.setState({ cameraPosition });
-                }
+                },
             }[currView];
 
             changeCamera();
@@ -975,8 +1065,8 @@ class VisualizerWidget extends PureComponent {
         },
         VISUALIZER_ZOOM_FIT: () => {
             this.actions.camera.zoomFit();
-        }
-    }
+        },
+    };
 
     shuttleControlEvents = {
         LOAD_FILE: {
@@ -1040,24 +1130,24 @@ class VisualizerWidget extends PureComponent {
             keysName: 'Start',
             cmd: 'START_JOB',
             payload: {
-                type: GRBL
+                type: GRBL,
             },
             preventDefault: true,
             isActive: true,
             category: CARVING_CATEGORY,
-            callback: this.shuttleControlFunctions.START_JOB
+            callback: this.shuttleControlFunctions.START_JOB,
         },
         START_JOB_ALT: {
             title: 'Start Job (Alt)',
             keys: ['ctrl', '`'].join('+'),
             cmd: 'START_JOB_ALT',
             payload: {
-                type: GRBLHAL
+                type: GRBLHAL,
             },
             preventDefault: true,
             isActive: true,
             category: CARVING_CATEGORY,
-            callback: this.shuttleControlFunctions.START_JOB
+            callback: this.shuttleControlFunctions.START_JOB,
         },
         PAUSE_JOB: {
             title: 'Pause Job',
@@ -1066,24 +1156,24 @@ class VisualizerWidget extends PureComponent {
             keysName: 'X',
             cmd: 'PAUSE_JOB',
             payload: {
-                type: GRBL
+                type: GRBL,
             },
             preventDefault: true,
             isActive: true,
             category: CARVING_CATEGORY,
-            callback: this.shuttleControlFunctions.PAUSE_JOB
+            callback: this.shuttleControlFunctions.PAUSE_JOB,
         },
         PAUSE_JOB_ALT: {
             title: 'Pause Job (Alt)',
             keys: ['ctrl', '1'].join('+'),
             cmd: 'PAUSE_JOB_ALT',
             payload: {
-                type: GRBLHAL
+                type: GRBLHAL,
             },
             preventDefault: true,
             isActive: true,
             category: CARVING_CATEGORY,
-            callback: this.shuttleControlFunctions.PAUSE_JOB
+            callback: this.shuttleControlFunctions.PAUSE_JOB,
         },
         STOP_JOB: {
             title: 'Stop Job',
@@ -1170,7 +1260,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         SPINDLE_OVERRIDE_PP: {
             title: 'Spindle/Laser ++',
@@ -1182,7 +1272,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         SPINDLE_OVERRIDE_M: {
             title: 'Spindle/Laser -',
@@ -1194,7 +1284,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         SPINDLE_OVERRIDE_MM: {
             title: 'Spindle/Laser --',
@@ -1206,7 +1296,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         SPINDLE_OVERRIDE_RESET: {
             title: 'Spindle/Laser Reset',
@@ -1218,7 +1308,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         VISUALIZER_VIEW_3D: {
             title: '3D / Isometric',
@@ -1228,7 +1318,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_VIEW
+            callback: this.shuttleControlFunctions.VISUALIZER_VIEW,
         },
         VISUALIZER_VIEW_TOP: {
             title: 'Top',
@@ -1238,7 +1328,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_VIEW
+            callback: this.shuttleControlFunctions.VISUALIZER_VIEW,
         },
         VISUALIZER_VIEW_FRONT: {
             title: 'Front',
@@ -1248,7 +1338,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_VIEW
+            callback: this.shuttleControlFunctions.VISUALIZER_VIEW,
         },
         VISUALIZER_VIEW_RIGHT: {
             title: 'Right',
@@ -1258,7 +1348,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_VIEW
+            callback: this.shuttleControlFunctions.VISUALIZER_VIEW,
         },
         VISUALIZER_VIEW_LEFT: {
             title: 'Left',
@@ -1268,7 +1358,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_VIEW
+            callback: this.shuttleControlFunctions.VISUALIZER_VIEW,
         },
         VISUALIZER_VIEW_RESET: {
             title: 'Reset View',
@@ -1278,7 +1368,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_VIEW
+            callback: this.shuttleControlFunctions.VISUALIZER_VIEW,
         },
         LIGHTWEIGHT_MODE: {
             title: 'Lightweight Mode',
@@ -1342,13 +1432,18 @@ class VisualizerWidget extends PureComponent {
             category: GENERAL_CATEGORY,
             callback: () => {
                 const shortcuts = store.get('commandKeys', {});
-                const allShuttleControlEvents = shuttleEvents.allShuttleControlEvents;
+                const allShuttleControlEvents =
+                    shuttleEvents.allShuttleControlEvents;
 
                 // Ignore shortcut for toggling all other shortcuts to
                 // allow them to be turned on and off
-                const allDisabled = Object
-                    .entries(shortcuts)
-                    .filter(([key, shortcut]) => (allShuttleControlEvents[key] ? allShuttleControlEvents[key].title : shortcut.title) !== 'Toggle Shortcuts')
+                const allDisabled = Object.entries(shortcuts)
+                    .filter(
+                        ([key, shortcut]) =>
+                            (allShuttleControlEvents[key]
+                                ? allShuttleControlEvents[key].title
+                                : shortcut.title) !== 'Toggle Shortcuts',
+                    )
                     .every(([key, shortcut]) => !shortcut.isActive);
                 const keybindings = _.cloneDeep(shortcuts);
                 Object.entries(keybindings).forEach(([key, keybinding]) => {
@@ -1359,7 +1454,7 @@ class VisualizerWidget extends PureComponent {
 
                 store.replace('commandKeys', keybindings);
                 pubsub.publish('keybindingsUpdated', keybindings);
-            }
+            },
         },
         MACRO: (_, { macroID }) => {
             const { activeState } = this.props;
@@ -1375,7 +1470,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_VIEW_CYCLE
+            callback: this.shuttleControlFunctions.VISUALIZER_VIEW_CYCLE,
         },
         VISUALIZER_ZOOM_IN: {
             title: 'Zoom In',
@@ -1385,7 +1480,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_ZOOM_IN
+            callback: this.shuttleControlFunctions.VISUALIZER_ZOOM_IN,
         },
         VISUALIZER_ZOOM_OUT: {
             title: 'Zoom Out',
@@ -1395,7 +1490,7 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_ZOOM_OUT
+            callback: this.shuttleControlFunctions.VISUALIZER_ZOOM_OUT,
         },
         VISUALIZER_ZOOM_FIT: {
             title: 'Zoom In',
@@ -1405,15 +1500,18 @@ class VisualizerWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: VISUALIZER_CATEGORY,
-            callback: this.shuttleControlFunctions.VISUALIZER_ZOOM_FIT
+            callback: this.shuttleControlFunctions.VISUALIZER_ZOOM_FIT,
         },
-    }
+    };
 
     addShuttleControlEvents() {
         combokeys.reload();
 
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
-            const callback = eventName === 'MACRO' ? this.shuttleControlEvents[eventName] : this.shuttleControlEvents[eventName].callback;
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
+            const callback =
+                eventName === 'MACRO'
+                    ? this.shuttleControlEvents[eventName]
+                    : this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
     }
@@ -1421,11 +1519,14 @@ class VisualizerWidget extends PureComponent {
     updateShuttleControlEvents = () => {
         this.removeShuttleControlEvents();
         this.addShuttleControlEvents();
-    }
+    };
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
-            const callback = eventName === 'MACRO' ? this.shuttleControlEvents[eventName] : this.shuttleControlEvents[eventName].callback;
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
+            const callback =
+                eventName === 'MACRO'
+                    ? this.shuttleControlEvents[eventName]
+                    : this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
     }
@@ -1438,7 +1539,15 @@ class VisualizerWidget extends PureComponent {
             return DARK_THEME_VALUES;
         } else if (CUSTOMIZABLE_THEMES.includes(theme)) {
             let colourMap = new Map();
-            PARTS_LIST.map(part => colourMap.set(part, this.config.get(theme + ' ' + part, DARK_THEME_VALUES.get(part))));
+            PARTS_LIST.map((part) =>
+                colourMap.set(
+                    part,
+                    this.config.get(
+                        theme + ' ' + part,
+                        DARK_THEME_VALUES.get(part),
+                    ),
+                ),
+            );
             return colourMap;
         }
         return DARK_THEME_VALUES;
@@ -1459,11 +1568,16 @@ class VisualizerWidget extends PureComponent {
         if (!objects.cuttingTool.visible) {
             return false;
         }
-        if (!includes([GRBL, MARLIN, SMOOTHIE, TINYG, GRBLHAL], controllerType)) {
+        if (
+            !includes([GRBL, MARLIN, SMOOTHIE, TINYG, GRBLHAL], controllerType)
+        ) {
             return false;
         }
         if (controllerType === GRBL || controllerType === GRBLHAL) {
-            if (activeState !== GRBL_ACTIVE_STATE_RUN && activeState !== GRBL_ACTIVE_STATE_CHECK) {
+            if (
+                activeState !== GRBL_ACTIVE_STATE_RUN &&
+                activeState !== GRBL_ACTIVE_STATE_CHECK
+            ) {
                 return false;
             }
         }
@@ -1476,30 +1590,38 @@ class VisualizerWidget extends PureComponent {
     subscribe() {
         const tokens = [
             pubsub.subscribe('theme:change', (msg, theme) => {
-                this.setState({
-                    theme: theme
-                }, this.setState({
-                    currentTheme: this.getVisualizerTheme()
-                }), pubsub.publish('visualizer:redraw'));
+                this.setState(
+                    {
+                        theme: theme,
+                    },
+                    this.setState({
+                        currentTheme: this.getVisualizerTheme(),
+                    }),
+                    pubsub.publish('visualizer:redraw'),
+                );
             }),
             pubsub.subscribe('visualizer:settings', () => {
                 this.setState({
                     disabled: this.config.get('disabled'),
                     disabledLite: this.config.get('disabledLite'),
                     objects: this.config.get('objects'),
-                    minimizeRenders: this.config.get('minimizeRenders')
+                    minimizeRenders: this.config.get('minimizeRenders'),
                 });
             }),
             pubsub.subscribe('units:change', (msg, units) => {
                 this.setState({
-                    units: units
+                    units: units,
                 });
             }),
             pubsub.subscribe('gcode:showWarning', (_, shouldShow) => {
-                this.setState({ invalidGcode: { shouldShow, showModal: false, list: [], } });
+                this.setState({
+                    invalidGcode: { shouldShow, showModal: false, list: [] },
+                });
             }),
             pubsub.subscribe('gcode:showLineWarnings', (_, shouldShow) => {
-                this.setState({ invalidLine: { shouldShow, show: false, line: '', } });
+                this.setState({
+                    invalidLine: { shouldShow, show: false, line: '' },
+                });
             }),
             pubsub.subscribe('keybindingsUpdated', () => {
                 this.updateShuttleControlEvents();
@@ -1509,39 +1631,53 @@ class VisualizerWidget extends PureComponent {
                 this.setState({
                     gcode: {
                         ...gcode,
-                        bbox: bbox
-                    }
+                        bbox: bbox,
+                    },
                 });
             }),
             pubsub.subscribe('widgets:reverse', (_, layoutIsReversed) => {
                 this.setState({ layoutIsReversed });
             }),
-            pubsub.subscribe('gcode:surfacing', async (_, { gcode, name, size }) => {
-                const file = new File([gcode], name);
-                await api.file.upload(file, controller.port, VISUALIZER_PRIMARY);
-            }),
+            pubsub.subscribe(
+                'gcode:surfacing',
+                async (_, { gcode, name, size }) => {
+                    const file = new File([gcode], name);
+                    await api.file.upload(
+                        file,
+                        controller.port,
+                        VISUALIZER_PRIMARY,
+                    );
+                },
+            ),
             pubsub.subscribe('file:content', (_, content, size, name) => {
                 this.setState({
                     gcode: {
                         ...this.state.gcode,
                         content: content,
                         size: size,
-                        name: name
-                    }
+                        name: name,
+                    },
                 });
             }),
             pubsub.subscribe('file:load', (_, data) => {
                 this.setState({
                     gcode: {
                         ...this.state.gcode,
-                        visualization: data
-                    }
+                        visualization: data,
+                    },
                 });
             }),
-            pubsub.subscribe('gcode:rotarySetup', async (_, { setupFile, name }) => {
-                const file = new File([setupFile], name);
-                await api.file.upload(file, controller.port, VISUALIZER_PRIMARY);
-            }),
+            pubsub.subscribe(
+                'gcode:rotarySetup',
+                async (_, { setupFile, name }) => {
+                    const file = new File([setupFile], name);
+                    await api.file.upload(
+                        file,
+                        controller.port,
+                        VISUALIZER_PRIMARY,
+                    );
+                },
+            ),
         ];
         this.pubsubTokens = this.pubsubTokens.concat(tokens);
     }
@@ -1554,115 +1690,131 @@ class VisualizerWidget extends PureComponent {
     }
 
     render() {
-        const { renderState, isSecondary, gcode, activeVisualizer, activeState, alarmCode, workflow, isConnected } = this.props;
+        const {
+            renderState,
+            isSecondary,
+            gcode,
+            activeVisualizer,
+            activeState,
+            alarmCode,
+            workflow,
+            isConnected,
+        } = this.props;
         const state = {
             ...this.state,
             controller: {
                 type: controller.type,
                 settings: controller.settings,
-                state: controller.state
+                state: controller.state,
             },
             alarmCode,
             activeState,
             workflow,
             isConnected,
-            isAgitated: this.isAgitated()
+            isAgitated: this.isAgitated(),
         };
         const actions = {
-            ...this.actions
+            ...this.actions,
         };
 
         const showRendering = renderState === RENDER_RENDERING;
         const showLoading = renderState === RENDER_LOADING;
         // Handle visualizer render
-        const isVisualizerDisabled = (state.liteMode) ? state.disabledLite : state.disabled;
+        const isVisualizerDisabled = state.liteMode
+            ? state.disabledLite
+            : state.disabled;
 
         const capable = {
-            view3D: WebGL.isWebGLAvailable() && !isVisualizerDisabled
+            view3D: WebGL.isWebGLAvailable() && !isVisualizerDisabled,
         };
 
         const showVisualizer =
             capable.view3D &&
-            (
-                (isSecondary && activeVisualizer === VISUALIZER_SECONDARY) ||
-                !isSecondary && activeVisualizer === VISUALIZER_PRIMARY
-            );
+            ((isSecondary && activeVisualizer === VISUALIZER_SECONDARY) ||
+                (!isSecondary && activeVisualizer === VISUALIZER_PRIMARY));
 
-        const MainComponent = isSecondary
-            ? (
-                <SecondaryVisualizer
-                    state={state}
-                    actions={actions}
-                    showLoading={showLoading}
-                    showRendering={showRendering}
-                    showVisualizer={showVisualizer}
-                    visualizerRef={(ref) => {
-                        this.visualizer = ref?.visualizer;
-                    }}
-                    gcode={gcode}
-                    cameraPosition="Top"
-                />
-            )
-            : (
-                <PrimaryVisualizer
-                    state={state}
-                    actions={actions}
-                    capable={capable}
-                    showLoading={showLoading}
-                    showRendering={showRendering}
-                    showVisualizer={showVisualizer}
-                    visualizerRef={(ref) => {
-                        this.visualizer = ref?.visualizer;
-                    }}
-                    workflowRef={(ref) => {
-                        this.workflowControl = ref;
-                    }}
-                    widgetContentRef={(ref) => {
-                        this.widgetContent = ref;
-                    }}
-                />
-            );
+        const MainComponent = isSecondary ? (
+            <SecondaryVisualizer
+                state={state}
+                actions={actions}
+                showLoading={showLoading}
+                showRendering={showRendering}
+                showVisualizer={showVisualizer}
+                visualizerRef={(ref) => {
+                    this.visualizer = ref?.visualizer;
+                }}
+                gcode={gcode}
+                cameraPosition="Top"
+            />
+        ) : (
+            <PrimaryVisualizer
+                state={state}
+                actions={actions}
+                capable={capable}
+                showLoading={showLoading}
+                showRendering={showRendering}
+                showVisualizer={showVisualizer}
+                visualizerRef={(ref) => {
+                    this.visualizer = ref?.visualizer;
+                }}
+                workflowRef={(ref) => {
+                    this.workflowControl = ref;
+                }}
+                widgetContentRef={(ref) => {
+                    this.widgetContent = ref;
+                }}
+            />
+        );
 
         return MainComponent;
     }
 }
 
-export default connect((store) => {
-    const settings = get(store, 'controller.settings');
-    const xMaxFeed = Number(get(settings.settings, '$110', 1500));
-    const yMaxFeed = Number(get(settings.settings, '$111', 1500));
-    const zMaxFeed = Number(get(settings.settings, '$112', 1500));
-    const xMaxAccel = Number(get(settings.settings, '$120', 1800000));
-    const yMaxAccel = Number(get(settings.settings, '$121', 1800000));
-    const zMaxAccel = Number(get(settings.settings, '$122', 1800000));
-    const workflow = get(store, 'controller.workflow');
-    const renderState = get(store, 'file.renderState');
-    const isConnected = get(store, 'connection.isConnected');
-    const controllerType = get(store, 'controller.type');
-    const activeState = get(store, 'controller.state.status.activeState');
-    const alarmCode = get(store, 'controller.state.status.alarmCode');
-    const overrides = get(store, 'controller.state.status.ov', [0, 0, 0]);
-    const isFileLoaded = get(store, 'file.fileLoaded');
-    const { activeVisualizer } = store.visualizer;
+export default connect(
+    (store) => {
+        const settings = get(store, 'controller.settings');
+        const xMaxFeed = Number(get(settings.settings, '$110', 1500));
+        const yMaxFeed = Number(get(settings.settings, '$111', 1500));
+        const zMaxFeed = Number(get(settings.settings, '$112', 1500));
+        const xMaxAccel = Number(get(settings.settings, '$120', 1800000));
+        const yMaxAccel = Number(get(settings.settings, '$121', 1800000));
+        const zMaxAccel = Number(get(settings.settings, '$122', 1800000));
+        const workflow = get(store, 'controller.workflow');
+        const renderState = get(store, 'file.renderState');
+        const isConnected = get(store, 'connection.isConnected');
+        const controllerType = get(store, 'controller.type');
+        const activeState = get(store, 'controller.state.status.activeState');
+        const alarmCode = get(store, 'controller.state.status.alarmCode');
+        const overrides = get(store, 'controller.state.status.ov', [0, 0, 0]);
+        const isFileLoaded = get(store, 'file.fileLoaded');
+        const { activeVisualizer } = store.visualizer;
 
-    const feedArray = [xMaxFeed, yMaxFeed, zMaxFeed];
-    const accelArray = [xMaxAccel * 3600, yMaxAccel * 3600, zMaxAccel * 3600];
+        const feedArray = [xMaxFeed, yMaxFeed, zMaxFeed];
+        const accelArray = [
+            xMaxAccel * 3600,
+            yMaxAccel * 3600,
+            zMaxAccel * 3600,
+        ];
 
-    const ovF = overrides[0];
-    const ovS = overrides[2];
+        const ovF = overrides[0];
+        const ovS = overrides[2];
 
-    return {
-        feedArray,
-        accelArray,
-        workflow,
-        renderState,
-        isConnected,
-        controllerType,
-        activeState,
-        activeVisualizer,
-        alarmCode,
-        isFileLoaded,
-        ovF,
-        ovS
-    };
-}, null, null, { forwardRef: true })(VisualizerWidget);
+        return {
+            feedArray,
+            accelArray,
+            workflow,
+            renderState,
+            isConnected,
+            controllerType,
+            activeState,
+            activeVisualizer,
+            alarmCode,
+            isFileLoaded,
+            ovF,
+            ovS,
+        };
+    },
+    null,
+    null,
+    { forwardRef: true },
+)(VisualizerWidget);

@@ -43,8 +43,8 @@ class CombinedCamera extends THREE.Camera {
         this.near = near;
 
         this.left = -(width / 2);
-        this.right = (width / 2);
-        this.top = (height / 2);
+        this.right = width / 2;
+        this.top = height / 2;
         this.bottom = -(height / 2);
 
         this.aspect = width / height;
@@ -52,8 +52,20 @@ class CombinedCamera extends THREE.Camera {
         this.view = null;
         // We could also handle the projectionMatrix internally, but just wanted to test nested camera objects
 
-        this.cameraO = new THREE.OrthographicCamera(this.left, this.right, this.top, this.bottom, orthoNear, orthoFar);
-        this.cameraP = new THREE.PerspectiveCamera(fov, width / height, near, far);
+        this.cameraO = new THREE.OrthographicCamera(
+            this.left,
+            this.right,
+            this.top,
+            this.bottom,
+            orthoNear,
+            orthoFar,
+        );
+        this.cameraP = new THREE.PerspectiveCamera(
+            fov,
+            width / height,
+            near,
+            far,
+        );
 
         this.toPerspective();
     }
@@ -88,7 +100,7 @@ class CombinedCamera extends THREE.Camera {
 
         const hyperfocus = (near + far) / 2;
 
-        let halfHeight = Math.tan(fov * Math.PI / 180 / 2) * hyperfocus;
+        let halfHeight = Math.tan((fov * Math.PI) / 180 / 2) * hyperfocus;
         let halfWidth = halfHeight * aspect;
 
         halfHeight /= this.zoom;
@@ -123,7 +135,8 @@ class CombinedCamera extends THREE.Camera {
         this.bottom = source.bottom;
 
         this.zoom = source.zoom;
-        this.view = source.view === null ? null : Object.assign({}, source.view);
+        this.view =
+            source.view === null ? null : Object.assign({}, source.view);
         this.aspect = source.aspect;
 
         this.cameraO.copy(source.cameraO);
@@ -142,7 +155,7 @@ class CombinedCamera extends THREE.Camera {
             offsetX: x,
             offsetY: y,
             width: width,
-            height: height
+            height: height,
         };
 
         if (this.inPerspectiveMode) {
@@ -161,8 +174,8 @@ class CombinedCamera extends THREE.Camera {
     setSize(width, height) {
         this.cameraP.aspect = width / height;
         this.left = -(width / 2);
-        this.right = (width / 2);
-        this.top = (height / 2);
+        this.right = width / 2;
+        this.top = height / 2;
         this.bottom = -(height / 2);
     }
 
@@ -187,16 +200,17 @@ class CombinedCamera extends THREE.Camera {
     }
 
     /*
-    * Uses Focal Length (in mm) to estimate and set FOV
-    * 35mm (full frame) camera is used if frame size is not specified;
-    * Formula based on http://www.bobatkins.com/photography/technical/field_of_view.html
-    */
+     * Uses Focal Length (in mm) to estimate and set FOV
+     * 35mm (full frame) camera is used if frame size is not specified;
+     * Formula based on http://www.bobatkins.com/photography/technical/field_of_view.html
+     */
     setLens(focalLength, filmGauge) {
         if (filmGauge === undefined) {
             filmGauge = 35;
         }
 
-        const vExtentSlope = 0.5 * filmGauge /
+        const vExtentSlope =
+            (0.5 * filmGauge) /
             (focalLength * Math.max(this.cameraP.aspect, 1));
 
         const fov = THREE.Math.RAD2DEG * 2 * Math.atan(vExtentSlope);
@@ -237,7 +251,7 @@ class CombinedCamera extends THREE.Camera {
 
     toRightView() {
         this.rotation.x = 0;
-        this.rotation.y = (Math.PI / 2);
+        this.rotation.y = Math.PI / 2;
         this.rotation.z = 0;
     }
 
@@ -248,7 +262,7 @@ class CombinedCamera extends THREE.Camera {
     }
 
     toBottomView() {
-        this.rotation.x = (Math.PI / 2);
+        this.rotation.x = Math.PI / 2;
         this.rotation.y = 0;
         this.rotation.z = 0;
     }

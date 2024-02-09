@@ -25,12 +25,25 @@ import React from 'react';
 import { uniqueId } from 'lodash';
 import styles from './slider.styl';
 
-const Slider = ({ sliderName = 'stepper', step = 1, min = 0, max = 100, value, onChange = null, onMouseUp = null, unitString = 'unit', datalist = [], ...props }) => {
+const Slider = ({
+    sliderName = 'stepper',
+    step = 1,
+    min = 0,
+    max = 100,
+    value,
+    onChange = null,
+    onMouseUp = null,
+    unitString = 'unit',
+    datalist = [],
+    ...props
+}) => {
     return (
         <div className={styles.sliderWrapper}>
             <div className={styles.sliderContainer}>
                 <input
-                    type="range" min={min} max={max}
+                    type="range"
+                    min={min}
+                    max={max}
                     list={sliderName + 'list'}
                     id={sliderName}
                     name={sliderName}
@@ -43,30 +56,31 @@ const Slider = ({ sliderName = 'stepper', step = 1, min = 0, max = 100, value, o
                 />
                 {/* these ticks are shown */}
                 <div className={styles.sliderticks}>
-                    {
-                        datalist &&
-                            [...Array(max - min)].map((e, i) => {
-                                // if the min isnt 0, need to calculate the slider number
-                                const index = i + min;
-                                if (datalist.includes(index)) {
-                                    return <p key={uniqueId()}></p>;
-                                } else {
-                                    return <div key={uniqueId()}></div>;
-                                }
-                            })
-                    }
+                    {datalist &&
+                        [...Array(max - min)].map((e, i) => {
+                            // if the min isnt 0, need to calculate the slider number
+                            const index = i + min;
+                            if (datalist.includes(index)) {
+                                return <p key={uniqueId()}></p>;
+                            } else {
+                                return <div key={uniqueId()}></div>;
+                            }
+                        })}
                 </div>
             </div>
             {/* datalist ticks wont be seen (we have webkit appearance turned off),
                 but they will add the sticky functionality */}
-            <datalist id={sliderName + 'list'} >
-                {
-                    datalist.map(data => {
-                        return <option key={sliderName + 'list' + data} value={data} />;
-                    })
-                }
+            <datalist id={sliderName + 'list'}>
+                {datalist.map((data) => {
+                    return (
+                        <option key={sliderName + 'list' + data} value={data} />
+                    );
+                })}
             </datalist>
-            <span>{value}{unitString}</span>
+            <span>
+                {value}
+                {unitString}
+            </span>
         </div>
     );
 };

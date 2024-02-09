@@ -34,9 +34,7 @@ import i18n from 'app/lib/i18n';
 import General from './General';
 import MDI from './MDI';
 import ShuttleXpress from './ShuttleXpress';
-import {
-    DEFAULT_AXES
-} from '../constants';
+import { DEFAULT_AXES } from '../constants';
 import { IMPERIAL_UNITS } from '../../../constants';
 import { convertToMetric } from '../../../containers/Preferences/calculate';
 
@@ -46,19 +44,19 @@ const TabContent = styled.div`
 `;
 
 const TabPane = styled.div`
-    display: ${props => (props.active ? 'block' : 'none')};
+    display: ${(props) => (props.active ? 'block' : 'none')};
 `;
 
 class Settings extends PureComponent {
     static propTypes = {
         config: PropTypes.object.isRequired,
         onSave: PropTypes.func,
-        onCancel: PropTypes.func
+        onCancel: PropTypes.func,
     };
 
     static defaultProps = {
         onSave: noop,
-        onCancel: noop
+        onCancel: noop,
     };
 
     config = this.props.config;
@@ -66,7 +64,7 @@ class Settings extends PureComponent {
     node = {
         general: null,
         mdi: null,
-        shuttleXpress: null
+        shuttleXpress: null,
     };
 
     state = {
@@ -76,8 +74,8 @@ class Settings extends PureComponent {
         general: {
             axes: this.config.get('axes', DEFAULT_AXES),
             jog: {
-                distances: ensureArray(this.config.get('jog.distances', []))
-            }
+                distances: ensureArray(this.config.get('jog.distances', [])),
+            },
         },
 
         // ShuttleXpress
@@ -85,16 +83,17 @@ class Settings extends PureComponent {
             feedrateMin: this.config.get('shuttle.feedrateMin'),
             feedrateMax: this.config.get('shuttle.feedrateMax'),
             hertz: this.config.get('shuttle.hertz'),
-            overshoot: this.config.get('shuttle.overshoot')
+            overshoot: this.config.get('shuttle.overshoot'),
         },
 
-        units: this.props.units
+        units: this.props.units,
     };
 
     save = () => {
         // MDI
         const { records } = this.node.mdi.state;
-        api.mdi.bulkUpdate({ records: records })
+        api.mdi
+            .bulkUpdate({ records: records })
             .then(() => {
                 // TODO
             })
@@ -103,10 +102,7 @@ class Settings extends PureComponent {
             });
 
         // General
-        const {
-            axes = DEFAULT_AXES,
-            jogDistances
-        } = this.node.general.value;
+        const { axes = DEFAULT_AXES, jogDistances } = this.node.general.value;
 
         let convertedJogDistances = jogDistances;
         if (this.state.units === IMPERIAL_UNITS) {
@@ -116,10 +112,14 @@ class Settings extends PureComponent {
         }
 
         this.config.replace('axes', ensureArray(axes));
-        this.config.replace('jog.distances', ensureArray(convertedJogDistances));
+        this.config.replace(
+            'jog.distances',
+            ensureArray(convertedJogDistances),
+        );
 
         // ShuttleXpress
-        const { feedrateMin, feedrateMax, hertz, overshoot } = this.node.shuttleXpress.state;
+        const { feedrateMin, feedrateMax, hertz, overshoot } =
+            this.node.shuttleXpress.state;
         this.config.set('shuttle.feedrateMin', feedrateMin);
         this.config.set('shuttle.feedrateMax', feedrateMax);
         this.config.set('shuttle.hertz', hertz);
@@ -130,11 +130,7 @@ class Settings extends PureComponent {
         const { general, shuttleXpress } = this.state;
 
         return (
-            <Modal
-                disableOverlayClick
-                size="md"
-                onClose={this.props.onCancel}
-            >
+            <Modal disableOverlayClick size="md" onClose={this.props.onCancel}>
                 <Modal.Header>
                     <Modal.Title>{i18n._('JogControl Settings')}</Modal.Title>
                 </Modal.Header>
@@ -142,22 +138,28 @@ class Settings extends PureComponent {
                     <Nav
                         navStyle="tabs"
                         activeKey={this.state.activeKey}
-                        onSelect={eventKey => {
+                        onSelect={(eventKey) => {
                             this.setState({ activeKey: eventKey });
                         }}
                         style={{
                             marginTop: 15,
-                            paddingLeft: 15
+                            paddingLeft: 15,
                         }}
                     >
-                        <NavItem eventKey="general">{i18n._('General')}</NavItem>
-                        <NavItem eventKey="mdi">{i18n._('Custom Commands')}</NavItem>
-                        <NavItem eventKey="shuttleXpress">{i18n._('ShuttleXpress')}</NavItem>
+                        <NavItem eventKey="general">
+                            {i18n._('General')}
+                        </NavItem>
+                        <NavItem eventKey="mdi">
+                            {i18n._('Custom Commands')}
+                        </NavItem>
+                        <NavItem eventKey="shuttleXpress">
+                            {i18n._('ShuttleXpress')}
+                        </NavItem>
                     </Nav>
                     <TabContent>
                         <TabPane active={this.state.activeKey === 'general'}>
                             <General
-                                ref={node => {
+                                ref={(node) => {
                                     this.node.general = node;
                                 }}
                                 axes={general.axes}
@@ -166,14 +168,16 @@ class Settings extends PureComponent {
                         </TabPane>
                         <TabPane active={this.state.activeKey === 'mdi'}>
                             <MDI
-                                ref={node => {
+                                ref={(node) => {
                                     this.node.mdi = node;
                                 }}
                             />
                         </TabPane>
-                        <TabPane active={this.state.activeKey === 'shuttleXpress'}>
+                        <TabPane
+                            active={this.state.activeKey === 'shuttleXpress'}
+                        >
                             <ShuttleXpress
-                                ref={node => {
+                                ref={(node) => {
                                     this.node.shuttleXpress = node;
                                 }}
                                 feedrateMin={shuttleXpress.feedrateMin}
@@ -185,14 +189,12 @@ class Settings extends PureComponent {
                     </TabContent>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button
-                        onClick={this.props.onCancel}
-                    >
+                    <Button onClick={this.props.onCancel}>
                         {i18n._('Cancel')}
                     </Button>
                     <Button
                         btnStyle="primary"
-                        onClick={event => {
+                        onClick={(event) => {
                             this.save();
 
                             // Update parent state

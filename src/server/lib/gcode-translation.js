@@ -4,20 +4,22 @@ export const GCODE_TRANSLATION_TYPE = {
     TO_IMPERIAL: 'TO_IMPERIAL',
 };
 
-const replaceHandler = ({ from, to, type }) => ((data) => {
-    const [, value] = data.split(from.toUpperCase());
-    const valueAsNumber = parseFloat(value);
+const replaceHandler =
+    ({ from, to, type }) =>
+    (data) => {
+        const [, value] = data.split(from.toUpperCase());
+        const valueAsNumber = parseFloat(value);
 
-    const outputValue = ({
-        [GCODE_TRANSLATION_TYPE.DEFAULT]: valueAsNumber,
-        [GCODE_TRANSLATION_TYPE.TO_IMPERIAL]: valueAsNumber / 25.4,
-        [GCODE_TRANSLATION_TYPE.TO_METRIC]: valueAsNumber * 25.4,
-    }[type]).toFixed(3);
+        const outputValue = {
+            [GCODE_TRANSLATION_TYPE.DEFAULT]: valueAsNumber,
+            [GCODE_TRANSLATION_TYPE.TO_IMPERIAL]: valueAsNumber / 25.4,
+            [GCODE_TRANSLATION_TYPE.TO_METRIC]: valueAsNumber * 25.4,
+        }[type].toFixed(3);
 
-    const updatedMovement = `${to}${outputValue}`;
+        const updatedMovement = `${to}${outputValue}`;
 
-    return updatedMovement;
-});
+        return updatedMovement;
+    };
 
 // Function to update gcode axes letters and values from a given string
 // @params gcode: string containing gcode
@@ -40,7 +42,10 @@ export const translateGcode = ({
         return gcode;
     }
 
-    const updatedGcode = gcode.replace(regex, replaceHandler({ from, to, type }));
+    const updatedGcode = gcode.replace(
+        regex,
+        replaceHandler({ from, to, type }),
+    );
 
     return updatedGcode;
 };

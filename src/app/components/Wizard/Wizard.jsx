@@ -32,27 +32,42 @@ import MinMaxButton from 'app/components/Wizard/components/MinMaxButton';
 import CancelButton from 'app/components/Wizard/components/CancelButton';
 import { CSSTransition } from 'react-transition-group';
 
-
 const Wizard = () => {
-    const { title, visible, minimized, activeStep, overlay, steps } = useWizardContext();
+    const { title, visible, minimized, activeStep, overlay, steps } =
+        useWizardContext();
     const { load, updateSubstepOverlay } = useWizardAPI();
 
-    useEffect(
-        () => {
-            pubsub.subscribe('wizard:load', (_, payload) => {
-                const { instructions, title } = payload;
-                load(instructions, title);
-                updateSubstepOverlay({ activeStep: 0, activeSubstep: 0 }, instructions.steps);
-            });
-        },
-        []
-    );
+    useEffect(() => {
+        pubsub.subscribe('wizard:load', (_, payload) => {
+            const { instructions, title } = payload;
+            load(instructions, title);
+            updateSubstepOverlay(
+                { activeStep: 0, activeSubstep: 0 },
+                instructions.steps,
+            );
+        });
+    }, []);
 
     return (
         <>
-            <div className={cx({ [styles.hidden]: !visible, [styles.overlay]: !minimized && overlay })} />
-            <div className={cx({ [styles.hidden]: !visible, [styles.wrapper]: !minimized })}>
-                <div className={cx({ [styles.hidden]: !visible || !overlay, [styles.infoMsgContainer]: !minimized && overlay })}>
+            <div
+                className={cx({
+                    [styles.hidden]: !visible,
+                    [styles.overlay]: !minimized && overlay,
+                })}
+            />
+            <div
+                className={cx({
+                    [styles.hidden]: !visible,
+                    [styles.wrapper]: !minimized,
+                })}
+            >
+                <div
+                    className={cx({
+                        [styles.hidden]: !visible || !overlay,
+                        [styles.infoMsgContainer]: !minimized && overlay,
+                    })}
+                >
                     <div className={styles.infoMsgHeading}>
                         Widgets are disabled
                     </div>
@@ -60,9 +75,18 @@ const Wizard = () => {
                         Please use the button(s) in the wizard instead.
                     </div>
                 </div>
-                <div className={cx({ [styles.hidden]: !visible, [styles.minimizedWrapper]: minimized, [styles.wizardWrapper]: !minimized })}>
+                <div
+                    className={cx({
+                        [styles.hidden]: !visible,
+                        [styles.minimizedWrapper]: minimized,
+                        [styles.wizardWrapper]: !minimized,
+                    })}
+                >
                     <div className={styles.wizardTitle}>
-                        <h1><i className="fas fa-hat-wizard" /> {title} - Step {activeStep + 1} of {steps.length}</h1>
+                        <h1>
+                            <i className="fas fa-hat-wizard" /> {title} - Step{' '}
+                            {activeStep + 1} of {steps.length}
+                        </h1>
                         <div style={{ display: 'flex' }}>
                             <MinMaxButton />
                             <CancelButton />
@@ -75,15 +99,19 @@ const Wizard = () => {
                             enterActive: styles.maximizeActive,
                             enterDone: styles.maximizeDone,
                             exitActive: styles.minimizeActive,
-                            exitDone: styles.minimizeDone
+                            exitDone: styles.minimizeDone,
                         }}
                     >
-                        <div id="wizContent" className={cx(styles.wizardContent, { [styles.hidden]: minimized })}>
+                        <div
+                            id="wizContent"
+                            className={cx(styles.wizardContent, {
+                                [styles.hidden]: minimized,
+                            })}
+                        >
                             <Stepper />
                             <Instructions />
                         </div>
                     </CSSTransition>
-
                 </div>
             </div>
         </>

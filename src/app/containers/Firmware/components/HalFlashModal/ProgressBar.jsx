@@ -6,7 +6,13 @@ const ProgressBarWrapper = ({ sent, total }) => {
     const now = (sent / total).toFixed(1) * 100;
     return (
         <div className={styles.progressArea}>
-            <ProgressBar striped variant="info" animated now={now} label={`${now}%`}/>
+            <ProgressBar
+                striped
+                variant="info"
+                animated
+                now={now}
+                label={`${now}%`}
+            />
         </div>
     );
 };

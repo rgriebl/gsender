@@ -15,16 +15,21 @@ import {
     MODAL_FIRMWARE,
     MODAL_SURFACING,
     MODAL_CALIBRATE,
-    MODAL_HELP
+    MODAL_HELP,
 } from 'app/containers/NavSidebar/constants';
-import { SPEED_NORMAL, SPEED_PRECISE, SPEED_RAPID } from 'app/widgets/JogControl/constants';
+import {
+    SPEED_NORMAL,
+    SPEED_PRECISE,
+    SPEED_RAPID,
+} from 'app/widgets/JogControl/constants';
 
 const AXIS_X = 'x';
 const AXIS_Y = 'y';
 const AXIS_Z = 'z';
 
 export const shortcuts = [
-    { // Load File
+    {
+        // Load File
         id: 0,
         title: 'Load File',
         keys: ['shift', 'l'].join('+'),
@@ -33,7 +38,8 @@ export const shortcuts = [
         isActive: true,
         category: CARVING_CATEGORY,
     },
-    { // Unload Load File
+    {
+        // Unload Load File
         id: 1,
         title: 'Unload File',
         keys: ['shift', 'k'].join('+'),
@@ -42,7 +48,8 @@ export const shortcuts = [
         isActive: true,
         category: CARVING_CATEGORY,
     },
-    { // Test Run
+    {
+        // Test Run
         id: 2,
         title: 'Test Run',
         keys: '#',
@@ -51,7 +58,8 @@ export const shortcuts = [
         isActive: true,
         category: CARVING_CATEGORY,
     },
-    { // Start Job
+    {
+        // Start Job
         id: 3,
         title: 'Start Job',
         keys: '~',
@@ -60,7 +68,8 @@ export const shortcuts = [
         isActive: true,
         category: CARVING_CATEGORY,
     },
-    { // Pause Job
+    {
+        // Pause Job
         id: 4,
         title: 'Pause Job',
         keys: '!',
@@ -69,7 +78,8 @@ export const shortcuts = [
         isActive: true,
         category: CARVING_CATEGORY,
     },
-    { // Stop Job
+    {
+        // Stop Job
         id: 5,
         title: 'Stop Job',
         keys: '@',
@@ -78,7 +88,8 @@ export const shortcuts = [
         isActive: true,
         category: CARVING_CATEGORY,
     },
-    { // Feed +
+    {
+        // Feed +
         id: 6,
         title: 'Feed +',
         keys: '',
@@ -88,7 +99,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Feed ++
+    {
+        // Feed ++
         id: 7,
         title: 'Feed ++',
         keys: '',
@@ -98,7 +110,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Feed -
+    {
+        // Feed -
         id: 8,
         title: 'Feed -',
         keys: '',
@@ -108,7 +121,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Feed --
+    {
+        // Feed --
         id: 9,
         title: 'Feed --',
         keys: '',
@@ -118,7 +132,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Feed Reset
+    {
+        // Feed Reset
         id: 10,
         title: 'Feed Reset',
         keys: '',
@@ -128,7 +143,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Spindle/Laser +
+    {
+        // Spindle/Laser +
         id: 11,
         title: 'Spindle/Laser +',
         keys: '',
@@ -138,7 +154,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Spindle/Laser ++
+    {
+        // Spindle/Laser ++
         id: 12,
         title: 'Spindle/Laser ++',
         keys: '',
@@ -148,7 +165,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Spindle/Laser -
+    {
+        // Spindle/Laser -
         id: 13,
         title: 'Spindle/Laser -',
         keys: '',
@@ -158,7 +176,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Spindle/Laser --
+    {
+        // Spindle/Laser --
         id: 14,
         title: 'Spindle/Laser --',
         keys: '',
@@ -168,7 +187,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // Spindle/Laser Reset
+    {
+        // Spindle/Laser Reset
         id: 15,
         title: 'Spindle/Laser Reset',
         keys: '',
@@ -178,7 +198,8 @@ export const shortcuts = [
         isActive: true,
         category: OVERRIDES_CATEGORY,
     },
-    { // 3D / Isometric
+    {
+        // 3D / Isometric
         id: 16,
         title: '3D / Isometric',
         keys: '',
@@ -188,7 +209,8 @@ export const shortcuts = [
         isActive: true,
         category: VISUALIZER_CATEGORY,
     },
-    { // TOP
+    {
+        // TOP
         id: 17,
         title: 'Top',
         keys: '',
@@ -198,7 +220,8 @@ export const shortcuts = [
         isActive: true,
         category: VISUALIZER_CATEGORY,
     },
-    { // FRONT
+    {
+        // FRONT
         id: 18,
         title: 'Front',
         keys: '',
@@ -208,7 +231,8 @@ export const shortcuts = [
         isActive: true,
         category: VISUALIZER_CATEGORY,
     },
-    { // RIGHT
+    {
+        // RIGHT
         id: 19,
         title: 'Right',
         keys: '',
@@ -218,7 +242,8 @@ export const shortcuts = [
         isActive: true,
         category: VISUALIZER_CATEGORY,
     },
-    { // LEFT
+    {
+        // LEFT
         id: 20,
         title: 'Left',
         keys: '',
@@ -228,7 +253,8 @@ export const shortcuts = [
         isActive: true,
         category: VISUALIZER_CATEGORY,
     },
-    { // Reset View
+    {
+        // Reset View
         id: 21,
         title: 'Reset View',
         keys: ['shift', 'n'].join('+'),
@@ -238,7 +264,8 @@ export const shortcuts = [
         isActive: true,
         category: VISUALIZER_CATEGORY,
     },
-    { // Lightweight Mode
+    {
+        // Lightweight Mode
         id: 22,
         title: 'Lightweight Mode',
         keys: ['shift', 'm'].join('+'),
@@ -247,7 +274,8 @@ export const shortcuts = [
         isActive: true,
         category: VISUALIZER_CATEGORY,
     },
-    { // ZERO X AXIS
+    {
+        // ZERO X AXIS
         id: 23,
         title: 'Zero X Axis',
         keys: ['shift', 'w'].join('+'),
@@ -257,7 +285,8 @@ export const shortcuts = [
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // ZERO Y AXIS
+    {
+        // ZERO Y AXIS
         id: 24,
         title: 'Zero Y Axis',
         keys: ['shift', 'e'].join('+'),
@@ -267,7 +296,8 @@ export const shortcuts = [
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // ZERO Y AXIS
+    {
+        // ZERO Y AXIS
         id: 25,
         title: 'Zero Z Axis',
         keys: ['shift', 'r'].join('+'),
@@ -277,7 +307,8 @@ export const shortcuts = [
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // Zero All Axis
+    {
+        // Zero All Axis
         id: 26,
         title: 'Zero All',
         keys: ['shift', 'q'].join('+'),
@@ -287,7 +318,8 @@ export const shortcuts = [
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // Go to X Zero
+    {
+        // Go to X Zero
         id: 27,
         title: 'Go to X Zero',
         keys: ['shift', 's'].join('+'),
@@ -297,7 +329,8 @@ export const shortcuts = [
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // Go to Y Zero
+    {
+        // Go to Y Zero
         id: 28,
         title: 'Go to Y Zero',
         keys: ['shift', 'd'].join('+'),
@@ -307,7 +340,8 @@ export const shortcuts = [
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // Go to Z Zero
+    {
+        // Go to Z Zero
         id: 29,
         title: 'Go to Z Zero',
         keys: ['shift', 'f'].join('+'),
@@ -317,7 +351,8 @@ export const shortcuts = [
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // Go to All Zero
+    {
+        // Go to All Zero
         id: 30,
         title: 'Go to XY Zero',
         keys: ['shift', 'a'].join('+'),
@@ -327,19 +362,21 @@ export const shortcuts = [
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // Homing
+    {
+        // Homing
         id: 31,
         title: 'Homing',
         keys: ['ctrl', 'alt', 'command', 'h'].join('+'),
         cmd: 'CONTROLLER_COMMAND',
         payload: {
-            command: 'homing'
+            command: 'homing',
         },
         preventDefault: true,
         isActive: true,
         category: LOCATION_CATEGORY,
     },
-    { // Jog X+
+    {
+        // Jog X+
         id: 32,
         title: 'Jog: X+',
         keys: 'shift+right',
@@ -351,7 +388,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog X-
+    {
+        // Jog X-
         id: 33,
         title: 'Jog: X-',
         keys: 'shift+left',
@@ -363,7 +401,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog Y+
+    {
+        // Jog Y+
         id: 34,
         title: 'Jog: Y+',
         keys: 'shift+up',
@@ -375,7 +414,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog Y-
+    {
+        // Jog Y-
         id: 35,
         title: 'Jog: Y-',
         keys: 'shift+down',
@@ -387,7 +427,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog Z+
+    {
+        // Jog Z+
         id: 36,
         title: 'Jog: Z+',
         keys: 'shift+pageup',
@@ -399,7 +440,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog Z-
+    {
+        // Jog Z-
         id: 37,
         title: 'Jog: Z-',
         keys: 'shift+pagedown',
@@ -411,7 +453,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog X+ Y-
+    {
+        // Jog X+ Y-
         id: 38,
         title: 'Jog: X+ Y-',
         keys: '',
@@ -423,7 +466,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog X- Y+
+    {
+        // Jog X- Y+
         id: 39,
         title: 'Jog: X- Y+',
         keys: '',
@@ -435,7 +479,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog X+ Y+
+    {
+        // Jog X+ Y+
         id: 40,
         title: 'Jog: X+ Y+',
         keys: '',
@@ -447,7 +492,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Jog X- Y-
+    {
+        // Jog X- Y-
         id: 41,
         title: 'Jog: X- Y-',
         keys: '',
@@ -459,7 +505,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Stop Jog
+    {
+        // Stop Jog
         id: 42,
         title: 'Stop Jog',
         keys: '',
@@ -469,67 +516,73 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Change Jog Speed
+    {
+        // Change Jog Speed
         id: 43,
         title: 'Increase Jog Speed',
         keys: '=',
         cmd: 'JOG_SPEED',
         payload: {
-            speed: 'increase'
+            speed: 'increase',
         },
         preventDefault: false,
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Change Jog Speed
+    {
+        // Change Jog Speed
         id: 44,
         title: 'Decrease Jog Speed',
         keys: '-',
         cmd: 'JOG_SPEED',
         payload: {
-            speed: 'decrease'
+            speed: 'decrease',
         },
         preventDefault: false,
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Select Rapid Jog Preset
+    {
+        // Select Rapid Jog Preset
         id: 45,
         title: 'Select Rapid Jog Preset',
         keys: ['shift', 'v'].join('+'),
         cmd: 'SET_JOG_PRESET',
         payload: {
-            key: SPEED_RAPID
+            key: SPEED_RAPID,
         },
         preventDefault: false,
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Select Normal Jog Preset
+    {
+        // Select Normal Jog Preset
         id: 46,
         title: 'Select Normal Jog Preset',
         keys: ['shift', 'c'].join('+'),
         cmd: 'SET_JOG_PRESET',
         payload: {
-            key: SPEED_NORMAL
+            key: SPEED_NORMAL,
         },
         preventDefault: false,
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Select Precise Jog Preset
+    {
+        // Select Precise Jog Preset
         id: 47,
         title: 'Select Precise Jog Preset',
         keys: ['shift', 'x'].join('+'),
         cmd: 'SET_JOG_PRESET',
         payload: {
-            key: SPEED_PRECISE
+            key: SPEED_PRECISE,
         },
         preventDefault: false,
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Cycle Through Jog Presets
+    {
+        // Cycle Through Jog Presets
         id: 48,
         title: 'Cycle Through Jog Presets',
         keys: ['shift', 'z'].join('+'),
@@ -538,7 +591,8 @@ export const shortcuts = [
         isActive: true,
         category: JOGGING_CATEGORY,
     },
-    { // Confirm Probe
+    {
+        // Confirm Probe
         id: 49,
         title: 'Confirm Probe',
         keys: '',
@@ -547,7 +601,8 @@ export const shortcuts = [
         isActive: true,
         category: PROBING_CATEGORY,
     },
-    { // Start Probing
+    {
+        // Start Probing
         id: 50,
         title: 'Start Probing',
         keys: '',
@@ -556,7 +611,8 @@ export const shortcuts = [
         isActive: true,
         category: PROBING_CATEGORY,
     },
-    { // Toggle Mode
+    {
+        // Toggle Mode
         id: 51,
         title: 'Toggle Mode',
         keys: '',
@@ -565,7 +621,8 @@ export const shortcuts = [
         isActive: true,
         category: SPINDLE_LASER_CATEGORY,
     },
-    { // CW / Laser On
+    {
+        // CW / Laser On
         id: 52,
         title: 'CW / Laser On',
         keys: '',
@@ -574,7 +631,8 @@ export const shortcuts = [
         isActive: true,
         category: SPINDLE_LASER_CATEGORY,
     },
-    { // CCW / Laser Test
+    {
+        // CCW / Laser Test
         id: 53,
         title: 'CCW / Laser Test',
         keys: '',
@@ -583,7 +641,8 @@ export const shortcuts = [
         isActive: true,
         category: SPINDLE_LASER_CATEGORY,
     },
-    { // Stop / Laser Off
+    {
+        // Stop / Laser Off
         id: 54,
         title: 'Stop / Laser Off',
         keys: '',
@@ -619,7 +678,8 @@ export const shortcuts = [
         isActive: true,
         category: COOLANT_CATEGORY,
     },
-    { // Cut
+    {
+        // Cut
         id: 55,
         title: 'Cut',
         keys: ['ctrl', 'x'].join('+'),
@@ -628,7 +688,8 @@ export const shortcuts = [
         isActive: true,
         category: GENERAL_CATEGORY,
     },
-    { // Copy
+    {
+        // Copy
         id: 56,
         title: 'Copy',
         keys: ['ctrl', 'c'].join('+'),
@@ -637,7 +698,8 @@ export const shortcuts = [
         isActive: true,
         category: GENERAL_CATEGORY,
     },
-    { // Paste
+    {
+        // Paste
         id: 57,
         title: 'Paste',
         keys: ['ctrl', 'v'].join('+'),
@@ -646,7 +708,8 @@ export const shortcuts = [
         isActive: true,
         category: GENERAL_CATEGORY,
     },
-    { // Undo
+    {
+        // Undo
         id: 58,
         title: 'Undo',
         keys: ['ctrl', 'z'].join('+'),
@@ -655,7 +718,8 @@ export const shortcuts = [
         isActive: true,
         category: GENERAL_CATEGORY,
     },
-    { // Close Dialog
+    {
+        // Close Dialog
         id: 59,
         title: 'Close Dialog',
         keys: 'esc',
@@ -664,7 +728,8 @@ export const shortcuts = [
         isActive: true,
         category: GENERAL_CATEGORY,
     },
-    { // Toggle Tab Widgets
+    {
+        // Toggle Tab Widgets
         id: 60,
         title: 'Toggle Tab Widgets',
         keys: 'tab',
@@ -673,31 +738,34 @@ export const shortcuts = [
         isActive: true,
         category: GENERAL_CATEGORY,
     },
-    { // Unlock
+    {
+        // Unlock
         id: 61,
         title: 'Unlock',
         keys: '$',
         cmd: 'CONTROLLER_COMMAND',
         payload: {
-            command: 'unlock'
+            command: 'unlock',
         },
         preventDefault: false,
         isActive: true,
         category: GENERAL_CATEGORY,
     },
-    { // Soft Reset
+    {
+        // Soft Reset
         id: 62,
         title: 'Soft Reset',
         keys: '%',
         cmd: 'CONTROLLER_COMMAND',
         payload: {
-            command: 'reset'
+            command: 'reset',
         },
         preventDefault: false,
         isActive: true,
         category: GENERAL_CATEGORY,
     },
-    { // Toggle Shortcuts
+    {
+        // Toggle Shortcuts
         id: 63,
         title: 'Toggle Shortcuts',
         keys: '^',
@@ -707,7 +775,8 @@ export const shortcuts = [
         category: GENERAL_CATEGORY,
     },
 
-    { // Connect
+    {
+        // Connect
         id: 64,
         title: 'Connect',
         keys: 'f1',
@@ -717,7 +786,8 @@ export const shortcuts = [
         isActive: true,
         category: TOOLBAR_CATEGORY,
     },
-    { // Surfacing
+    {
+        // Surfacing
         id: 65,
         title: 'Surfacing',
         keys: 'f2',
@@ -727,7 +797,8 @@ export const shortcuts = [
         isActive: true,
         category: TOOLBAR_CATEGORY,
     },
-    { // Heightmap
+    {
+        // Heightmap
         id: 66,
         title: 'Heightmap',
         keys: 'f3',
@@ -737,7 +808,8 @@ export const shortcuts = [
         isActive: true,
         category: TOOLBAR_CATEGORY,
     },
-    { // Calibrate
+    {
+        // Calibrate
         id: 67,
         title: 'Calibrate',
         keys: 'f4',
@@ -747,7 +819,8 @@ export const shortcuts = [
         isActive: true,
         category: TOOLBAR_CATEGORY,
     },
-    { // Firmware
+    {
+        // Firmware
         id: 68,
         title: 'Firmware',
         keys: 'f5',
@@ -757,7 +830,8 @@ export const shortcuts = [
         isActive: true,
         category: TOOLBAR_CATEGORY,
     },
-    { // Help
+    {
+        // Help
         id: 69,
         title: 'Help',
         keys: 'f6',
@@ -767,7 +841,8 @@ export const shortcuts = [
         isActive: true,
         category: TOOLBAR_CATEGORY,
     },
-    { // Settings
+    {
+        // Settings
         id: 70,
         title: 'Settings',
         keys: 'f7',

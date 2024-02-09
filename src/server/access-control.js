@@ -44,35 +44,45 @@ const whitelist = [
     // IPv6 reserved space
     '::1/128', // loopback address to the local host
     'fc00::/7', // Unique local address
-    'fe80::/10' // Link-local address
+    'fe80::/10', // Link-local address
 ];
 
-export const authorizeIPAddress = (ipaddr) => new Promise((resolve, reject) => {
-    let pass = true; // TODO: Fix whitelist
-    pass = pass || whitelist.some(test => rangeCheck.inRange(ipaddr, test));
+export const authorizeIPAddress = (ipaddr) =>
+    new Promise((resolve, reject) => {
+        let pass = true; // TODO: Fix whitelist
+        pass =
+            pass || whitelist.some((test) => rangeCheck.inRange(ipaddr, test));
 
-    if (pass) {
-        resolve();
-    } else {
-        reject(new Error(`Unauthorized IP address: ipaddr=${ipaddr}`));
-    }
-});
+        if (pass) {
+            resolve();
+        } else {
+            reject(new Error(`Unauthorized IP address: ipaddr=${ipaddr}`));
+        }
+    });
 
-export const validateUser = (user) => new Promise((resolve, reject) => {
-    const { id = null, name = null } = { ...user };
+export const validateUser = (user) =>
+    new Promise((resolve, reject) => {
+        const { id = null, name = null } = { ...user };
 
-    const users = ensureArray(config.get('users'))
-        .filter(user => _.isPlainObject(user))
-        .map(user => ({
-            ...user,
-            // Defaults to true if not explicitly initialized
-            enabled: (user.enabled !== false)
-        }));
-    const enabledUsers = users.filter(user => user.enabled);
+        const users = ensureArray(config.get('users'))
+            .filter((user) => _.isPlainObject(user))
+            .map((user) => ({
+                ...user,
+                // Defaults to true if not explicitly initialized
+                enabled: user.enabled !== false,
+            }));
+        const enabledUsers = users.filter((user) => user.enabled);
 
-    if ((enabledUsers.length === 0) || _.find(enabledUsers, { id: id, name: name })) {
-        resolve();
-    } else {
-        reject(new Error(`Unauthorized user: user.id=${id}, user.name=${name}`));
-    }
-});
+        if (
+            enabledUsers.length === 0 ||
+            _.find(enabledUsers, { id: id, name: name })
+        ) {
+            resolve();
+        } else {
+            reject(
+                new Error(
+                    `Unauthorized user: user.id=${id}, user.name=${name}`,
+                ),
+            );
+        }
+    });

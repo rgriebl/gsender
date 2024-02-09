@@ -30,15 +30,15 @@ import styles from './index.styl';
 const CoolantActiveIndicator = ({ showIndicator }) => {
     return (
         <div className={styles.indicatorRow}>
-            <small>
-                {
-                    showIndicator ? 'Active' : 'Not Active'
-                }
-            </small>
-            <div className={cx(styles.activeIndicator, { [styles.activeIndicatorOn]: showIndicator })}>
-                {
-                    showIndicator && <i className={cx('fas fa-tint', styles.activePulse)} />
-                }
+            <small>{showIndicator ? 'Active' : 'Not Active'}</small>
+            <div
+                className={cx(styles.activeIndicator, {
+                    [styles.activeIndicatorOn]: showIndicator,
+                })}
+            >
+                {showIndicator && (
+                    <i className={cx('fas fa-tint', styles.activePulse)} />
+                )}
             </div>
         </div>
     );
@@ -50,6 +50,6 @@ export default connect((store) => {
     const showIndicator = isConnected && coolantModal !== 'M9';
 
     return {
-        showIndicator
+        showIndicator,
     };
 })(CoolantActiveIndicator);

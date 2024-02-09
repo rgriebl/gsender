@@ -30,12 +30,11 @@ import insertAtCaret from 'app/widgets/Macro/insertAtCaret';
 import uniqueId from 'lodash/uniqueId';
 import styles from './index.styl';
 
-
 const MacroVariableDropdown = ({ textarea, label = '' }) => {
     return (
         <div className="form-group">
             <div className={styles['macro-commands']}>
-                <label>{ label }</label>
+                <label>{label}</label>
                 <Dropdown
                     id="add-macro-dropdown"
                     className="pull-right"
@@ -56,12 +55,10 @@ const MacroVariableDropdown = ({ textarea, label = '' }) => {
                         <i className="fa fa-caret-down" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu className={styles.macroVariablesDropdown}>
-                        {variables.map(v => {
+                        {variables.map((v) => {
                             if (typeof v === 'object') {
                                 return v.type === 'header' ? (
-                                    <Dropdown.Header
-                                        key={uniqueId()}
-                                    >
+                                    <Dropdown.Header key={uniqueId()}>
                                         {v.text}
                                     </Dropdown.Header>
                                 ) : (

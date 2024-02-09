@@ -24,7 +24,7 @@ if (isElectron()) {
     const path = window.require('path'); // Require the path module within Electron
 
     userData = {
-        path: path.join(app.getPath('userData'), 'gsender-0.5.6.json')
+        path: path.join(app.getPath('userData'), 'gsender-0.5.6.json'),
     };
 }
 
@@ -55,8 +55,8 @@ const persist = (data) => {
         version: version || settings.version,
         state: {
             ...store.state,
-            ...state
-        }
+            ...state,
+        },
     };
 
     try {
@@ -115,8 +115,12 @@ const normalizeState = (state) => {
     //
     // Remember recent files
     //
-    const storedRecentFiles = ensureArray(get(cnc.state, 'workspace.recentFiles'));
-    const defaultRecentFiles = ensureArray(get(defaultState, 'workspace.recentFiles'));
+    const storedRecentFiles = ensureArray(
+        get(cnc.state, 'workspace.recentFiles'),
+    );
+    const defaultRecentFiles = ensureArray(
+        get(defaultState, 'workspace.recentFiles'),
+    );
     if (configuredAxes.length > 0) {
         set(state, 'workspace.recentFiles', storedRecentFiles);
     } else {
@@ -155,7 +159,6 @@ const normalizeState = (state) => {
         set(state, 'workspace.reverseWidgets', false);
     }
 
-
     return state;
 };
 
@@ -168,22 +171,25 @@ const merge = (base, saved) => {
     const savedIsObject = saved instanceof Object;
     const savedIsArray = Array.isArray(saved);
 
-    const fromStringToNumber = isNumber(base) && isString(saved) && numberRegex.test(saved);
-    const fromNumberToString = isNumber(saved) && isString(base) && numberRegex.test(base);
+    const fromStringToNumber =
+        isNumber(base) && isString(saved) && numberRegex.test(saved);
+    const fromNumberToString =
+        isNumber(saved) && isString(base) && numberRegex.test(base);
 
-    if (
-        (!(baseIsObject) || baseIsArray) &&
-        (!(savedIsObject) || savedIsArray)
-    ) {
+    if ((!baseIsObject || baseIsArray) && (!savedIsObject || savedIsArray)) {
         // if they are the same type, use saved
         // when numbers are rounded, they become strings
         // so if it changes between those two types, and the string is a number, keep saved
-        if ((typeof base === typeof saved) || fromStringToNumber || fromNumberToString) {
+        if (
+            typeof base === typeof saved ||
+            fromStringToNumber ||
+            fromNumberToString
+        ) {
             return saved;
         }
         // if they are not, default structure changed, so use base
         return base;
-    } else if ((!(baseIsObject) || baseIsArray) || (!(savedIsObject) || savedIsArray)) {
+    } else if (!baseIsObject || baseIsArray || !savedIsObject || savedIsArray) {
         // if one is an object and the other isn't, then default structure changed, so use base
         return base;
     }
@@ -208,13 +214,20 @@ const merge = (base, saved) => {
 
 // Save backup
 const backupPreviousState = (data) => {
-    const value = JSON.stringify({ state: data, version: settings.version }, null, 2);
+    const value = JSON.stringify(
+        { state: data, version: settings.version },
+        null,
+        2,
+    );
 
     if (isElectron()) {
         const { app } = window.require('@electron/remote');
         const path = window.require('path'); // Require the path module within Electron
 
-        const backupPath = path.join(app.getPath('userData'), 'preferences-backup.json');
+        const backupPath = path.join(
+            app.getPath('userData'),
+            'preferences-backup.json',
+        );
 
         const fs = window.require('fs'); // Use window.require to require fs module in Electron
         fs.writeFileSync(backupPath, value);
@@ -225,7 +238,7 @@ const backupPreviousState = (data) => {
 
 const cnc = {
     version: settings.version,
-    state: {}
+    state: {},
 };
 
 try {
@@ -240,12 +253,17 @@ try {
     log.error(e);
 }
 
-store.state = normalizeState(merge(JSON.parse(JSON.stringify(defaultState)), cnc.state || {}));
+store.state = normalizeState(
+    merge(JSON.parse(JSON.stringify(defaultState)), cnc.state || {}),
+);
 
 // Debouncing enforces that a function not be called again until a certain amount of time (e.g. 100ms) has passed without it being called.
-store.on('change', debounce((state) => {
-    persist({ state: state });
-}, 100));
+store.on(
+    'change',
+    debounce((state) => {
+        persist({ state: state });
+    }, 100),
+);
 
 //
 // Migration
@@ -255,7 +273,10 @@ const migrateStore = () => {
         return;
     }
     console.log(cnc.version);
-    if (semver.lt(cnc.version, '1.3.10') || semver.lt(cnc.version, '1.3.10-EDGE')) {
+    if (
+        semver.lt(cnc.version, '1.3.10') ||
+        semver.lt(cnc.version, '1.3.10-EDGE')
+    ) {
         const settings = store.get();
 
         if (settings.workspace.probeProfile.xyThickness.mm) {
@@ -263,7 +284,7 @@ const migrateStore = () => {
                 ...settings.workspace.probeProfile,
                 xyThickness: settings.workspace.probeProfile.xyThickness.mm,
                 zThickness: settings.workspace.probeProfile.zThickness.mm,
-                plateWidth: settings.workspace.probeProfile.plateWidth.mm
+                plateWidth: settings.workspace.probeProfile.plateWidth.mm,
             });
         }
 
@@ -286,7 +307,7 @@ const migrateStore = () => {
                     feedrate: settings.widgets.axes.jog.precise.mm.feedrate,
                 },
                 step: settings.widgets.axes.jog.metric.step,
-                distances: settings.widgets.axes.jog.metric.distances
+                distances: settings.widgets.axes.jog.metric.distances,
             });
         }
 
@@ -294,7 +315,7 @@ const migrateStore = () => {
             store.replace('widgets.axes.location', {
                 ...settings.widgets.axes.location,
                 step: settings.widgets.location.jog.metric.step,
-                distances: settings.widgets.location.jog.metric.distances
+                distances: settings.widgets.location.jog.metric.distances,
             });
         }
 
@@ -303,24 +324,30 @@ const migrateStore = () => {
                 ...settings.widgets.probe,
                 probeFeedrate: settings.widgets.probe.probeFeedrate.mm,
                 probeFastFeedrate: settings.widgets.probe.probeFastFeedrate.mm,
-                retractionDistance: settings.widgets.probe.retractionDistance.mm,
-                zProbeDistance: settings.widgets.probe.zProbeDistance.mm
+                retractionDistance:
+                    settings.widgets.probe.retractionDistance.mm,
+                zProbeDistance: settings.widgets.probe.zProbeDistance.mm,
             });
         }
     }
 
     // Reset machine profile to default selection for 1.4.1 to prevent ID overlaps
     if (semver.lt(cnc.version, '1.4.1')) {
-        const defaultMachineProfile = get(defaultState, 'workspace.machineProfiles');
+        const defaultMachineProfile = get(
+            defaultState,
+            'workspace.machineProfiles',
+        );
         store.set('workspace.machineProfile', defaultMachineProfile);
     }
 
-    if (semver.lt(cnc.version, '1.2.4') || semver.lt(cnc.version, '1.2.4-EDGE')) {
+    if (
+        semver.lt(cnc.version, '1.2.4') ||
+        semver.lt(cnc.version, '1.2.4-EDGE')
+    ) {
         const currentCommandKeys = store.get('commandKeys');
         let newCommandKeysList = {};
 
         const oldKeysToNewKeysMap = {
-
             // Jog Commands
             'Jog: X+': 'JOG_X_P',
             'Jog: X-': 'JOG_X_M',
@@ -349,10 +376,10 @@ const migrateStore = () => {
 
             // Visualizer View Commands
             '3D / Isometric': 'VISUALIZER_VIEW_3D',
-            'Top': 'VISUALIZER_VIEW_TOP',
-            'Front': 'VISUALIZER_VIEW_FRONT',
-            'Right': 'VISUALIZER_VIEW_RIGHT',
-            'Left': 'VISUALIZER_VIEW_LEFT',
+            Top: 'VISUALIZER_VIEW_TOP',
+            Front: 'VISUALIZER_VIEW_FRONT',
+            Right: 'VISUALIZER_VIEW_RIGHT',
+            Left: 'VISUALIZER_VIEW_LEFT',
             'Reset View': 'VISUALIZER_VIEW_RESET',
 
             // Zeroing Commands
@@ -377,21 +404,21 @@ const migrateStore = () => {
             'Select Precise Jog Preset': 'SET_P_JOG_PRESET',
 
             // Controller Commands
-            'Unlock': 'CONTROLLER_COMMAND_UNLOCK',
+            Unlock: 'CONTROLLER_COMMAND_UNLOCK',
             'Soft Reset': 'CONTROLLER_COMMAND_RESET',
 
             // Toolbar Commands
-            'Connect': 'OPEN_TOOLBAR_CONN',
-            'Surfacing': 'OPEN_TOOLBAR_SURF',
-            'Heightmap': 'OPEN_TOOLBAR_MAP',
-            'Calibrate': 'OPEN_TOOLBAR_CALI',
-            'Firmware': 'OPEN_TOOLBAR_FIRM',
-            'Help': 'OPEN_TOOLBAR_HELP',
-            'Settings': 'OPEN_TOOLBAR_SETT',
+            Connect: 'OPEN_TOOLBAR_CONN',
+            Surfacing: 'OPEN_TOOLBAR_SURF',
+            Heightmap: 'OPEN_TOOLBAR_MAP',
+            Calibrate: 'OPEN_TOOLBAR_CALI',
+            Firmware: 'OPEN_TOOLBAR_FIRM',
+            Help: 'OPEN_TOOLBAR_HELP',
+            Settings: 'OPEN_TOOLBAR_SETT',
         };
 
         if (Array.isArray(currentCommandKeys)) {
-            currentCommandKeys.forEach(element => {
+            currentCommandKeys.forEach((element) => {
                 if (element.category === MACRO_CATEGORY) {
                     element.cmd = element.id;
                 }
@@ -424,13 +451,16 @@ const migrateStore = () => {
         store.replace('commandKeys', newCommandKeysList);
 
         // Gamepad changes
-        const currentGamepadProfiles = store.get('workspace.gamepad.profiles', []);
-        const updatedGamepadProfiles = currentGamepadProfiles.map(profile => {
+        const currentGamepadProfiles = store.get(
+            'workspace.gamepad.profiles',
+            [],
+        );
+        const updatedGamepadProfiles = currentGamepadProfiles.map((profile) => {
             const shortcuts = profile.shortcuts;
             let updatedProfileShortcuts = {};
 
             if (Array.isArray(shortcuts)) {
-                shortcuts.forEach(element => {
+                shortcuts.forEach((element) => {
                     if (element.category === MACRO_CATEGORY) {
                         element.cmd = element.id;
                     }
@@ -448,19 +478,26 @@ const migrateStore = () => {
                 updatedProfileShortcuts = shortcuts;
             }
 
-            Object.entries(updatedProfileShortcuts).forEach(([key, shortcut]) => {
-                delete shortcut.title;
-                delete shortcut.payload;
-                delete shortcut.preventDefault;
-                delete shortcut.category;
-                delete shortcut.callback;
-                updatedProfileShortcuts[key] = shortcut;
-            });
+            Object.entries(updatedProfileShortcuts).forEach(
+                ([key, shortcut]) => {
+                    delete shortcut.title;
+                    delete shortcut.payload;
+                    delete shortcut.preventDefault;
+                    delete shortcut.category;
+                    delete shortcut.callback;
+                    updatedProfileShortcuts[key] = shortcut;
+                },
+            );
 
             if (!Array.isArray(profile.id)) {
                 profile.id = [profile.id];
             }
-            return { ...profile, shortcuts: isEmpty(updatedProfileShortcuts) ? shortcuts : updatedProfileShortcuts };
+            return {
+                ...profile,
+                shortcuts: isEmpty(updatedProfileShortcuts)
+                    ? shortcuts
+                    : updatedProfileShortcuts,
+            };
         });
         store.replace('workspace.gamepad.profiles', updatedGamepadProfiles);
 
@@ -470,17 +507,26 @@ const migrateStore = () => {
             store.set('workspace.toolChangeOption', 'Pause');
         }
 
-
         // Fix Auto Zero String
-        const probeType = store.get('workspace.probeProfile.touchplateType', '');
+        const probeType = store.get(
+            'workspace.probeProfile.touchplateType',
+            '',
+        );
         if (probeType === 'Auto Zero Touchplate') {
-            store.set('workspace.probeProfile.touchplateType', 'AutoZero Touchplate');
+            store.set(
+                'workspace.probeProfile.touchplateType',
+                'AutoZero Touchplate',
+            );
         }
     }
 
     if (semver.lt(cnc.version, '1.1.5')) {
         const currSurfacingState = store.get('widgets.surfacing');
-        const defaultSurfacingState = get(defaultState, 'widgets.surfacing', currSurfacingState);
+        const defaultSurfacingState = get(
+            defaultState,
+            'widgets.surfacing',
+            currSurfacingState,
+        );
 
         store.replace('widgets.surfacing', defaultSurfacingState);
     }
@@ -489,7 +535,10 @@ const migrateStore = () => {
     if (semver.lt(cnc.version, '1.0.4')) {
         const currSpindleVal = store.get('widgets.spindle', {});
 
-        store.replace('widgets.spindle', { currSpindleVal, laser: { ...currSpindleVal.laser, minPower: 1, maxPower: 100 } });
+        store.replace('widgets.spindle', {
+            currSpindleVal,
+            laser: { ...currSpindleVal.laser, minPower: 1, maxPower: 100 },
+        });
     }
 };
 

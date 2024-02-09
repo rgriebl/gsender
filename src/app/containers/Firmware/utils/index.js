@@ -5,7 +5,12 @@ import ip from 'ip';
 
 import controller from 'app/lib/controller';
 import WidgetConfig from 'app/widgets/WidgetConfig';
-import { Toaster, TOASTER_SUCCESS, TOASTER_INFO, TOASTER_DANGER } from 'app/lib/toaster/ToasterLib';
+import {
+    Toaster,
+    TOASTER_SUCCESS,
+    TOASTER_INFO,
+    TOASTER_DANGER,
+} from 'app/lib/toaster/ToasterLib';
 // import store from 'app/store';
 import { GRBL } from 'app/constants';
 
@@ -13,10 +18,14 @@ import defaultGRBLSettings from '../eepromFiles/DefaultGrblSettings.json';
 import {
     AXIS_MASK_ID,
     BITFIELD_ID,
-    BOOLEAN_ID, DECIMAL_ID,
+    BOOLEAN_ID,
+    DECIMAL_ID,
     EXCLUSIVE_BITFIELD_ID,
-    INTEGER_ID, IPV4_ID, PASSWORD_ID,
-    RADIO_BUTTON_ID, STRING_ID
+    INTEGER_ID,
+    IPV4_ID,
+    PASSWORD_ID,
+    RADIO_BUTTON_ID,
+    STRING_ID,
 } from 'Containers/Firmware/components/HalSettings/constants';
 import BooleanInput from 'Containers/Firmware/components/HalSettings/inputs/BooleanInput';
 import BitfieldInput from 'Containers/Firmware/components/HalSettings/inputs/BitfieldInput';
@@ -29,16 +38,15 @@ import StringInput from 'Containers/Firmware/components/HalSettings/inputs/Strin
 import PasswordInput from 'Containers/Firmware/components/HalSettings/inputs/PasswordInput';
 import Ipv4Input from 'Containers/Firmware/components/HalSettings/inputs/Ipv4Input';
 
-export const FirmwareContext = createContext({ });
+export const FirmwareContext = createContext({});
 
 export const controllerSettingsLoaded = () => {
     const { settings } = controller.settings;
     if (settings) {
-        return (Object.keys(settings).length > 0);
+        return Object.keys(settings).length > 0;
     }
     return false;
 };
-
 
 export const connectToLastDevice = (callback) => {
     const connectionConfig = new WidgetConfig('connection');
@@ -49,16 +57,21 @@ export const connectToLastDevice = (callback) => {
 
     const isNetwork = ip.isV4Format(port); // Do we look like an IP address?
 
-    controller.openPort(port, controllerType, {
-        baudrate,
-        rtscts: false,
-        network: isNetwork
-    }, (err) => {
-        if (err) {
-            return;
-        }
-        callback && callback();
-    });
+    controller.openPort(
+        port,
+        controllerType,
+        {
+            baudrate,
+            rtscts: false,
+            network: isNetwork,
+        },
+        (err) => {
+            if (err) {
+                return;
+            }
+            callback && callback();
+        },
+    );
 };
 
 export const getResetToDefaultMessage = ({ name, type } = {}) => {
@@ -79,14 +92,14 @@ export const startFlash = (port, profile, hex = null, isHal = false) => {
         Toaster.pop({
             msg: 'No port specified - please connect to the device to determine what is being flashed',
             type: TOASTER_DANGER,
-            duration: 15000
+            duration: 15000,
         });
         return;
     }
     Toaster.pop({
         msg: `Flashing started on port: ${port} `,
         type: TOASTER_INFO,
-        duration: 10000
+        duration: 10000,
     });
     const imageType = getMachineProfileVersion(profile);
 
@@ -94,8 +107,11 @@ export const startFlash = (port, profile, hex = null, isHal = false) => {
 };
 
 export const restoreDefaultSettings = (machineProfile) => {
-    const eepromSettings = machineProfile?.eepromSettings ?? defaultGRBLSettings;
-    const values = Object.entries(eepromSettings).map(([key, value]) => (`${key}=${value}`));
+    const eepromSettings =
+        machineProfile?.eepromSettings ?? defaultGRBLSettings;
+    const values = Object.entries(eepromSettings).map(
+        ([key, value]) => `${key}=${value}`,
+    );
     values.push('$$');
 
     controller.command('gcode', values);
@@ -107,7 +123,8 @@ export const restoreDefaultSettings = (machineProfile) => {
 };
 
 export const restoreSingleDefaultSetting = (setting, machineProfile) => {
-    const eepromSettings = machineProfile?.eepromSettings ?? defaultGRBLSettings;
+    const eepromSettings =
+        machineProfile?.eepromSettings ?? defaultGRBLSettings;
     const defaultValue = eepromSettings[setting];
 
     controller.command('gcode', [`${setting}=${defaultValue}`, '$$']);
@@ -119,14 +136,14 @@ export const restoreSingleDefaultSetting = (setting, machineProfile) => {
 };
 
 export const addControllerEvents = (controllerEvents) => {
-    Object.keys(controllerEvents).forEach(eventName => {
+    Object.keys(controllerEvents).forEach((eventName) => {
         const callback = controllerEvents[eventName];
         controller.addListener(eventName, callback);
     });
 };
 
 export const removeControllerEvents = (controllerEvents) => {
-    Object.keys(controllerEvents).forEach(eventName => {
+    Object.keys(controllerEvents).forEach((eventName) => {
         const callback = controllerEvents[eventName];
         controller.removeListener(eventName, callback);
     });
@@ -146,11 +163,17 @@ export const applyNewSettings = (settings, eeprom, setSettingsToApply) => {
     let index22 = 200; // index of $22 - default is 200 because we have less eeprom values than that, so it will never be set to this value
     let index2021 = -1; // index of $20 or $21, whichever comes first
     let changedSettings = settings
-        .filter(item => eeprom[item.setting] !== item.value) // Only retrieve settings that have been modified
-        .map((item, i) => { // Create array of set eeprom value strings (ex. "$0=1")
-            if (item.setting === '$22') { // always find where $22 is
+        .filter((item) => eeprom[item.setting] !== item.value) // Only retrieve settings that have been modified
+        .map((item, i) => {
+            // Create array of set eeprom value strings (ex. "$0=1")
+            if (item.setting === '$22') {
+                // always find where $22 is
                 index22 = i;
-            } else if ((item.setting === '$20' || item.setting === '$21') && i < index22 && index2021 === -1) {
+            } else if (
+                (item.setting === '$20' || item.setting === '$21') &&
+                i < index22 &&
+                index2021 === -1
+            ) {
                 // if $20 or $21 come before $22,
                 // and this is the first occurence of $20 or $21,
                 // we are going to have to switch it with $20, so save the index.
@@ -171,7 +194,7 @@ export const applyNewSettings = (settings, eeprom, setSettingsToApply) => {
     setSettingsToApply(false);
     Toaster.pop({
         msg: 'Firmware Settings Updated',
-        type: TOASTER_SUCCESS
+        type: TOASTER_SUCCESS,
     });
 };
 
@@ -193,20 +216,24 @@ export const exportFirmwareSettings = (settings) => {
     download(blob, filename, 'json');
 };
 
-
 export const descriptionLookup = (key, descriptions) => {
     let metadata = get(descriptions, key, {});
 
-    let message = metadata.description || `$${key} EEPROM Value - no detailed title found`;
-    let description = metadata.details || `Configure the value of $${key} in the firmware - no detailed description found.`;
+    let message =
+        metadata.description ||
+        `$${key} EEPROM Value - no detailed title found`;
+    let description =
+        metadata.details ||
+        `Configure the value of $${key} in the firmware - no detailed description found.`;
     // Non-newline newlines from parser need to be replaced
-    description = description.replace(/\\n/gmi, '\n');
+    description = description.replace(/\\n/gim, '\n');
 
     return {
-        ...metadata, message, description
+        ...metadata,
+        message,
+        description,
     };
 };
-
 
 export const halDatatypeMap = {
     [BOOLEAN_ID]: BooleanInput,
@@ -218,13 +245,12 @@ export const halDatatypeMap = {
     [DECIMAL_ID]: DecimalInput,
     [STRING_ID]: StringInput,
     [PASSWORD_ID]: PasswordInput,
-    [IPV4_ID]: Ipv4Input
+    [IPV4_ID]: Ipv4Input,
 };
 
 export const getDatatypeInput = (type) => {
     type = Number(type);
     return halDatatypeMap[type] || String;
 };
-
 
 // Convert integer to base 2 string, split and reverse it so index 0 is the lowest bit

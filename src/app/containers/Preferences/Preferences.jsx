@@ -42,16 +42,23 @@ import About from './About';
 import Rotary from './Rotary';
 import store from '../../store';
 import styles from './index.styl';
-import { METRIC_UNITS, IMPERIAL_UNITS, ROTARY_MODE_FIRMWARE_SETTINGS, WORKFLOW_STATE_RUNNING, DEFAULT_FIRMWARE_SETTINGS } from '../../constants';
+import {
+    METRIC_UNITS,
+    IMPERIAL_UNITS,
+    ROTARY_MODE_FIRMWARE_SETTINGS,
+    WORKFLOW_STATE_RUNNING,
+    DEFAULT_FIRMWARE_SETTINGS,
+} from '../../constants';
 import { convertToImperial, convertToMetric } from './calculate';
 import {
-    DARK_THEME_VALUES, PARTS_LIST, G1_PART
+    DARK_THEME_VALUES,
+    PARTS_LIST,
+    G1_PART,
 } from '../../widgets/Visualizer/constants';
 import StatsPage from './Stats';
 import SafetySettings from './Safety';
 //from '../../widgets/Visualizer/constants';
 import { roundMetric } from '../../lib/rounding';
-
 
 class PreferencesPage extends PureComponent {
     probeConfig = new WidgetConfig('probe');
@@ -63,15 +70,21 @@ class PreferencesPage extends PureComponent {
     state = this.getInitialState();
 
     // this makes sure a toast won't pop up upon opening preferences while there's a job/test run/outline
-    shouldShowToast = this.props.workflow?.state !== WORKFLOW_STATE_RUNNING && this.props.feederStatus?.queue === 0;
+    shouldShowToast =
+        this.props.workflow?.state !== WORKFLOW_STATE_RUNNING &&
+        this.props.feederStatus?.queue === 0;
 
-    showToast = _.throttle(() => {
-        Toaster.pop({
-            msg: 'Settings Updated',
-            type: TOASTER_SUCCESS,
-            duration: 3000
-        });
-    }, 3000, { trailing: false });
+    showToast = _.throttle(
+        () => {
+            Toaster.pop({
+                msg: 'Settings Updated',
+                type: TOASTER_SUCCESS,
+                duration: 3000,
+            });
+        },
+        3000,
+        { trailing: false },
+    );
 
     getInitialState() {
         return {
@@ -85,38 +98,38 @@ class PreferencesPage extends PureComponent {
             controller: {
                 type: controller.type,
                 settings: controller.settings,
-                state: controller.state
+                state: controller.state,
             },
             menu: [
                 {
                     id: 0,
                     label: 'General',
-                    component: General
+                    component: General,
                 },
                 {
                     id: 1,
                     label: 'Safety',
-                    component: SafetySettings
+                    component: SafetySettings,
                 },
                 {
                     id: 2,
                     label: 'Probe',
-                    component: ProbeSettings
+                    component: ProbeSettings,
                 },
                 {
                     id: 3,
                     label: 'Spindle/Laser',
-                    component: SpindleLaser
+                    component: SpindleLaser,
                 },
                 {
                     id: 4,
                     label: 'Visualizer',
-                    component: VisualizerSettings
+                    component: VisualizerSettings,
                 },
                 {
                     id: 5,
                     label: 'Shortcuts',
-                    component: Shortcuts
+                    component: Shortcuts,
                 },
                 {
                     id: 6,
@@ -131,40 +144,46 @@ class PreferencesPage extends PureComponent {
                 {
                     id: 8,
                     label: 'Tool Change',
-                    component: Events
+                    component: Events,
                 },
                 {
                     id: 9,
                     label: 'Rotary',
-                    component: Rotary
+                    component: Rotary,
                 },
                 {
                     id: 10,
                     label: 'About',
                     component: About,
-                }
+                },
             ],
             tools: store.get('workspace[tools]', []),
             tool: {
                 metricDiameter: 0,
                 imperialDiameter: 0,
-                type: 'End Mill'
+                type: 'End Mill',
             },
             probe: store.get('workspace[probeProfile]'),
             probeSettings: {
-                retractionDistance: this.probeConfig.get('retractionDistance', {}),
+                retractionDistance: this.probeConfig.get(
+                    'retractionDistance',
+                    {},
+                ),
                 normalFeedrate: this.probeConfig.get('probeFeedrate', {}),
                 fastFeedrate: this.probeConfig.get('probeFastFeedrate', {}),
                 probeCommand: this.probeConfig.get('probeCommand', 'G38.2'),
-                connectivityTest: this.probeConfig.get('connectivityTest', true),
-                zProbeDistance: this.probeConfig.get('zProbeDistance', {})
+                connectivityTest: this.probeConfig.get(
+                    'connectivityTest',
+                    true,
+                ),
+                zProbeDistance: this.probeConfig.get('zProbeDistance', {}),
             },
             laser: {
-                ...this.spindleConfig.get('laser')
+                ...this.spindleConfig.get('laser'),
             },
             spindle: {
                 ...this.spindleConfig.get(),
-                delay: this.spindleConfig.get('delay')
+                delay: this.spindleConfig.get('delay'),
             },
             visualizer: {
                 minimizeRenders: this.visualizerConfig.get('minimizeRenders'),
@@ -172,7 +191,10 @@ class PreferencesPage extends PureComponent {
                 objects: this.visualizerConfig.get('objects'),
                 disabled: this.visualizerConfig.get('disabled'),
                 disabledLite: this.visualizerConfig.get('disabledLite'),
-                showSoftLimitsWarning: this.visualizerConfig.get('showSoftLimitsWarning', false),
+                showSoftLimitsWarning: this.visualizerConfig.get(
+                    'showSoftLimitsWarning',
+                    false,
+                ),
                 SVGEnabled: this.visualizerConfig.get('SVGEnabled', false),
             },
             showWarning: store.get('widgets.visualizer.showWarning'),
@@ -180,26 +202,35 @@ class PreferencesPage extends PureComponent {
             shouldWarnZero: store.get('workspace.shouldWarnZero', false),
             ipRange: store.get('widgets.connection.ip', [192, 168, 5, 1]),
             toolChange: {
-                passthrough: store.get('workspace.toolChange.passthrough', false),
+                passthrough: store.get(
+                    'workspace.toolChange.passthrough',
+                    false,
+                ),
             },
             rotary: {
-                firmwareSettings: store.get('workspace.rotaryAxis.firmwareSettings', ROTARY_MODE_FIRMWARE_SETTINGS),
-                defaultFirmwareSettings: store.get('workspace.rotaryAxis.defaultFirmwareSettings', DEFAULT_FIRMWARE_SETTINGS),
-            }
+                firmwareSettings: store.get(
+                    'workspace.rotaryAxis.firmwareSettings',
+                    ROTARY_MODE_FIRMWARE_SETTINGS,
+                ),
+                defaultFirmwareSettings: store.get(
+                    'workspace.rotaryAxis.defaultFirmwareSettings',
+                    DEFAULT_FIRMWARE_SETTINGS,
+                ),
+            },
         };
     }
 
     actions = {
         setSelectedMenu: (index) => {
             this.setState({
-                selectedMenu: index
+                selectedMenu: index,
             });
         },
         general: {
             setSafeRetractHeight: (e) => {
                 const value = Math.abs(Number(e.target.value));
                 this.setState({
-                    safeRetractHeight: value
+                    safeRetractHeight: value,
                 });
                 pubsub.publish('safeHeight:update', value);
             },
@@ -212,33 +243,36 @@ class PreferencesPage extends PureComponent {
                 }
                 e.target.value = value;
                 this.setState({
-                    customDecimalPlaces: value
+                    customDecimalPlaces: value,
                 });
                 controller.command('checkStateUpdate');
             },
             setUnits: (units) => {
-                this.setState({
-                    units: units
-                }, this.convertUnits());
+                this.setState(
+                    {
+                        units: units,
+                    },
+                    this.convertUnits(),
+                );
                 pubsub.publish('units:change', units);
             },
             setReverseWidgets: () => {
                 const reverseWidgetState = !this.state.reverseWidgets;
                 this.setState({
-                    reverseWidgets: reverseWidgetState
+                    reverseWidgets: reverseWidgetState,
                 });
                 pubsub.publish('widgets:reverse', reverseWidgetState);
             },
             setAutoReconnect: () => {
                 const autoReconnect = !this.state.autoReconnect;
                 this.setState({
-                    autoReconnect: autoReconnect
+                    autoReconnect: autoReconnect,
                 });
                 pubsub.publish('autoReconnect:update', autoReconnect);
             },
             setBaudrate: (option) => {
                 this.setState({
-                    baudrate: option.value
+                    baudrate: option.value,
                 });
                 pubsub.publish('baudrate:update', option.value);
             },
@@ -275,7 +309,7 @@ class PreferencesPage extends PureComponent {
                         ...tool,
                         metricDiameter: metricDiameter,
                         imperialDiameter: diameter,
-                    }
+                    },
                 });
             },
             setMetricDiameter: (e) => {
@@ -287,7 +321,7 @@ class PreferencesPage extends PureComponent {
                         ...tool,
                         metricDiameter: diameter,
                         imperialDiameter: imperialDiameter,
-                    }
+                    },
                 });
             },
             setToolType: (e) => {
@@ -296,8 +330,8 @@ class PreferencesPage extends PureComponent {
                 this.setState({
                     tool: {
                         ...tool,
-                        type: type
-                    }
+                        type: type,
+                    },
                 });
             },
             addTool: () => {
@@ -306,7 +340,7 @@ class PreferencesPage extends PureComponent {
                 tools.push(tool);
                 tools.sort(this.toolSortCompare);
                 this.setState({
-                    tools: tools
+                    tools: tools,
                 });
                 pubsub.publish('tools:updated');
             },
@@ -314,10 +348,10 @@ class PreferencesPage extends PureComponent {
                 const tools = [...this.state.tools];
                 tools.splice(index, 1);
                 this.setState({
-                    tools: [...tools]
+                    tools: [...tools],
                 });
                 pubsub.publish('tools:updated');
-            }
+            },
         },
         probe: {
             handleToggleChange: (...keys) => {
@@ -332,8 +366,8 @@ class PreferencesPage extends PureComponent {
                         ...probe,
                         functions: {
                             ...functions,
-                        }
-                    }
+                        },
+                    },
                 });
                 pubsub.publish('probe:updated');
             },
@@ -343,13 +377,16 @@ class PreferencesPage extends PureComponent {
 
                 const { units } = this.state;
 
-                const metricValue = units === METRIC_UNITS ? value : Math.abs(convertToMetric(value));
+                const metricValue =
+                    units === METRIC_UNITS
+                        ? value
+                        : Math.abs(convertToMetric(value));
 
                 this.setState({
                     probeSettings: {
                         ...probeSettings,
                         retractionDistance: metricValue,
-                    }
+                    },
                 });
             },
             changeNormalFeedrate: (e) => {
@@ -357,13 +394,16 @@ class PreferencesPage extends PureComponent {
                 const value = Math.abs(Number(e.target.value).toFixed(3) * 1);
                 const { units } = this.state;
 
-                const metricValue = units === METRIC_UNITS ? value : Math.abs(convertToMetric(value));
+                const metricValue =
+                    units === METRIC_UNITS
+                        ? value
+                        : Math.abs(convertToMetric(value));
 
                 this.setState({
                     probeSettings: {
                         ...probeSettings,
                         normalFeedrate: metricValue,
-                    }
+                    },
                 });
             },
             changeFastFeedrate: (e) => {
@@ -371,13 +411,16 @@ class PreferencesPage extends PureComponent {
                 const value = Math.abs(Number(e.target.value).toFixed(3) * 1);
                 const { units } = this.state;
 
-                const metricValue = units === METRIC_UNITS ? value : Math.abs(convertToMetric(value));
+                const metricValue =
+                    units === METRIC_UNITS
+                        ? value
+                        : Math.abs(convertToMetric(value));
 
                 this.setState({
                     probeSettings: {
                         ...probeSettings,
                         fastFeedrate: metricValue,
-                    }
+                    },
                 });
             },
             changeXYThickness: (e) => {
@@ -385,13 +428,16 @@ class PreferencesPage extends PureComponent {
                 const probe = { ...this.state.probe };
                 const { units } = this.state;
 
-                const metricValue = units === METRIC_UNITS ? value : Math.abs(convertToMetric(value));
+                const metricValue =
+                    units === METRIC_UNITS
+                        ? value
+                        : Math.abs(convertToMetric(value));
 
                 this.setState({
                     probe: {
                         ...probe,
                         xyThickness: metricValue,
-                    }
+                    },
                 });
                 pubsub.publish('probe:updated');
             },
@@ -400,13 +446,14 @@ class PreferencesPage extends PureComponent {
                 const probe = { ...this.state.probe };
                 const { units } = this.state;
 
-                const metricValue = units === METRIC_UNITS ? value : convertToMetric(value);
+                const metricValue =
+                    units === METRIC_UNITS ? value : convertToMetric(value);
 
                 this.setState({
                     probe: {
                         ...probe,
                         zThickness: metricValue,
-                    }
+                    },
                 });
                 pubsub.publish('probe:updated');
             },
@@ -416,13 +463,14 @@ class PreferencesPage extends PureComponent {
 
                 const { units } = this.state;
 
-                const metricValue = units === METRIC_UNITS ? value : convertToMetric(value);
+                const metricValue =
+                    units === METRIC_UNITS ? value : convertToMetric(value);
 
                 this.setState({
                     probe: {
                         ...probe,
                         plateWidth: metricValue,
-                    }
+                    },
                 });
             },
             changePlateLength: (e) => {
@@ -431,13 +479,14 @@ class PreferencesPage extends PureComponent {
 
                 const { units } = this.state;
 
-                const metricValue = units === METRIC_UNITS ? value : convertToMetric(value);
+                const metricValue =
+                    units === METRIC_UNITS ? value : convertToMetric(value);
 
                 this.setState({
                     probe: {
                         ...probe,
                         plateLength: metricValue,
-                    }
+                    },
                 });
             },
             changeConnectivityTest: (value) => {
@@ -445,8 +494,8 @@ class PreferencesPage extends PureComponent {
                 this.setState({
                     probeSettings: {
                         ...probeSettings,
-                        connectivityTest: value
-                    }
+                        connectivityTest: value,
+                    },
                 });
                 pubsub.publish('probe:test', value);
             },
@@ -456,15 +505,18 @@ class PreferencesPage extends PureComponent {
 
                 const { units } = this.state;
 
-                const metricValue = units === METRIC_UNITS ? value : Math.abs(convertToMetric(value));
+                const metricValue =
+                    units === METRIC_UNITS
+                        ? value
+                        : Math.abs(convertToMetric(value));
 
                 this.setState({
                     probeSettings: {
                         ...probeSettings,
                         zProbeDistance: metricValue,
-                    }
+                    },
                 });
-            }
+            },
         },
         laser: {
             handleOffsetChange: (e, axis) => {
@@ -481,16 +533,16 @@ class PreferencesPage extends PureComponent {
                     this.setState({
                         laser: {
                             ...laser,
-                            xOffset: value
-                        }
+                            xOffset: value,
+                        },
                     });
                 } else if (axis === 'Y') {
                     this.spindleConfig.set('laser.yOffset', value);
                     this.setState({
                         laser: {
                             ...laser,
-                            yOffset: value
-                        }
+                            yOffset: value,
+                        },
                     });
                 }
             },
@@ -506,7 +558,7 @@ class PreferencesPage extends PureComponent {
 
                 this.spindleConfig.set(`laser.${type}`, amount);
                 this.setState({
-                    laser: newLaserValue
+                    laser: newLaserValue,
                 });
 
                 pubsub.publish('laser:updated', newLaserValue);
@@ -532,10 +584,10 @@ class PreferencesPage extends PureComponent {
                 this.setState({
                     spindle: {
                         ...spindle,
-                        delay: hasDelay
-                    }
+                        delay: hasDelay,
+                    },
                 });
-            }
+            },
         },
         visualizer: {
             handleMinimizeRenderToggle: () => {
@@ -544,8 +596,8 @@ class PreferencesPage extends PureComponent {
                 this.setState({
                     visualizer: {
                         ...visualizer,
-                        minimizeRenders: !minimizeRenders
-                    }
+                        minimizeRenders: !minimizeRenders,
+                    },
                 });
                 pubsub.publish('visualizer:settings');
             },
@@ -555,7 +607,7 @@ class PreferencesPage extends PureComponent {
                     visualizer: {
                         ...visualizer,
                         theme: theme.value,
-                    }
+                    },
                 });
                 pubsub.publish('theme:change', theme.value);
             },
@@ -566,19 +618,25 @@ class PreferencesPage extends PureComponent {
                     if (value === G1_PART) {
                         label = 'G1-3';
                     }
-                    return this.visualizerConfig.set(theme + ' ' + label, themeColours.get(value));
+                    return this.visualizerConfig.set(
+                        theme + ' ' + label,
+                        themeColours.get(value),
+                    );
                 });
                 this.setState({
                     visualizer: {
                         ...visualizer,
                         theme: theme,
-                    }
+                    },
                 });
                 pubsub.publish('theme:change', theme);
             },
             handleChangeComplete: (color, part) => {
                 const { visualizer } = this.state;
-                this.visualizerConfig.set('temp ' + visualizer.theme + ' ' + part, color.hex);
+                this.visualizerConfig.set(
+                    'temp ' + visualizer.theme + ' ' + part,
+                    color.hex,
+                );
             },
             handlePartChange: () => {
                 pubsub.publish('part:change');
@@ -587,7 +645,10 @@ class PreferencesPage extends PureComponent {
                 return DARK_THEME_VALUES.get(part) || '#000000';
             },
             getCurrentColor: (theme, part, defaultColour) => {
-                return this.visualizerConfig.get(theme + ' ' + part, defaultColour);
+                return this.visualizerConfig.get(
+                    theme + ' ' + part,
+                    defaultColour,
+                );
             },
             handleVisEnabledToggle: (liteMode = false) => {
                 const { visualizer } = this.state;
@@ -596,16 +657,16 @@ class PreferencesPage extends PureComponent {
                     this.setState({
                         visualizer: {
                             ...visualizer,
-                            disabledLite: !value
-                        }
+                            disabledLite: !value,
+                        },
                     });
                 } else {
                     const value = visualizer.disabled;
                     this.setState({
                         visualizer: {
                             ...visualizer,
-                            disabled: !value
-                        }
+                            disabled: !value,
+                        },
                     });
                 }
                 pubsub.publish('visualizer:settings');
@@ -616,8 +677,8 @@ class PreferencesPage extends PureComponent {
                 this.setState({
                     visualizer: {
                         ...visualizer,
-                        SVGEnabled: !value
-                    }
+                        SVGEnabled: !value,
+                    },
                 });
                 pubsub.publish('visualizer:settings');
             },
@@ -634,10 +695,10 @@ class PreferencesPage extends PureComponent {
                                 ...objects,
                                 cutPath: {
                                     ...cutPath,
-                                    visibleLite: !value
-                                }
-                            }
-                        }
+                                    visibleLite: !value,
+                                },
+                            },
+                        },
                     });
                 } else {
                     const value = cutPath.visible;
@@ -648,10 +709,10 @@ class PreferencesPage extends PureComponent {
                                 ...objects,
                                 cutPath: {
                                     ...cutPath,
-                                    visible: !value
-                                }
-                            }
-                        }
+                                    visible: !value,
+                                },
+                            },
+                        },
                     });
                 }
                 pubsub.publish('visualizer:settings');
@@ -669,10 +730,10 @@ class PreferencesPage extends PureComponent {
                                 ...objects,
                                 cuttingToolAnimation: {
                                     ...cuttingToolAnimation,
-                                    visibleLite: !value
-                                }
-                            }
-                        }
+                                    visibleLite: !value,
+                                },
+                            },
+                        },
                     });
                 } else {
                     const value = cuttingToolAnimation.visible;
@@ -683,10 +744,10 @@ class PreferencesPage extends PureComponent {
                                 ...objects,
                                 cuttingToolAnimation: {
                                     ...cuttingToolAnimation,
-                                    visible: !value
-                                }
-                            }
-                        }
+                                    visible: !value,
+                                },
+                            },
+                        },
                     });
                 }
                 pubsub.publish('visualizer:settings');
@@ -704,10 +765,10 @@ class PreferencesPage extends PureComponent {
                                 ...objects,
                                 cuttingTool: {
                                     ...cuttingTool,
-                                    visibleLite: !value
-                                }
-                            }
-                        }
+                                    visibleLite: !value,
+                                },
+                            },
+                        },
                     });
                 } else {
                     const value = cuttingTool.visible;
@@ -718,26 +779,33 @@ class PreferencesPage extends PureComponent {
                                 ...objects,
                                 cuttingTool: {
                                     ...cuttingTool,
-                                    visible: !value
-                                }
-                            }
-                        }
+                                    visible: !value,
+                                },
+                            },
+                        },
                     });
                 }
                 pubsub.publish('visualizer:settings');
             },
             handleLimitsWarningToggle: () => {
                 const { visualizer } = this.state;
-                this.visualizerConfig.set('showSoftLimitsWarning', !this.state.visualizer.showSoftLimitsWarning);
-                pubsub.publish('softlimits:changevisibility', !this.state.visualizer.showSoftLimitsWarning);
+                this.visualizerConfig.set(
+                    'showSoftLimitsWarning',
+                    !this.state.visualizer.showSoftLimitsWarning,
+                );
+                pubsub.publish(
+                    'softlimits:changevisibility',
+                    !this.state.visualizer.showSoftLimitsWarning,
+                );
                 this.setState({
                     visualizer: {
                         ...visualizer,
-                        showSoftLimitsWarning: !this.state.visualizer.showSoftLimitsWarning
-                    }
+                        showSoftLimitsWarning:
+                            !this.state.visualizer.showSoftLimitsWarning,
+                    },
                 });
                 pubsub.publish('visualizer:settings');
-            }
+            },
         },
         toolChange: {
             handlePassthroughToggle: () => {
@@ -745,54 +813,72 @@ class PreferencesPage extends PureComponent {
                 this.setState({
                     toolChange: {
                         ...toolChange,
-                        passthrough: !toolChange.passthrough
-                    }
+                        passthrough: !toolChange.passthrough,
+                    },
                 });
-            }
+            },
         },
         rotary: {
             updateFirmwareSetting: (setting, value) => {
-                store.replace(`workspace.rotaryAxis.firmwareSettings[${setting}]`, value);
+                store.replace(
+                    `workspace.rotaryAxis.firmwareSettings[${setting}]`,
+                    value,
+                );
 
-                this.setState(prev => ({
+                this.setState((prev) => ({
                     rotary: {
                         ...prev.rotary,
                         firmwareSettings: {
                             ...prev.rotary.firmwareSettings,
                             [setting]: value,
-                        }
-                    }
+                        },
+                    },
                 }));
             },
             updateDefaultFirmwareSetting: (setting, value) => {
-                store.replace(`workspace.rotaryAxis.defaultFirmwareSettings[${setting}]`, value);
+                store.replace(
+                    `workspace.rotaryAxis.defaultFirmwareSettings[${setting}]`,
+                    value,
+                );
 
-                this.setState(prev => ({
+                this.setState((prev) => ({
                     rotary: {
                         ...prev.rotary,
                         defaultFirmwareSettings: {
                             ...prev.rotary.defaultFirmwareSettings,
                             [setting]: value,
-                        }
-                    }
+                        },
+                    },
                 }));
             },
             resetFirmwareToDefault: () => {
-                store.replace('workspace.rotaryAxis.firmwareSettings', ROTARY_MODE_FIRMWARE_SETTINGS);
+                store.replace(
+                    'workspace.rotaryAxis.firmwareSettings',
+                    ROTARY_MODE_FIRMWARE_SETTINGS,
+                );
 
-                this.setState(prev => ({
-                    rotary: { ...prev.rotary, firmwareSettings: ROTARY_MODE_FIRMWARE_SETTINGS }
+                this.setState((prev) => ({
+                    rotary: {
+                        ...prev.rotary,
+                        firmwareSettings: ROTARY_MODE_FIRMWARE_SETTINGS,
+                    },
                 }));
             },
             resetDefaultFirmwareSettings: () => {
-                store.replace('workspace.rotaryAxis.defaultFirmwareSettings', DEFAULT_FIRMWARE_SETTINGS);
+                store.replace(
+                    'workspace.rotaryAxis.defaultFirmwareSettings',
+                    DEFAULT_FIRMWARE_SETTINGS,
+                );
 
-                this.setState(prev => ({
-                    rotary: { ...prev.rotary, defaultFirmwareSettings: DEFAULT_FIRMWARE_SETTINGS }
+                this.setState((prev) => ({
+                    rotary: {
+                        ...prev.rotary,
+                        defaultFirmwareSettings: DEFAULT_FIRMWARE_SETTINGS,
+                    },
                 }));
-            }
-        }
-    }
+            },
+        },
+    };
 
     // make sure the toast doesn't show when the state/feeder status/sender status is updating
     controllerEvents = {
@@ -804,18 +890,18 @@ class PreferencesPage extends PureComponent {
         },
         'sender:status': (status) => {
             this.shouldShowToast = false;
-        }
-    }
+        },
+    };
 
     addControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.addListener(eventName, callback);
         });
     }
 
     removeControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.removeListener(eventName, callback);
         });
@@ -851,7 +937,7 @@ class PreferencesPage extends PureComponent {
             safeRetractHeight,
             customDecimalPlaces,
             spindle,
-            toolChange
+            toolChange,
         } = this.state;
 
         store.set('workspace.reverseWidgets', reverseWidgets);
@@ -862,7 +948,10 @@ class PreferencesPage extends PureComponent {
         store.set('widgets.visualizer.disabled', visualizer.disabled);
         store.set('widgets.visualizer.disabledLite', visualizer.disabledLite);
         store.set('widgets.visualizer.SVGEnabled', visualizer.SVGEnabled);
-        store.set('widgets.visualizer.minimizeRenders', visualizer.minimizeRenders);
+        store.set(
+            'widgets.visualizer.minimizeRenders',
+            visualizer.minimizeRenders,
+        );
         store.set('workspace.units', units);
         store.replace('workspace[tools]', tools);
         store.replace('widgets.visualizer.objects', visualizer.objects);
@@ -871,10 +960,16 @@ class PreferencesPage extends PureComponent {
         store.set('widgets.spindle.spindleMax', spindle.spindleMax);
         store.set('widgets.spindle.spindleMin', spindle.spindleMin);
         store.set('widgets.spindle.delay', spindle.delay);
-        this.probeConfig.set('retractionDistance', probeSettings.retractionDistance);
+        this.probeConfig.set(
+            'retractionDistance',
+            probeSettings.retractionDistance,
+        );
         this.probeConfig.set('probeFeedrate', probeSettings.normalFeedrate);
         this.probeConfig.set('probeFastFeedrate', probeSettings.fastFeedrate);
-        this.probeConfig.set('connectivityTest', probeSettings.connectivityTest);
+        this.probeConfig.set(
+            'connectivityTest',
+            probeSettings.connectivityTest,
+        );
         this.probeConfig.set('zProbeDistance', probeSettings.zProbeDistance);
         store.set('workspace.toolChange.passthrough', toolChange.passthrough);
 
@@ -921,7 +1016,7 @@ class PreferencesPage extends PureComponent {
             safeRetractHeight = convertToMetric(safeRetractHeight);
         }
         this.setState({
-            safeRetractHeight: safeRetractHeight
+            safeRetractHeight: safeRetractHeight,
         });
         pubsub.publish('safeHeight:update', safeRetractHeight);
     }
@@ -938,33 +1033,35 @@ class PreferencesPage extends PureComponent {
                     <div className={styles.preferencesContent}>
                         <div className={styles.preferencesMenu}>
                             <h3>Settings</h3>
-                            {
-                                menu.map((menuItem, index) => (
-                                    <button
-                                        type="button"
-                                        key={`section-${menuItem.label}`}
-                                        className={index === selectedMenu ? styles.activeMenu : ''}
-                                        onClick={() => actions.setSelectedMenu(index)}
-                                    >
-                                        { menuItem.label }
-                                    </button>
-                                ))
-                            }
+                            {menu.map((menuItem, index) => (
+                                <button
+                                    type="button"
+                                    key={`section-${menuItem.label}`}
+                                    className={
+                                        index === selectedMenu
+                                            ? styles.activeMenu
+                                            : ''
+                                    }
+                                    onClick={() =>
+                                        actions.setSelectedMenu(index)
+                                    }
+                                >
+                                    {menuItem.label}
+                                </button>
+                            ))}
                         </div>
                         <div className={styles.preferencesOptions}>
-                            {
-                                menu.map((menuItem, index) => (index === selectedMenu
-                                    ? (
-                                        <div key={menuItem.id}>
-                                            <menuItem.component
-                                                actions={actions}
-                                                state={state}
-                                                active={index === selectedMenu}
-                                            />
-                                        </div>
-                                    )
-                                    : null))
-                            }
+                            {menu.map((menuItem, index) =>
+                                index === selectedMenu ? (
+                                    <div key={menuItem.id}>
+                                        <menuItem.component
+                                            actions={actions}
+                                            state={state}
+                                            active={index === selectedMenu}
+                                        />
+                                    </div>
+                                ) : null,
+                            )}
                         </div>
                     </div>
                 </div>

@@ -7,7 +7,12 @@ import ToolsNotificationModal from 'app/components/ToolsNotificationModal/Modal'
 import { Toaster, TOASTER_WARNING } from 'app/lib/toaster/ToasterLib';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import { FirmwareContext, getResetToDefaultMessage, restoreDefaultSettings, startFlash } from '../../utils';
+import {
+    FirmwareContext,
+    getResetToDefaultMessage,
+    restoreDefaultSettings,
+    startFlash,
+} from '../../utils';
 import defaultGRBLSettings from '../../eepromFiles/DefaultGrblSettings.json';
 import defaultGRBLHALSettings from '../../eepromFiles/DefaultGrblHalSettings.json';
 import HalFlashModal from 'Containers/Firmware/components/HalFlashModal';
@@ -25,14 +30,17 @@ const Notifications = () => {
     } = useContext(FirmwareContext);
 
     const [portSelected, setPortSelected] = useState('');
-    const controllerType = store.get('widgets.connection.controller.type', 'invalid');
+    const controllerType = store.get(
+        'widgets.connection.controller.type',
+        'invalid',
+    );
 
     const beginFlashing = (port, profile) => {
         if (profile === '' || port === '') {
             Toaster.pop({
                 msg: 'Please select a Port and Machine profile',
                 type: TOASTER_WARNING,
-                duration: 2500
+                duration: 2500,
             });
         } else {
             setPortSelected(port);
@@ -45,17 +53,33 @@ const Notifications = () => {
     const message = getResetToDefaultMessage(machineProfile);
 
     const restoreDefaults = () => {
-        const controllerType = get(reduxStore.getState(), 'controller.type', 'grbl');
-        const machineProfileUpdated = { ...machineProfile, eepromSettings: machineProfile.eepromSettings ?? (controllerType === GRBLHAL ? defaultGRBLHALSettings : defaultGRBLSettings) };
+        const controllerType = get(
+            reduxStore.getState(),
+            'controller.type',
+            'grbl',
+        );
+        const machineProfileUpdated = {
+            ...machineProfile,
+            eepromSettings:
+                machineProfile.eepromSettings ??
+                (controllerType === GRBLHAL
+                    ? defaultGRBLHALSettings
+                    : defaultGRBLSettings),
+        };
         restoreDefaultSettings(machineProfileUpdated);
-        setSettings(prev => prev.map(item => ({ ...item, value: machineProfileUpdated.eepromSettings[item.setting] })));
+        setSettings((prev) =>
+            prev.map((item) => ({
+                ...item,
+                value: machineProfileUpdated.eepromSettings[item.setting],
+            })),
+        );
         setShouldRestoreDefault(false);
     };
 
     return (
         <>
             <div style={{ position: 'absolute', width: '968px' }}>
-                {(initiateFlashing && controllerType === GRBLHAL) && (
+                {initiateFlashing && controllerType === GRBLHAL && (
                     <HalFlashModal
                         title="Grbl Flashing"
                         onClose={() => setInitiateFlashing(false)}
@@ -65,12 +89,13 @@ const Notifications = () => {
                         yesFunction={beginFlashing}
                         showOptions={true}
                     >
-                        This feature exists to flash the GRBL firmware onto compatible Arduino boards only!
-                        Improper flashing could damage your device.
+                        This feature exists to flash the GRBL firmware onto
+                        compatible Arduino boards only! Improper flashing could
+                        damage your device.
                     </HalFlashModal>
                 )}
 
-                {(initiateFlashing && controllerType !== GRBLHAL) && (
+                {initiateFlashing && controllerType !== GRBLHAL && (
                     <ToolsNotificationModal
                         title="Grbl Flashing"
                         onClose={() => setInitiateFlashing(false)}
@@ -80,8 +105,9 @@ const Notifications = () => {
                         yesFunction={beginFlashing}
                         showOptions={true}
                     >
-                        This feature exists to flash the GRBL firmware onto compatible Arduino boards only!
-                        Improper flashing could damage your device.
+                        This feature exists to flash the GRBL firmware onto
+                        compatible Arduino boards only! Improper flashing could
+                        damage your device.
                     </ToolsNotificationModal>
                 )}
 

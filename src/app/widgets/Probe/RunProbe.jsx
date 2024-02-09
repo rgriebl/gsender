@@ -39,7 +39,7 @@ import useKeybinding from '../../lib/useKeybinding';
 class RunProbe extends PureComponent {
     static propTypes = {
         state: PropTypes.object,
-        actions: PropTypes.object
+        actions: PropTypes.object,
     };
 
     state = this.getInitialState();
@@ -75,23 +75,23 @@ class RunProbe extends PureComponent {
                     msg: 'Probe Confirmed Manually',
                     type: TOASTER_INFO,
                     duration: 5000,
-                    icon: 'fa-satellite-dish'
+                    icon: 'fa-satellite-dish',
                 });
 
                 actions.setProbeConnectivity(true);
-            }
-        }
-    }
+            },
+        },
+    };
 
     getInitialState() {
         return {
-            testRunning: false
+            testRunning: false,
         };
     }
 
     resetProbeState() {
         this.setState({
-            ...this.getInitialState()
+            ...this.getInitialState(),
         });
     }
 
@@ -107,10 +107,10 @@ class RunProbe extends PureComponent {
             msg: 'Initiated probing cycle',
             type: TOASTER_INFO,
             duration: 5000,
-            icon: 'fa-satellite-dish'
+            icon: 'fa-satellite-dish',
         });
         actions.closeModal();
-    }
+    };
 
     startConnectivityTest(probeStatus, connectivityTest) {
         const { actions } = this.props;
@@ -122,7 +122,7 @@ class RunProbe extends PureComponent {
         }
 
         this.setState({
-            testRunning: true
+            testRunning: true,
         });
         this.testInterval = setInterval(() => {
             if (probeStatus()) {
@@ -138,7 +138,12 @@ class RunProbe extends PureComponent {
         this.addShuttleControlEvents();
         useKeybinding(this.shuttleControlEvents);
 
-        gamepad.on('gamepad:button', (event) => runAction({ event, shuttleControlEvents: this.shuttleControlEvents }));
+        gamepad.on('gamepad:button', (event) =>
+            runAction({
+                event,
+                shuttleControlEvents: this.shuttleControlEvents,
+            }),
+        );
     }
 
     componentWillUnmount() {
@@ -149,14 +154,14 @@ class RunProbe extends PureComponent {
     addShuttleControlEvents() {
         combokeys.reload();
 
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
     }
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
@@ -168,7 +173,8 @@ class RunProbe extends PureComponent {
         const { touchplateType } = touchplate;
         //const probeCommands = actions.generateProbeCommands();
         //console.log(probeCommands.join('\n'));
-        const probeCommand = state.availableProbeCommands[state.selectedProbeCommand];
+        const probeCommand =
+            state.availableProbeCommands[state.selectedProbeCommand];
 
         const probeActive = actions.returnProbeConnectivity();
 
@@ -180,7 +186,9 @@ class RunProbe extends PureComponent {
                 className={styles.modalOverride}
             >
                 <Modal.Header className={styles.modalHeader}>
-                    <Modal.Title>{i18n._(`Probe - ${probeCommand.id}`)}</Modal.Title>
+                    <Modal.Title>
+                        {i18n._(`Probe - ${probeCommand.id}`)}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className={styles.runProbeBody}>
@@ -188,25 +196,41 @@ class RunProbe extends PureComponent {
                             <div className={styles.greyText}>
                                 <p>Ensure tool is positioned as shown.</p>
                                 <p>
-                                    To confirm a reliable circuit, touch your plate to the tool and look for the signal to be robustly detected
-                                    (indicated by a green light) before returning the probe to the probing position.
+                                    To confirm a reliable circuit, touch your
+                                    plate to the tool and look for the signal to
+                                    be robustly detected (indicated by a green
+                                    light) before returning the probe to the
+                                    probing position.
                                 </p>
-                                <p>Probing cannot be run without confirming the circuit.</p>
-                                <p>Consider holding your touch plate in place during probing to get a more consistent measurement.</p>
+                                <p>
+                                    Probing cannot be run without confirming the
+                                    circuit.
+                                </p>
+                                <p>
+                                    Consider holding your touch plate in place
+                                    during probing to get a more consistent
+                                    measurement.
+                                </p>
                             </div>
                             <FunctionButton
                                 primary
                                 disabled={!connectionMade}
                                 onClick={this.startProbe}
                             >
-                                {
-                                    connectionMade ? 'Start Probe' : 'Waiting on probe circuit confirmation...'
-                                }
+                                {connectionMade
+                                    ? 'Start Probe'
+                                    : 'Waiting on probe circuit confirmation...'}
                             </FunctionButton>
                         </div>
                         <div className={styles.right}>
-                            <ProbeImage probeCommand={probeCommand} touchplateType={touchplateType} />
-                            <ProbeCircuitStatus connected={canClick} probeActive={probeActive} />
+                            <ProbeImage
+                                probeCommand={probeCommand}
+                                touchplateType={touchplateType}
+                            />
+                            <ProbeCircuitStatus
+                                connected={canClick}
+                                probeActive={probeActive}
+                            />
                         </div>
                     </div>
                 </Modal.Body>

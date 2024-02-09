@@ -21,7 +21,10 @@ const HeaderArea = () => {
 
             <div className={styles.headerRight}>
                 <p>Copyright &copy; {year} Sienci Labs Inc.</p>
-                <div className={styles.country}><span>Made in Canada</span> <img src={canadaFlagIcon} alt="Canada Flag" /></div>
+                <div className={styles.country}>
+                    <span>Made in Canada</span>{' '}
+                    <img src={canadaFlagIcon} alt="Canada Flag" />
+                </div>
                 <p>
                     <a
                         href="https://github.com/Sienci-Labs/sender/blob/master/LICENSE"

@@ -18,44 +18,56 @@ class Gamepad extends GamepadListener {
         if (precision) {
             this.options.precision = precision;
         }
-    }
+    };
 
     holdListener = () => {
         this.shouldHold = true;
-    }
+    };
 
     unholdListener = () => {
         this.shouldHold = false;
-    }
+    };
 
     onAxis = ({ detail }) => {
         const profiles = store.get('workspace.gamepad.profiles', []);
-        const currentProfile = profiles.find(profile => profile.id.includes(detail.gamepad.id));
+        const currentProfile = profiles.find((profile) =>
+            profile.id.includes(detail.gamepad.id),
+        );
 
-        const lockoutButton = detail.gamepad.buttons[currentProfile?.lockout?.button];
+        const lockoutButton =
+            detail.gamepad.buttons[currentProfile?.lockout?.button];
 
         if (lockoutButton && !lockoutButton?.pressed) {
             return;
         }
 
-        const deadZone = currentProfile?.joystickOptions?.zeroThreshold && currentProfile?.joystickOptions?.zeroThreshold / 100;
+        const deadZone =
+            currentProfile?.joystickOptions?.zeroThreshold &&
+            currentProfile?.joystickOptions?.zeroThreshold / 100;
 
-        const [leftStickX, leftStickY, rightStickX, rightStickY] = detail.gamepad.axes;
+        const [leftStickX, leftStickY, rightStickX, rightStickY] =
+            detail.gamepad.axes;
 
         const cartesian2Polar = (x, y) => {
             const radians = Math.atan2(y, x);
-            const degrees = Math.round((radians * (180 / Math.PI))) * -1;
+            const degrees = Math.round(radians * (180 / Math.PI)) * -1;
             return (degrees + 360) % 360; //https://stackoverflow.com/a/25725005
         };
 
         const cartesian2PolarDistance = (x, y) => {
             const distance = Math.sqrt(x * x + y * y);
 
-            return +(distance.toFixed(2));
+            return +distance.toFixed(2);
         };
 
-        const leftStickDistance = cartesian2PolarDistance(leftStickX, leftStickY);
-        const rightStickDistance = cartesian2PolarDistance(rightStickX, rightStickY);
+        const leftStickDistance = cartesian2PolarDistance(
+            leftStickX,
+            leftStickY,
+        );
+        const rightStickDistance = cartesian2PolarDistance(
+            rightStickX,
+            rightStickY,
+        );
 
         const leftStick = cartesian2Polar(leftStickX, leftStickY);
         const rightStick = cartesian2Polar(rightStickX, rightStickY);
@@ -68,7 +80,7 @@ class Gamepad extends GamepadListener {
             },
             distance: {
                 leftStick: leftStickDistance,
-                rightStick: rightStickDistance
+                rightStick: rightStickDistance,
             },
         };
 
@@ -77,20 +89,26 @@ class Gamepad extends GamepadListener {
         if (deadZone && detail.value < deadZone && detail.value > -deadZone) {
             const payload = {
                 ...dataOutput,
-                value: 0
+                value: 0,
             };
 
             this.emit('gamepad:axis', payload);
             this.emit(`gamepad:${index}:axis`, payload);
-            this.emit(`gamepad:${index}:axis:${dataOutput.axis}`, payload.detail);
+            this.emit(
+                `gamepad:${index}:axis:${dataOutput.axis}`,
+                payload.detail,
+            );
 
             return;
         }
 
         this.emit('gamepad:axis', dataOutput);
         this.emit(`gamepad:${index}:axis`, dataOutput);
-        this.emit(`gamepad:${index}:axis:${dataOutput.axis}`, dataOutput.detail);
-    }
+        this.emit(
+            `gamepad:${index}:axis:${dataOutput.axis}`,
+            dataOutput.detail,
+        );
+    };
 }
 
 //  TODO:  Remove this when SSL is working correctly
@@ -119,13 +137,16 @@ export const shortcutComboBuilder = (list = []) => {
 export const checkButtonHold = (buttonType, currentProfile) => {
     const gamepads = navigator.getGamepads();
 
-    const currentGamepad = gamepads.find(gamepad => currentProfile.id.includes(gamepad?.id));
+    const currentGamepad = gamepads.find((gamepad) =>
+        currentProfile.id.includes(gamepad?.id),
+    );
 
     if (!currentGamepad) {
         return false;
     }
 
-    const isHoldingButton = currentGamepad.buttons[currentProfile[buttonType]?.button]?.pressed;
+    const isHoldingButton =
+        currentGamepad.buttons[currentProfile[buttonType]?.button]?.pressed;
 
     return isHoldingButton;
 };
@@ -139,15 +160,22 @@ export const onGamepadButtonPress = ({ detail }) => {
     const gamepadID = gamepad.id;
 
     const profiles = store.get('workspace.gamepad.profiles', []);
-    const currentProfile = profiles.find(profile => profile.id.includes(gamepadID));
+    const currentProfile = profiles.find((profile) =>
+        profile.id.includes(gamepadID),
+    );
 
     if (!currentProfile) {
         return null;
     }
 
-    const foundAction = currentProfile.buttons?.find(({ value }) => value === button);
+    const foundAction = currentProfile.buttons?.find(
+        ({ value }) => value === button,
+    );
 
-    if (!detail.pressed && foundAction?.primaryAction?.includes('JOG') || foundAction.secondaryAction?.includes('JOG')) {
+    if (
+        (!detail.pressed && foundAction?.primaryAction?.includes('JOG')) ||
+        foundAction.secondaryAction?.includes('JOG')
+    ) {
         return 'STOP_JOG';
     }
 
@@ -188,10 +216,14 @@ gamepadInstance.on('gamepad:connected', ({ detail }) => {
 
     const profiles = store.get('workspace.gamepad.profiles');
 
-    const foundGamepad = profiles.find(profile => profile.id.includes(gamepad.id));
+    const foundGamepad = profiles.find((profile) =>
+        profile.id.includes(gamepad.id),
+    );
 
     Toaster.pop({
-        msg: foundGamepad ? `${foundGamepad.name} Connected` : 'New gamepad connected, add it as a profile in your preferences',
+        msg: foundGamepad
+            ? `${foundGamepad.name} Connected`
+            : 'New gamepad connected, add it as a profile in your preferences',
         type: TOASTER_INFO,
     });
 });

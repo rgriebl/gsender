@@ -25,7 +25,7 @@ class GCodeBlock {
     words = null;
     pairs = null;
     flatPairs = null;
-    line = ''
+    line = '';
 
     constructor(words, line) {
         this.line = line;
@@ -56,11 +56,11 @@ class GCodeBlock {
 
     has(word) {
         const result = word in this.pairs;
-        return (result);
+        return result;
     }
 
     hasLetter(letter) {
-        return (letter in this.flatPairs);
+        return letter in this.flatPairs;
     }
 
     get(word) {

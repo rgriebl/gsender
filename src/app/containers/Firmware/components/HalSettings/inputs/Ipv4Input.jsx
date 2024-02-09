@@ -8,10 +8,13 @@ const Ipv4Input = ({ info, setting, onChange }) => {
 
     return (
         <div className={styles.inputRow}>
-            <ControlledInput type="text" className={styles.textInput} externalOnChange={onChange} value={value} />
-            {
-                unit && <span className={styles.unit}>{unit}</span>
-            }
+            <ControlledInput
+                type="text"
+                className={styles.textInput}
+                externalOnChange={onChange}
+                value={value}
+            />
+            {unit && <span className={styles.unit}>{unit}</span>}
         </div>
     );
 };

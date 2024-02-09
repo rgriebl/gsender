@@ -7,7 +7,11 @@ import { Toaster, TOASTER_INFO } from 'app/lib/toaster/ToasterLib';
 import Button from 'app/components/FunctionButton/FunctionButton';
 
 import { GamepadContext } from './utils/context';
-import { setCurrentGamepadProfile, setGamepadProfileList, setCurrentModal } from './utils/actions';
+import {
+    setCurrentGamepadProfile,
+    setGamepadProfileList,
+    setCurrentModal,
+} from './utils/actions';
 
 import styles from '../index.styl';
 import Fieldset from '../../components/Fieldset';
@@ -29,16 +33,27 @@ const Profile = ({ data }) => {
         checkGamepadConnection();
 
         return () => {
-            gamepad.removeEventListener('gamepad:connected', checkGamepadConnection);
-            gamepad.removeEventListener('gamepad:disconnected', checkGamepadConnection);
-            gamepad.removeEventListener('gamepad:button', checkGamepadConnection);
+            gamepad.removeEventListener(
+                'gamepad:connected',
+                checkGamepadConnection,
+            );
+            gamepad.removeEventListener(
+                'gamepad:disconnected',
+                checkGamepadConnection,
+            );
+            gamepad.removeEventListener(
+                'gamepad:button',
+                checkGamepadConnection,
+            );
         };
     }, []);
 
     const checkGamepadConnection = () => {
         const gamepads = navigator.getGamepads();
 
-        const foundGamepad = gamepads?.find(gamepad => data?.id?.includes(gamepad?.id));
+        const foundGamepad = gamepads?.find((gamepad) =>
+            data?.id?.includes(gamepad?.id),
+        );
 
         setIsConnected(!!foundGamepad);
     };
@@ -50,21 +65,32 @@ const Profile = ({ data }) => {
 
         const profiles = store.get('workspace.gamepad.profiles', []);
 
-        const updatedProfiles =
-            profiles.map(profile => (arrayComparator(profile.id, data.id) ? ({ ...profile, profileName: name }) : profile));
+        const updatedProfiles = profiles.map((profile) =>
+            arrayComparator(profile.id, data.id)
+                ? { ...profile, profileName: name }
+                : profile,
+        );
 
         dispatch(setGamepadProfileList(updatedProfiles));
 
         Toaster.pop({
             msg: 'Updated Profile Name',
             type: TOASTER_INFO,
-            duration: 2000
+            duration: 2000,
         });
     };
 
     return (
         <>
-            <div style={{ display: 'grid', gridTemplateColumns: '8fr 4fr 2fr 6fr', gap: '1.5rem', alignItems: 'center', margin: '0 0 0.5rem' }}>
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: '8fr 4fr 2fr 6fr',
+                    gap: '1.5rem',
+                    alignItems: 'center',
+                    margin: '0 0 0.5rem',
+                }}
+            >
                 <input
                     type="text"
                     value={name}
@@ -72,32 +98,51 @@ const Profile = ({ data }) => {
                     onChange={(e) => setName(e.target.value)}
                     onBlur={handleEditName}
                 />
-                <span style={{
-                    padding: '0.5rem',
-                    borderRadius: '5px',
-                    color: 'white',
-                    backgroundColor: isConnected ? '#4bb543' : '#16b1c9',
-                    textAlign: 'center'
-                }}
+                <span
+                    style={{
+                        padding: '0.5rem',
+                        borderRadius: '5px',
+                        color: 'white',
+                        backgroundColor: isConnected ? '#4bb543' : '#16b1c9',
+                        textAlign: 'center',
+                    }}
                 >
                     {isConnected ? 'Connected' : 'Not Connected'}
                 </span>
-                <Button onClick={() => dispatch(setCurrentModal(GAMEPAD_MODAL.HELP))} style={{ margin: 0 }}>
+                <Button
+                    onClick={() =>
+                        dispatch(setCurrentModal(GAMEPAD_MODAL.HELP))
+                    }
+                    style={{ margin: 0 }}
+                >
                     Help
                 </Button>
-                <Button onClick={() => dispatch(setCurrentGamepadProfile(null))} style={{ margin: 0 }}>
+                <Button
+                    onClick={() => dispatch(setCurrentGamepadProfile(null))}
+                    style={{ margin: 0 }}
+                >
                     <i className="fas fa-arrow-left" />
                     <span>Back to Gamepad Profiles</span>
                 </Button>
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <Fieldset legend="Button Actions" style={{ width: '60%', padding: '0.75rem' }}>
+                <Fieldset
+                    legend="Button Actions"
+                    style={{ width: '60%', padding: '0.75rem' }}
+                >
                     <p style={{ textAlign: 'center' }}>
-                        Assign a &quot;Lockout&quot; button for gamepad safety, or a &quot;2nd Action&quot;{' '}
-                        button to use like a Function key and give your gamepad double the functions!
+                        Assign a &quot;Lockout&quot; button for gamepad safety,
+                        or a &quot;2nd Action&quot; button to use like a
+                        Function key and give your gamepad double the functions!
                     </p>
-                    <div style={{ overflowY: 'auto', height: '425px', backgroundColor: 'white' }}>
+                    <div
+                        style={{
+                            overflowY: 'auto',
+                            height: '425px',
+                            backgroundColor: 'white',
+                        }}
+                    >
                         <ButtonActionsTable />
                     </div>
                 </Fieldset>

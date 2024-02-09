@@ -32,7 +32,7 @@ const decimalPlaces = (num) => {
     const digits = match[1] ? match[1].length : 0;
 
     // Adjust for scientific notation.
-    const E = match[2] ? (+match[2]) : 0;
+    const E = match[2] ? +match[2] : 0;
 
     return Math.max(0, digits - E);
 };

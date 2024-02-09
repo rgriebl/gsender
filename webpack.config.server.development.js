@@ -8,7 +8,7 @@ const babelConfig = require('./babel.config');
 const pkg = require('./package.json');
 
 dotenv.config({
-    path: path.resolve('webpack.config.server.development.env')
+    path: path.resolve('webpack.config.server.development.env'),
 });
 
 // Use publicPath for production
@@ -27,57 +27,54 @@ module.exports = {
     target: 'node', // ignore built-in modules like path, fs, etc.
     context: path.resolve(__dirname, 'src/server'),
     entry: {
-        index: [
-            './index.js'
-        ]
+        index: ['./index.js'],
     },
     output: {
         path: path.resolve(__dirname, 'output/server'),
         filename: '[name].js',
-        libraryTarget: 'commonjs2'
+        libraryTarget: 'commonjs2',
     },
     plugins: [
         new webpack.DefinePlugin({
             'global.NODE_ENV': JSON.stringify('development'),
             'global.PUBLIC_PATH': JSON.stringify(publicPath),
             'global.BUILD_VERSION': JSON.stringify(buildVersion),
-            'global.METRICS_ENDPOINT': JSON.stringify(process.env.METRICS_ENDPOINT),
+            'global.METRICS_ENDPOINT': JSON.stringify(
+                process.env.METRICS_ENDPOINT,
+            ),
             'process.env': JSON.stringify(process.env),
-        })
+        }),
     ],
     module: {
         rules: [
             {
                 test: /\.hex$/,
-                loader: 'file-loader'
+                loader: 'file-loader',
             },
             {
                 test: /\.hex$/,
                 loader: 'file-loader',
                 include: [
-                    path.resolve(__dirname, 'src/server/lib/FirmwareFlashing')
-                ]
+                    path.resolve(__dirname, 'src/server/lib/FirmwareFlashing'),
+                ],
             },
             {
                 test: /\.jsx?$/,
                 loader: 'eslint-loader',
                 enforce: 'pre',
-                exclude: /node_modules/
+                exclude: /node_modules/,
             },
             {
                 test: /\.jsx?$/,
                 loader: 'babel-loader',
                 options: babelConfig,
-                exclude: /node_modules/
-            }
-        ]
+                exclude: /node_modules/,
+            },
+        ],
     },
     externals: [nodeExternals()], // ignore all modules in node_modules folder
     resolve: {
-        modules: [
-            path.resolve(__dirname, 'src'),
-            'node_modules'
-        ],
+        modules: [path.resolve(__dirname, 'src'), 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
         alias: {
             // Alias paths so that e.g. "../../components/File" becomes "Components/File"
@@ -96,13 +93,11 @@ module.exports = {
             Styles: path.resolve(__dirname, './src/app/styles'),
             Types: path.resolve(__dirname, './src/app/types'),
             Utils: path.resolve(__dirname, './src/app/utils'),
-            Views: path.resolve(__dirname, './src/app/views')
-        }
+            Views: path.resolve(__dirname, './src/app/views'),
+        },
     },
     resolveLoader: {
-        modules: [
-            path.resolve(__dirname, 'node_modules')
-        ]
+        modules: [path.resolve(__dirname, 'node_modules')],
     },
     node: {
         console: true,
@@ -111,6 +106,6 @@ module.exports = {
         Buffer: true,
         __filename: true, // Use relative path
         __dirname: true, // Use relative path
-        setImmediate: true
-    }
+        setImmediate: true,
+    },
 };

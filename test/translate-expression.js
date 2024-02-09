@@ -17,7 +17,7 @@ test('expressions', (t) => {
         _x: 10,
         _y: 20,
         _z: 30,
-        delay: 1000
+        delay: 1000,
     };
 
     const found = translateExpression(data, context);

@@ -16,8 +16,8 @@ export const getParsedData = () => {
                 .transaction(OBJECT_STORE)
                 .objectStore(OBJECT_STORE)
                 .get(DATA_ID).onsuccess = (event) => {
-                    return resolve(event.target.result);
-                };
+                return resolve(event.target.result);
+            };
         };
         request.onerror = (event) => {
             console.error('Error getting parsed data from indexedDB');
@@ -36,11 +36,11 @@ export const getEstimateData = () => {
                 .transaction(OBJECT_STORE)
                 .objectStore(OBJECT_STORE)
                 .get(DATA_ID).onsuccess = (event) => {
-                    return resolve({
-                        estimates: event.target.result.estimates,
-                        estimatedTime: event.target.result.info.estimatedTime
-                    });
-                };
+                return resolve({
+                    estimates: event.target.result.estimates,
+                    estimatedTime: event.target.result.info.estimatedTime,
+                });
+            };
         };
         request.onerror = (event) => {
             console.error('Error getting parsed data from indexedDB');

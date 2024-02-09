@@ -35,7 +35,9 @@ class ImmutableStore extends events.EventEmitter {
     }
 
     get(key, defaultValue) {
-        return (key === undefined) ? this.state : _.get(this.state, key, defaultValue);
+        return key === undefined
+            ? this.state
+            : _.get(this.state, key, defaultValue);
     }
 
     set(key, value) {

@@ -26,17 +26,14 @@ import ToolModal from 'app/components/ToolModal/ToolModal';
 import HelpCard from 'app/containers/Help/HelpCard';
 import styles from './index.styl';
 
-
 const REPORT_FORM_LINK = 'https://sienci.com/gsender-feedback/';
-const DOCUMENTATION_LINK = 'https://resources.sienci.com/view/gs-using-gsender/';
+const DOCUMENTATION_LINK =
+    'https://resources.sienci.com/view/gs-using-gsender/';
 const FORUM_LINK = 'https://forum.sienci.com/c/gsender/14';
 
 const HelpModal = ({ modalClose }) => {
     return (
-        <ToolModal
-            onClose={modalClose}
-            title="gSender Help"
-        >
+        <ToolModal onClose={modalClose} title="gSender Help">
             <div className={styles.helpWrapper}>
                 <div className={styles.helpModal}>
                     <HelpCard

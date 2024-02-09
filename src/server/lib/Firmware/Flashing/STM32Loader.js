@@ -11,23 +11,24 @@ export class STM32Loader {
     }
 
     open() {
-        SerialPort.list({
-
-        }).then(ports => {
-            ports.map(port => console.log(port));
+        SerialPort.list({}).then((ports) => {
+            ports.map((port) => console.log(port));
         });
-        this.port = new SerialPort({
-            path: this.path,
-            baudRate: this.BAUD_RATE,
-            parity: 'even'
-        }, async (err) => {
-            if (err) {
-                console.log(err);
-            }
-            this.port.on('data', this.onData.bind(this));
-            await delay(100);
-            this.initChip();
-        });
+        this.port = new SerialPort(
+            {
+                path: this.path,
+                baudRate: this.BAUD_RATE,
+                parity: 'even',
+            },
+            async (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                this.port.on('data', this.onData.bind(this));
+                await delay(100);
+                this.initChip();
+            },
+        );
     }
 
     onData(data) {
@@ -86,7 +87,7 @@ export class STM32Loader {
         this.buffer = [];
         this.setRTS(false);
         this.reset().then(async () => {
-            this.write(0x7F);
+            this.write(0x7f);
             await this.waitForAck(5);
         });
     }
@@ -106,13 +107,13 @@ export class STM32Loader {
 
     setDTR(value) {
         this.port.set({
-            dtr: value
+            dtr: value,
         });
     }
 
     setRTS(value) {
         this.port.set({
-            rts: value
+            rts: value,
         });
     }
 }

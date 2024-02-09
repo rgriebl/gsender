@@ -13,12 +13,12 @@ class GrblHalLineParserResultGroupDetail {
         const payload = {
             group: Number(r[1]),
             parent: Number(r[2]),
-            label: r[3]
+            label: r[3],
         };
 
         return {
             type: GrblHalLineParserResultGroupDetail,
-            payload
+            payload,
         };
     }
 }

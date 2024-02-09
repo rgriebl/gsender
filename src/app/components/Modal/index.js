@@ -28,11 +28,11 @@ import React, { PureComponent } from 'react';
 
 class ModalWrapper extends PureComponent {
     static propTypes = {
-        ...Modal.propTypes
+        ...Modal.propTypes,
     };
 
     static defaultProps = {
-        ...Modal.defaultProps
+        ...Modal.defaultProps,
     };
 
     // eslint-disable-next-line camelcase

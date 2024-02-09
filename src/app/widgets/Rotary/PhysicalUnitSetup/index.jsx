@@ -14,13 +14,25 @@ import extensionTrackGraphic from '../assets/extension-track-top-view.png';
 import customTrackGraphic from '../assets/custom-boring-track-top-view.png';
 
 import styles from './index.styl';
-import { ContentWrapper, Option, MenuTitle, RadioWrapper, WarningBanner } from './styled';
-import { HOLE_TYPES, EIGHTH, QUARTER, SIX, TEN, } from '../constant';
+import {
+    ContentWrapper,
+    Option,
+    MenuTitle,
+    RadioWrapper,
+    WarningBanner,
+} from './styled';
+import { HOLE_TYPES, EIGHTH, QUARTER, SIX, TEN } from '../constant';
 import { RotaryContext } from '../Context';
-import { CLOSE_ACTIVE_DIALOG, UPDATE_PHYSICAL_UNIT_SETUP } from '../Context/actions';
+import {
+    CLOSE_ACTIVE_DIALOG,
+    UPDATE_PHYSICAL_UNIT_SETUP,
+} from '../Context/actions';
 
 const PhysicalUnitSetup = ({ actions }) => {
-    const { state: { physicalUnitSetup }, dispatch } = useContext(RotaryContext);
+    const {
+        state: { physicalUnitSetup },
+        dispatch,
+    } = useContext(RotaryContext);
     const { linesUp, drillBitDiameter, holeCount } = physicalUnitSetup;
 
     const onSubmit = () => {
@@ -32,24 +44,24 @@ const PhysicalUnitSetup = ({ actions }) => {
             gcode = HOLE_TYPES.DOESNT_LINE_UP_QUARTER;
             localHoleCount = 2;
 
-        // ⅛” diameter endmill milling 2 holes for custom mounting solution
+            // ⅛” diameter endmill milling 2 holes for custom mounting solution
         } else if (!linesUp && drillBitDiameter === EIGHTH) {
             gcode = HOLE_TYPES.DOESNT_LINE_UP_EIGHTH;
             localHoleCount = 2;
 
-        // ¼” diameter endmill milling 6 holes for 30” track
+            // ¼” diameter endmill milling 6 holes for 30” track
         } else if (drillBitDiameter === QUARTER && holeCount === SIX) {
             gcode = HOLE_TYPES.QUARTER_INCH_SIX_HOLES;
 
-        // ⅛” diameter endmill milling 6 holes for 30” track
+            // ⅛” diameter endmill milling 6 holes for 30” track
         } else if (drillBitDiameter === EIGHTH && holeCount === SIX) {
             gcode = HOLE_TYPES.EIGHTH_INCH_SIX_HOLES;
 
-        // ¼” diameter endmill milling 10 holes for 30” track with extension
+            // ¼” diameter endmill milling 10 holes for 30” track with extension
         } else if (drillBitDiameter === QUARTER && holeCount === TEN) {
             gcode = HOLE_TYPES.QUARTER_INCH_TEN_HOLES;
 
-        // ⅛” diameter endmill milling 10 holes for 30” track with extension
+            // ⅛” diameter endmill milling 10 holes for 30” track with extension
         } else if (drillBitDiameter === EIGHTH && holeCount === TEN) {
             gcode = HOLE_TYPES.EIGHTH_INCH_TEN_HOLES;
         }
@@ -71,7 +83,10 @@ const PhysicalUnitSetup = ({ actions }) => {
     };
 
     const handleDiameterSelection = (drillBitDiameter) => {
-        dispatch({ type: UPDATE_PHYSICAL_UNIT_SETUP, payload: { drillBitDiameter } });
+        dispatch({
+            type: UPDATE_PHYSICAL_UNIT_SETUP,
+            payload: { drillBitDiameter },
+        });
     };
 
     const handleDrillCountSelection = (holeCount) => {
@@ -112,22 +127,28 @@ const PhysicalUnitSetup = ({ actions }) => {
         >
             <ContentWrapper>
                 <div>
-                    {
-                        workspaceMode === WORKSPACE_MODE.ROTARY && (
-                            <>
-                                <WarningBanner>
-                                    Rotary Mode is enabled, please disable it before proceeding.
-                                </WarningBanner>
+                    {workspaceMode === WORKSPACE_MODE.ROTARY && (
+                        <>
+                            <WarningBanner>
+                                Rotary Mode is enabled, please disable it before
+                                proceeding.
+                            </WarningBanner>
 
-                                <Button onClick={handleDisableRotaryMode}>Disable Rotary Mode</Button>
-                            </>
-                        )
-                    }
-                    <p style={{ fontWeight: 'bold' }}>Make sure your router is mounted as far down as possible with the bit inserted not too far into the collet to prevent bottoming out.</p>
+                            <Button onClick={handleDisableRotaryMode}>
+                                Disable Rotary Mode
+                            </Button>
+                        </>
+                    )}
+                    <p style={{ fontWeight: 'bold' }}>
+                        Make sure your router is mounted as far down as possible
+                        with the bit inserted not too far into the collet to
+                        prevent bottoming out.
+                    </p>
 
                     <Option>
                         <MenuTitle>
-                            Does the mounting track lineup without any interference?
+                            Does the mounting track lineup without any
+                            interference?
                         </MenuTitle>
                         <RadioGroup
                             value={linesUp}
@@ -197,7 +218,11 @@ const PhysicalUnitSetup = ({ actions }) => {
                     </Option>
                 </div>
 
-                <img className={styles.graphic} src={getIllustrationImage()} alt="" />
+                <img
+                    className={styles.graphic}
+                    src={getIllustrationImage()}
+                    alt=""
+                />
 
                 <ToolModalButton
                     icon="fas fa-play"

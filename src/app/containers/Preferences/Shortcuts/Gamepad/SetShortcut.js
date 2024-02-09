@@ -28,28 +28,38 @@ import { arrayComparator } from './utils';
 
 const SetShortcut = () => {
     const {
-        state: { currentProfile, currentButton, settings: { profiles } },
+        state: {
+            currentProfile,
+            currentButton,
+            settings: { profiles },
+        },
         dispatch,
         actions: { getGamepadProfile },
     } = useContext(GamepadContext);
     const [isChanged, setIsChanged] = useState(false);
 
-    const { value: currentButtonValue, type: currentButtonType } = currentButton || {};
+    const { value: currentButtonValue, type: currentButtonType } =
+        currentButton || {};
 
     const profile = getGamepadProfile(currentProfile);
-    const currentShortcut = profile.buttons?.[currentButtonValue][currentButtonType];
+    const currentShortcut =
+        profile.buttons?.[currentButtonValue][currentButtonType];
 
     const closeModal = () => dispatch(setCurrentModal(null));
 
     const handleSetAction = (shortcut) => {
-        const updatedProfiles =
-            profiles.map(profile => (arrayComparator(profile.id, currentProfile)
-                ? ({
-                    ...profile,
-                    buttons: profile.buttons.map(button => (button.value === currentButtonValue ? { ...button, [currentButtonType]: shortcut } : button))
-                })
-                : profile
-            ));
+        const updatedProfiles = profiles.map((profile) =>
+            arrayComparator(profile.id, currentProfile)
+                ? {
+                      ...profile,
+                      buttons: profile.buttons.map((button) =>
+                          button.value === currentButtonValue
+                              ? { ...button, [currentButtonType]: shortcut }
+                              : button,
+                      ),
+                  }
+                : profile,
+        );
 
         dispatch(setGamepadProfileList(updatedProfiles));
 
@@ -72,7 +82,7 @@ const SetShortcut = () => {
         } else if (type === 'modifier') {
             payload = {
                 modifier: {
-                    button: shouldSet ? button : null
+                    button: shouldSet ? button : null,
                 },
             };
 
@@ -81,14 +91,14 @@ const SetShortcut = () => {
             }
         }
 
-        const updatedProfiles =
-            profiles.map(profile => (arrayComparator(profile.id, currentProfile)
-                ? ({
-                    ...profile,
-                    ...payload,
-                })
-                : profile
-            ));
+        const updatedProfiles = profiles.map((profile) =>
+            arrayComparator(profile.id, currentProfile)
+                ? {
+                      ...profile,
+                      ...payload,
+                  }
+                : profile,
+        );
 
         dispatch(setGamepadProfileList(updatedProfiles));
 
@@ -101,22 +111,30 @@ const SetShortcut = () => {
         Toaster.pop({
             msg: 'Button Shortcut Set',
             type: TOASTER_INFO,
-            duration: 3000
+            duration: 3000,
         });
     };
 
-    const data = Object.values(shuttleEvents.allShuttleControlEvents)
-        .reduce((acc, value) => {
-            const hasCategory = acc.find(event => event?.category === value?.category);
+    const data = Object.values(shuttleEvents.allShuttleControlEvents).reduce(
+        (acc, value) => {
+            const hasCategory = acc.find(
+                (event) => event?.category === value?.category,
+            );
 
             if (hasCategory) {
-                acc = acc.map(event => (event?.category === value?.category ? { ...event, actions: [...event.actions, value] } : event));
+                acc = acc.map((event) =>
+                    event?.category === value?.category
+                        ? { ...event, actions: [...event.actions, value] }
+                        : event,
+                );
             } else {
                 acc.push({ category: value?.category, actions: [value] });
             }
 
             return acc;
-        }, []);
+        },
+        [],
+    );
 
     const render = {
         category: (_, row) => {
@@ -131,32 +149,34 @@ const SetShortcut = () => {
                 [GENERAL_CATEGORY]: 'categoryGrey',
                 [TOOLBAR_CATEGORY]: 'categoryShipCove',
                 [MACRO_CATEGORY]: 'categoryLightBlue',
-                [COOLANT_CATEGORY]: 'categoryDarkRed'
+                [COOLANT_CATEGORY]: 'categoryDarkRed',
             };
 
-            const rowCategory = shuttleEvents.allShuttleControlEvents?.[row.cmd]?.category ?? row.category;
+            const rowCategory =
+                shuttleEvents.allShuttleControlEvents?.[row.cmd]?.category ??
+                row.category;
             const category = categories[rowCategory];
 
-            return (
-                <div className={generalStyles[category]}>{rowCategory}</div>
-            );
+            return <div className={generalStyles[category]}>{rowCategory}</div>;
         },
         actions: (_, row) => {
             return (
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    {
-                        row.actions.map(action => (
-                            <button
-                                key={action.cmd}
-                                type="button"
-                                className={action.cmd === currentShortcut ? styles['action-item-active'] : styles['action-item']}
-                                onClick={() => handleSetAction(action.cmd)}
-                                disabled={action.cmd === currentShortcut}
-                            >
-                                {action.title}
-                            </button>
-                        ))
-                    }
+                    {row.actions.map((action) => (
+                        <button
+                            key={action.cmd}
+                            type="button"
+                            className={
+                                action.cmd === currentShortcut
+                                    ? styles['action-item-active']
+                                    : styles['action-item']
+                            }
+                            onClick={() => handleSetAction(action.cmd)}
+                            disabled={action.cmd === currentShortcut}
+                        >
+                            {action.title}
+                        </button>
+                    ))}
                 </div>
             );
         },
@@ -167,22 +187,47 @@ const SetShortcut = () => {
         { title: 'Actions', width: '75%', render: render.actions },
     ];
 
-    const currentShortcutTitle = shuttleEvents.allShuttleControlEvents[currentShortcut]?.title ?? currentShortcut;
+    const currentShortcutTitle =
+        shuttleEvents.allShuttleControlEvents[currentShortcut]?.title ??
+        currentShortcut;
     const buttonLabel = profile?.buttons?.[currentButtonValue]?.label;
 
     const isLockoutButton = currentButtonValue === profile.lockout?.button;
-    const isSecondaryActionButton = currentButtonValue === profile.modifier?.button;
+    const isSecondaryActionButton =
+        currentButtonValue === profile.modifier?.button;
 
     const lockoutLabel = isLockoutButton ? 'Lockout Button' : null;
-    const secondaryActionLabel = isSecondaryActionButton ? 'Activate Secondary Action Button' : null;
+    const secondaryActionLabel = isSecondaryActionButton
+        ? 'Activate Secondary Action Button'
+        : null;
 
     return (
-        <Modal onClose={closeModal} size="md" title="Set Gamepad Profile Shortcut">
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '1rem' }}>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '4fr 1fr', gap: '1rem' }}>
+        <Modal
+            onClose={closeModal}
+            size="md"
+            title="Set Gamepad Profile Shortcut"
+        >
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    padding: '1rem',
+                }}
+            >
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: '4fr 1fr',
+                        gap: '1rem',
+                    }}
+                >
                     <div style={{ position: 'relative' }}>
-                        {(isLockoutButton || isSecondaryActionButton) && <div className={styles['disabled-overlay']} />}
+                        {(isLockoutButton || isSecondaryActionButton) && (
+                            <div className={styles['disabled-overlay']} />
+                        )}
 
                         <Table
                             useFixedHeader
@@ -198,7 +243,13 @@ const SetShortcut = () => {
                             <p>Use As Lockout Button</p>
                             <ToggleSwitch
                                 checked={isLockoutButton}
-                                onChange={(checked) => handleSetToggle('lockout', currentButtonValue, checked)}
+                                onChange={(checked) =>
+                                    handleSetToggle(
+                                        'lockout',
+                                        currentButtonValue,
+                                        checked,
+                                    )
+                                }
                             />
                         </div>
 
@@ -206,22 +257,51 @@ const SetShortcut = () => {
                             <p>Use As Enable Second Action Button</p>
                             <ToggleSwitch
                                 checked={isSecondaryActionButton}
-                                onChange={(checked) => handleSetToggle('modifier', currentButtonValue, checked)}
+                                onChange={(checked) =>
+                                    handleSetToggle(
+                                        'modifier',
+                                        currentButtonValue,
+                                        checked,
+                                    )
+                                }
                             />
                         </div>
                     </div>
                 </div>
 
-                <div style={{ width: '100%', display: 'flex', gap: '3rem', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <div
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        gap: '3rem',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <div
+                        style={{
+                            display: 'flex',
+                            gap: '0.5rem',
+                            alignItems: 'center',
+                        }}
+                    >
                         <div>Shortcut:</div>
                         <kbd>{buttonLabel}</kbd>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            gap: '0.5rem',
+                            alignItems: 'center',
+                        }}
+                    >
                         <div>Action:</div>
                         <div className={styles['action-item-active']}>
-                            {lockoutLabel || secondaryActionLabel || currentShortcutTitle || '...'}
+                            {lockoutLabel ||
+                                secondaryActionLabel ||
+                                currentShortcutTitle ||
+                                '...'}
                         </div>
                     </div>
 
@@ -234,7 +314,6 @@ const SetShortcut = () => {
                         Set Shortcut
                     </Button>
                 </div>
-
             </div>
         </Modal>
     );

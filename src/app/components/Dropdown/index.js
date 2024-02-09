@@ -31,5 +31,5 @@ export {
     DropdownMenu,
     DropdownSubMenu,
     MenuItem,
-    DropdownButton
+    DropdownButton,
 } from '@trendmicro/react-dropdown';

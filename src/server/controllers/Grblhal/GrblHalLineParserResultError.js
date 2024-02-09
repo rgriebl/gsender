@@ -30,12 +30,12 @@ class GrblHalLineParserResultError {
         }
 
         const payload = {
-            message: r[1]
+            message: r[1],
         };
 
         return {
             type: GrblHalLineParserResultError,
-            payload: payload
+            payload: payload,
         };
     }
 }

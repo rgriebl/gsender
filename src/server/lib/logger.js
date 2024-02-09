@@ -47,15 +47,17 @@ const logger = winston.createLogger({
             format: combine(
                 colorize(),
                 timestamp(),
-                printf(log => `${log.timestamp} - ${log.level} ${log.message}`)
+                printf(
+                    (log) => `${log.timestamp} - ${log.level} ${log.message}`,
+                ),
             ),
-            handleExceptions: true
+            handleExceptions: true,
         }),
         new winston.transports.File({
             filename: 'gsender_server_log.txt',
-            level: 'info'
-        })
-    ]
+            level: 'info',
+        }),
+    ],
 });
 
 // https://github.com/winstonjs/winston/blob/master/README.md#logging-levels
@@ -78,12 +80,14 @@ export default (namespace = '') => {
     namespace = String(namespace);
 
     return levels.reduce((acc, level) => {
-        acc[level] = function(...args) {
-            if ((settings.verbosity >= VERBOSITY_MAX) && (level !== 'silly')) {
+        acc[level] = function (...args) {
+            if (settings.verbosity >= VERBOSITY_MAX && level !== 'silly') {
                 args = args.concat(getStackTrace()[2]);
             }
-            return (namespace.length > 0)
-                ? logger[level](chalk.cyan(namespace) + ' ' + util.format(...args))
+            return namespace.length > 0
+                ? logger[level](
+                      chalk.cyan(namespace) + ' ' + util.format(...args),
+                  )
                 : logger[level](util.format(...args));
         };
         return acc;

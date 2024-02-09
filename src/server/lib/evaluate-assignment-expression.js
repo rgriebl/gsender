@@ -28,8 +28,14 @@ import logger from './logger';
 
 const log = logger('evaluate-assignment-expression');
 
-const isStaticMemberExpression = (node) => typeof node === 'object' && node.type === 'MemberExpression' && !node.computed;
-const isComputedMemberExpression = (node) => typeof node === 'object' && node.type === 'MemberExpression' && !!node.computed;
+const isStaticMemberExpression = (node) =>
+    typeof node === 'object' &&
+    node.type === 'MemberExpression' &&
+    !node.computed;
+const isComputedMemberExpression = (node) =>
+    typeof node === 'object' &&
+    node.type === 'MemberExpression' &&
+    !!node.computed;
 
 const lookupObjectPath = (node, vars) => {
     if (!node) {
@@ -46,7 +52,10 @@ const lookupObjectPath = (node, vars) => {
     }
 
     if (isComputedMemberExpression(node)) {
-        return [...lookupObjectPath(node.object, vars), evaluateExpression(node.property, vars)];
+        return [
+            ...lookupObjectPath(node.object, vars),
+            evaluateExpression(node.property, vars),
+        ];
     }
 
     if (isStaticMemberExpression(node)) {
@@ -84,10 +93,16 @@ const lookupObjectPath = (node, vars) => {
          * }
          */
         if (node.property.type === 'Literal') {
-            return [...lookupObjectPath(node.object, vars), node.property.value];
+            return [
+                ...lookupObjectPath(node.object, vars),
+                node.property.value,
+            ];
         }
 
-        return [...lookupObjectPath(node.object, vars), evaluateExpression(node.property, vars)];
+        return [
+            ...lookupObjectPath(node.object, vars),
+            evaluateExpression(node.property, vars),
+        ];
     }
 
     return [node.name];
@@ -106,7 +121,7 @@ const walkAssignmentExpression = (node, vars) => {
 const walkSequenceExpression = (node, vars) => {
     console.assert(node && node.type === 'SequenceExpression');
 
-    node.expressions.forEach(expr => {
+    node.expressions.forEach((expr) => {
         if (expr.type === 'AssignmentExpression') {
             walkAssignmentExpression(expr, vars);
             return;

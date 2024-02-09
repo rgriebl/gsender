@@ -32,7 +32,10 @@ import get from 'lodash/get';
 import MachinePositionInput from 'app/widgets/Location/components/MachinePositionInput';
 import controller from 'app/lib/controller';
 import store from 'app/store';
-import { getHomingLocation, getMovementGCode } from 'app/widgets/Location/RapidPosition';
+import {
+    getHomingLocation,
+    getMovementGCode,
+} from 'app/widgets/Location/RapidPosition';
 import Modal from 'app/components/Modal';
 import combokeys from 'app/lib/combokeys';
 import gamepad, { runAction } from 'app/lib/gamepad';
@@ -55,7 +58,7 @@ import {
     WORKFLOW_STATE_RUNNING,
     GRBL_ACTIVE_STATE_ALARM,
     WORKSPACE_MODE,
-    LOCATION_CATEGORY
+    LOCATION_CATEGORY,
 } from '../../constants';
 import styles from './index.styl';
 import AxisButton from './components/AxisButton';
@@ -80,22 +83,42 @@ class DisplayPanel extends PureComponent {
     actions = {
         jogtoFRCorner: () => {
             const { homingDirection, homingFlag, pullOff } = this.props;
-            const gcode = getMovementGCode('FR', homingDirection, homingFlag, pullOff);
+            const gcode = getMovementGCode(
+                'FR',
+                homingDirection,
+                homingFlag,
+                pullOff,
+            );
             controller.command('gcode', gcode);
         },
         jogtoFLCorner: () => {
             const { homingDirection, homingFlag, pullOff } = this.props;
-            const gcode = getMovementGCode('FL', homingDirection, homingFlag, pullOff);
+            const gcode = getMovementGCode(
+                'FL',
+                homingDirection,
+                homingFlag,
+                pullOff,
+            );
             controller.command('gcode', gcode);
         },
         jogtoBRCorner: () => {
             const { homingDirection, homingFlag, pullOff } = this.props;
-            const gcode = getMovementGCode('BR', homingDirection, homingFlag, pullOff);
+            const gcode = getMovementGCode(
+                'BR',
+                homingDirection,
+                homingFlag,
+                pullOff,
+            );
             controller.command('gcode', gcode);
         },
         jogtoBLCorner: () => {
             const { homingDirection, homingFlag, pullOff } = this.props;
-            const gcode = getMovementGCode('BL', homingDirection, homingFlag, pullOff);
+            const gcode = getMovementGCode(
+                'BL',
+                homingDirection,
+                homingFlag,
+                pullOff,
+            );
             controller.command('gcode', gcode);
         },
         startHoming: () => {
@@ -103,27 +126,27 @@ class DisplayPanel extends PureComponent {
         },
         startSingleAxisHoming: (axis) => {
             controller.command('homing', axis);
-        }
-    }
+        },
+    };
 
     controllerEvents = {
         'controller:state': (data, controllerState) => {
             let controllersAlarmState = this.state.controllersAlarmState;
             let hardStopAlarm = controllerState.status.alarmCode;
-            this.setState(prevState => ({
-                controllersAlarmState: hardStopAlarm
+            this.setState((prevState) => ({
+                controllersAlarmState: hardStopAlarm,
             }));
             if (controllersAlarmState === '1') {
                 controller.command('gcode:stop', { force: true });
             }
         },
         'controller:settings': (type, controllerSettings) => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 ...state.controller,
-                homePosition: controllerSettings.settings.$23
+                homePosition: controllerSettings.settings.$23,
             }));
         },
-    }
+    };
 
     shuttleControlEvents = {
         HOMING_GO_TO_BACK_LEFT_CORNER: {
@@ -134,7 +157,7 @@ class DisplayPanel extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.actions.jogtoBLCorner
+            callback: this.actions.jogtoBLCorner,
         },
         HOMING_GO_TO_BACK_RIGHT_CORNER: {
             title: 'Homing - Go to Back Right Corner',
@@ -144,7 +167,7 @@ class DisplayPanel extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.actions.jogtoBRCorner
+            callback: this.actions.jogtoBRCorner,
         },
         HOMING_GO_TO_FRONT_LEFT_CORNER: {
             title: 'Homing - Go to Front Left Corner',
@@ -154,7 +177,7 @@ class DisplayPanel extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.actions.jogtoFLCorner
+            callback: this.actions.jogtoFLCorner,
         },
         HOMING_GO_TO_FRONT_RIGHT_CORNER: {
             title: 'Homing - Go to Front Right Corner',
@@ -164,16 +187,21 @@ class DisplayPanel extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.actions.jogtoFRCorner
+            callback: this.actions.jogtoFRCorner,
         },
-    }
+    };
 
     componentDidMount() {
         store.on('change', this.updateMachineProfileFromStore);
         this.addControllerEvents();
         this.addShuttleControlEvents();
         useKeybinding(this.shuttleControlEvents);
-        gamepad.on('gamepad:button', (event) => runAction({ event, shuttleControlEvents: this.shuttleControlEvents }));
+        gamepad.on('gamepad:button', (event) =>
+            runAction({
+                event,
+                shuttleControlEvents: this.shuttleControlEvents,
+            }),
+        );
     }
 
     componentWillUnmount() {
@@ -184,28 +212,28 @@ class DisplayPanel extends PureComponent {
     addShuttleControlEvents() {
         combokeys.reload();
 
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
     }
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
     }
 
     addControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.addListener(eventName, callback);
         });
     }
 
     removeControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.removeListener(eventName, callback);
         });
@@ -220,7 +248,7 @@ class DisplayPanel extends PureComponent {
             [AXIS_Z]: false,
             [AXIS_A]: false,
             [AXIS_B]: false,
-            [AXIS_C]: false
+            [AXIS_C]: false,
         },
         machineProfile: store.get('workspace.machineProfile'),
         modalShow: false,
@@ -229,30 +257,30 @@ class DisplayPanel extends PureComponent {
             x: 0,
             y: 0,
             z: 0,
-            a: 0
-        }
+            a: 0,
+        },
     };
 
     handleSelect = (eventKey) => {
         const commands = ensureArray(eventKey);
-        commands.forEach(command => controller.command('gcode', command));
+        commands.forEach((command) => controller.command('gcode', command));
     };
 
     showPositionInput = (axis) => () => {
-        this.setState(state => ({
+        this.setState((state) => ({
             positionInput: {
                 ...state.positionInput,
-                [axis]: true
-            }
+                [axis]: true,
+            },
         }));
     };
 
     hidePositionInput = (axis) => () => {
-        this.setState(state => ({
+        this.setState((state) => ({
             positionInput: {
                 ...state.positionInput,
-                [axis]: false
-            }
+                [axis]: false,
+            },
         }));
     };
 
@@ -265,16 +293,26 @@ class DisplayPanel extends PureComponent {
         const wholeLength = num.split('.')[0].length;
 
         let result = num.slice(0, wholeLength + 1 + places); // cut off the javascript weirdness
-        if (DRO > places) { // add more 0s
+        if (DRO > places) {
+            // add more 0s
             result = result.padEnd(wholeLength + 1 + DRO, '0'); // +1 for ., +DRO for decimal places
-        } else { // remove decimal places (with rounding)
+        } else {
+            // remove decimal places (with rounding)
             result = Number(num).toFixed(DRO === 0 ? defaultPlaces : DRO);
         }
         return result;
     }
 
     renderAxis = (axis, disabled = false, disableGoTo = false) => {
-        const { canClick, machinePosition, workPosition, actions, safeRetractHeight, units, homingEnabled } = this.props;
+        const {
+            canClick,
+            machinePosition,
+            workPosition,
+            actions,
+            safeRetractHeight,
+            units,
+            homingEnabled,
+        } = this.props;
         let mpos = !disabled ? machinePosition[axis] : '0.00';
         const wpos = !disabled ? workPosition[axis] : '0.00';
         const axisLabel = axis.toUpperCase();
@@ -287,15 +325,19 @@ class DisplayPanel extends PureComponent {
                         disabled={!canClick || disabled || disableGoTo}
                         onClick={() => {
                             const commands = [];
-                            const modal = (units === METRIC_UNITS) ? 'G21' : 'G20';
+                            const modal =
+                                units === METRIC_UNITS ? 'G21' : 'G20';
                             if (safeRetractHeight !== 0 && axisLabel !== 'Z') {
                                 if (homingEnabled) {
                                     // get current Z
                                     const currentZ = Number(machinePosition.z);
-                                    const retractHeight = (Math.abs(safeRetractHeight) * -1);
+                                    const retractHeight =
+                                        Math.abs(safeRetractHeight) * -1;
                                     // only move Z if it is less than Z0-SafeHeight
                                     if (currentZ < retractHeight) {
-                                        commands.push(`G53 G0 Z${retractHeight}`);
+                                        commands.push(
+                                            `G53 G0 Z${retractHeight}`,
+                                        );
                                     }
                                 } else {
                                     commands.push('G91');
@@ -304,23 +346,39 @@ class DisplayPanel extends PureComponent {
                             }
                             commands.push(`G90 G0 ${axisLabel}0`); //Move to Work Position Zero
                             // We go down if homing not enabled
-                            if (safeRetractHeight !== 0 && axisLabel !== 'Z' && !homingEnabled) {
-                                commands.push(`G91 G0 Z${safeRetractHeight * -1}`);
+                            if (
+                                safeRetractHeight !== 0 &&
+                                axisLabel !== 'Z' &&
+                                !homingEnabled
+                            ) {
+                                commands.push(
+                                    `G91 G0 Z${safeRetractHeight * -1}`,
+                                );
                                 commands.push('G90');
                             }
                             controller.command('gcode:safe', commands, modal);
                         }}
                     />
-                    <AxisButton axis={axisLabel} onClick={() => actions.setZeroOnAxis(true, axisLabel)} disabled={!canClick || disabled} />
+                    <AxisButton
+                        axis={axisLabel}
+                        onClick={() => actions.setZeroOnAxis(true, axisLabel)}
+                        disabled={!canClick || disabled}
+                    />
                 </td>
                 <td className={styles.machinePosition}>
                     <MachinePositionInput
                         disabled={disabled}
-                        value={this.customMathRound(wpos)} handleManualMovement={(value) => {
+                        value={this.customMathRound(wpos)}
+                        handleManualMovement={(value) => {
                             actions.handleManualMovement(value, axis);
                         }}
                     />
-                    {!showPositionInput && <PositionLabel value={this.customMathRound(mpos)} small />}
+                    {!showPositionInput && (
+                        <PositionLabel
+                            value={this.customMathRound(mpos)}
+                            small
+                        />
+                    )}
                 </td>
             </tr>
         );
@@ -332,7 +390,10 @@ class DisplayPanel extends PureComponent {
     updateMachineProfileFromStore = () => {
         const machineProfile = store.get('workspace.machineProfile');
 
-        if (!machineProfile || _isEqual(machineProfile, this.state.machineProfile)) {
+        if (
+            !machineProfile ||
+            _isEqual(machineProfile, this.state.machineProfile)
+        ) {
             return;
         }
 
@@ -367,7 +428,7 @@ class DisplayPanel extends PureComponent {
         const isInRotaryMode = store.get('workspace.mode') === ROTARY;
         code.push(
             movement,
-            'G0 X' + location.x + ' Y' + location.y + ' Z' + location.z
+            'G0 X' + location.x + ' Y' + location.y + ' Z' + location.z,
         );
 
         if (isInRotaryMode) {
@@ -378,7 +439,17 @@ class DisplayPanel extends PureComponent {
     }
 
     render() {
-        const { axes, actions, canClick, safeRetractHeight, units, homingEnabled, canHome, homingDirection, homingRun } = this.props;
+        const {
+            axes,
+            actions,
+            canClick,
+            safeRetractHeight,
+            units,
+            homingEnabled,
+            canHome,
+            homingDirection,
+            homingRun,
+        } = this.props;
         const { modalShow, relative, location } = this.state;
         const homingLocation = getHomingLocation(homingDirection);
         const hasAxisX = includes(axes, AXIS_X);
@@ -392,7 +463,11 @@ class DisplayPanel extends PureComponent {
 
         return (
             <>
-                <Modal size="xs" show={modalShow} onClose={() => this.setState({ modalShow: false })}>
+                <Modal
+                    size="xs"
+                    show={modalShow}
+                    onClose={() => this.setState({ modalShow: false })}
+                >
                     <Modal.Header>
                         <Modal.Title>Go To Location</Modal.Title>
                     </Modal.Header>
@@ -402,7 +477,9 @@ class DisplayPanel extends PureComponent {
                                 label="X"
                                 units={units}
                                 value={location.x}
-                                onChange={(e) => this.setLocation(e.target.value, 'x')}
+                                onChange={(e) =>
+                                    this.setLocation(e.target.value, 'x')
+                                }
                                 additionalProps={{ type: 'number' }}
                             />
 
@@ -411,7 +488,9 @@ class DisplayPanel extends PureComponent {
                                     label="Y"
                                     units={units}
                                     value={location.y}
-                                    onChange={(e) => this.setLocation(e.target.value, 'y')}
+                                    onChange={(e) =>
+                                        this.setLocation(e.target.value, 'y')
+                                    }
                                     additionalProps={{ type: 'number' }}
                                 />
                             )}
@@ -420,29 +499,45 @@ class DisplayPanel extends PureComponent {
                                 label="Z"
                                 units={units}
                                 value={location.z}
-                                onChange={(e) => this.setLocation(e.target.value, 'z')}
+                                onChange={(e) =>
+                                    this.setLocation(e.target.value, 'z')
+                                }
                                 additionalProps={{ type: 'number' }}
                             />
-                            {
-                                isInRotaryMode && (
-                                    <Input
-                                        label="A"
-                                        units="deg"
-                                        value={location.a}
-                                        onChange={(e) => this.setLocation(e.target.value, 'a')}
-                                        additionalProps={{ type: 'number' }}
-                                    />
-                                )
-                            }
+                            {isInRotaryMode && (
+                                <Input
+                                    label="A"
+                                    units="deg"
+                                    value={location.a}
+                                    onChange={(e) =>
+                                        this.setLocation(e.target.value, 'a')
+                                    }
+                                    additionalProps={{ type: 'number' }}
+                                />
+                            )}
                             <div className={styles.switchWrapper}>
-                                <div className={ relative ? [styles.grey] : undefined }>Absolute (G90)</div>
+                                <div
+                                    className={
+                                        relative ? [styles.grey] : undefined
+                                    }
+                                >
+                                    Absolute (G90)
+                                </div>
                                 <Switch
                                     name="movement"
                                     checked={relative}
-                                    onChange={() => this.handleMovementSwitch(!relative)}
+                                    onChange={() =>
+                                        this.handleMovementSwitch(!relative)
+                                    }
                                     onColor="#888888"
                                 />
-                                <div className={ relative ? undefined : [styles.grey] }>Relative (G91)</div>
+                                <div
+                                    className={
+                                        relative ? undefined : [styles.grey]
+                                    }
+                                >
+                                    Relative (G91)
+                                </div>
                             </div>
                             <FunctionButton
                                 onClick={() => this.handleGoToLocation()}
@@ -460,13 +555,22 @@ class DisplayPanel extends PureComponent {
                             <table className={styles.displaypanelTable}>
                                 <tbody>
                                     {hasAxisX && this.renderAxis(AXIS_X)}
-                                    {!isInRotaryMode && hasAxisY ? this.renderAxis(AXIS_Y) : this.renderAxis(AXIS_Y, true)}
-                                    {hasAxisZ && this.renderAxis(AXIS_Z, false, isInRotaryMode)}
+                                    {!isInRotaryMode && hasAxisY
+                                        ? this.renderAxis(AXIS_Y)
+                                        : this.renderAxis(AXIS_Y, true)}
+                                    {hasAxisZ &&
+                                        this.renderAxis(
+                                            AXIS_Z,
+                                            false,
+                                            isInRotaryMode,
+                                        )}
                                 </tbody>
                             </table>
                             <div className={styles.controlButtons}>
                                 <FunctionButton
-                                    onClick={() => actions.setZeroOnAxis(true, 'all')}
+                                    onClick={() =>
+                                        actions.setZeroOnAxis(true, 'all')
+                                    }
                                     disabled={!canClick}
                                 >
                                     <i className="fas fa-bullseye" />
@@ -474,13 +578,27 @@ class DisplayPanel extends PureComponent {
                                 </FunctionButton>
                                 <FunctionButton
                                     onClick={() => {
-                                        const modal = (units === METRIC_UNITS) ? 'G21' : 'G20';
+                                        const modal =
+                                            units === METRIC_UNITS
+                                                ? 'G21'
+                                                : 'G20';
                                         if (safeRetractHeight !== 0) {
                                             if (homingEnabled) {
-                                                controller.command('gcode:safe', `G53 G0 Z${(Math.abs(safeRetractHeight) * -1)}`, modal);
+                                                controller.command(
+                                                    'gcode:safe',
+                                                    `G53 G0 Z${Math.abs(safeRetractHeight) * -1}`,
+                                                    modal,
+                                                );
                                             } else {
-                                                controller.command('gcode', 'G91');
-                                                controller.command('gcode:safe', `G0 Z${safeRetractHeight}`, modal); // Retract Z when moving across workspace
+                                                controller.command(
+                                                    'gcode',
+                                                    'G91',
+                                                );
+                                                controller.command(
+                                                    'gcode:safe',
+                                                    `G0 Z${safeRetractHeight}`,
+                                                    modal,
+                                                ); // Retract Z when moving across workspace
                                             }
                                         }
 
@@ -496,7 +614,7 @@ class DisplayPanel extends PureComponent {
                                 <FunctionButton
                                     onClick={() => {
                                         this.setState({
-                                            modalShow: true
+                                            modalShow: true,
                                         });
                                     }}
                                     disabled={!canClick}
@@ -509,77 +627,95 @@ class DisplayPanel extends PureComponent {
                             </div>
                         </div>
 
-                        {
-                            homingEnabled && (
-                                <div className={styles.endStop}>
-                                    {
-                                        singleAxisHoming ? (
-                                            <>
-                                                <div className={styles.homeWrapper}>
-                                                    <FunctionButton
-                                                        primary
-                                                        disabled={!canHome}
-                                                        onClick={this.actions.startHoming}
-                                                        className={styles.runHomeButton}
-                                                    >
-                                                        <i className="fas fa-home" /> Home
-                                                    </FunctionButton>
-                                                </div>
-                                                <ButtonCollection
-                                                    disabled={!canHome}
-                                                    buttons={['X', 'Y', 'Z', 'A']}
-                                                    onClick={this.actions.startSingleAxisHoming}
-                                                />
-                                            </>
-                                        ) : (
+                        {homingEnabled && (
+                            <div className={styles.endStop}>
+                                {singleAxisHoming ? (
+                                    <>
+                                        <div className={styles.homeWrapper}>
                                             <FunctionButton
                                                 primary
                                                 disabled={!canHome}
-                                                onClick={this.actions.startHoming}
+                                                onClick={
+                                                    this.actions.startHoming
+                                                }
                                                 className={styles.runHomeButton}
                                             >
-                                                <i className="fas fa-home" /> Home
+                                                <i className="fas fa-home" />{' '}
+                                                Home
                                             </FunctionButton>
-                                        )
-                                    }
-                                    <div className={styles.endStopActiveControls}>
-                                        <QuickPositionButton
-                                            disabled={!canClick || !homingRun}
-                                            className={styles.QPBL}
-                                            onClick={() => {
-                                                this.actions.jogtoBLCorner();
-                                            }}
-                                            icon={(homingLocation === 'BL') ? 'fa-home' : 'fa-arrow-circle-up'}
+                                        </div>
+                                        <ButtonCollection
+                                            disabled={!canHome}
+                                            buttons={['X', 'Y', 'Z', 'A']}
+                                            onClick={
+                                                this.actions
+                                                    .startSingleAxisHoming
+                                            }
                                         />
-                                        <QuickPositionButton
-                                            disabled={!canClick || !homingRun}
-                                            className={styles.QPBR}
-                                            rotate={45}
-                                            onClick={() => {
-                                                this.actions.jogtoBRCorner();
-                                            }}
-                                            icon={(homingLocation === 'BR') ? 'fa-home' : 'fa-arrow-circle-up'}
-                                        />
-                                        <QuickPositionButton
-                                            disabled={!canClick || !homingRun}
-                                            className={styles.QPFL}
-                                            onClick={() => {
-                                                this.actions.jogtoFLCorner();
-                                            }}
-                                            icon={(homingLocation === 'FL') ? 'fa-home' : 'fa-arrow-circle-up'}
-                                        />
-                                        <QuickPositionButton
-                                            disabled={!canClick || !homingRun}
-                                            className={styles.QPFR}
-                                            onClick={() => {
-                                                this.actions.jogtoFRCorner();
-                                            }}
-                                            icon={(homingLocation === 'FR') ? 'fa-home' : 'fa-arrow-circle-up'}
-                                        />
-                                    </div>
+                                    </>
+                                ) : (
+                                    <FunctionButton
+                                        primary
+                                        disabled={!canHome}
+                                        onClick={this.actions.startHoming}
+                                        className={styles.runHomeButton}
+                                    >
+                                        <i className="fas fa-home" /> Home
+                                    </FunctionButton>
+                                )}
+                                <div className={styles.endStopActiveControls}>
+                                    <QuickPositionButton
+                                        disabled={!canClick || !homingRun}
+                                        className={styles.QPBL}
+                                        onClick={() => {
+                                            this.actions.jogtoBLCorner();
+                                        }}
+                                        icon={
+                                            homingLocation === 'BL'
+                                                ? 'fa-home'
+                                                : 'fa-arrow-circle-up'
+                                        }
+                                    />
+                                    <QuickPositionButton
+                                        disabled={!canClick || !homingRun}
+                                        className={styles.QPBR}
+                                        rotate={45}
+                                        onClick={() => {
+                                            this.actions.jogtoBRCorner();
+                                        }}
+                                        icon={
+                                            homingLocation === 'BR'
+                                                ? 'fa-home'
+                                                : 'fa-arrow-circle-up'
+                                        }
+                                    />
+                                    <QuickPositionButton
+                                        disabled={!canClick || !homingRun}
+                                        className={styles.QPFL}
+                                        onClick={() => {
+                                            this.actions.jogtoFLCorner();
+                                        }}
+                                        icon={
+                                            homingLocation === 'FL'
+                                                ? 'fa-home'
+                                                : 'fa-arrow-circle-up'
+                                        }
+                                    />
+                                    <QuickPositionButton
+                                        disabled={!canClick || !homingRun}
+                                        className={styles.QPFR}
+                                        onClick={() => {
+                                            this.actions.jogtoFRCorner();
+                                        }}
+                                        icon={
+                                            homingLocation === 'FR'
+                                                ? 'fa-home'
+                                                : 'fa-arrow-circle-up'
+                                        }
+                                    />
                                 </div>
-                            )
-                        }
+                            </div>
+                        )}
                     </div>
                 </Panel>
             </>
@@ -597,9 +733,17 @@ export default connect((store) => {
     const isConnected = get(store, 'connection.isConnected');
     const workflowState = get(store, 'controller.workflow.state');
     const activeState = get(store, 'controller.state.status.activeState');
-    const canHome = isConnected && [GRBL_ACTIVE_STATE_IDLE, GRBL_ACTIVE_STATE_ALARM].includes(activeState) && workflowState !== WORKFLOW_STATE_RUNNING;
+    const canHome =
+        isConnected &&
+        [GRBL_ACTIVE_STATE_IDLE, GRBL_ACTIVE_STATE_ALARM].includes(
+            activeState,
+        ) &&
+        workflowState !== WORKFLOW_STATE_RUNNING;
     const mpos = get(store, 'controller.mpos');
-    const modalDistance = get(store, 'controller.state.parserstate.modal.distance');
+    const modalDistance = get(
+        store,
+        'controller.state.parserstate.modal.distance',
+    );
     const $13 = get(store, 'controller.settings.settings.$13');
     return {
         homingSetting,
@@ -611,6 +755,6 @@ export default connect((store) => {
         pullOff,
         mpos,
         modalDistance,
-        $13
+        $13,
     };
 })(DisplayPanel);

@@ -34,5 +34,5 @@ const Text = styled.code`
 export const StyledLine = {
     Wrapper,
     Number,
-    Text
+    Text,
 };

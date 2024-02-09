@@ -31,7 +31,7 @@ class Feeder extends events.EventEmitter {
         pending: false,
         changed: false,
         outstanding: 0,
-        interval: null
+        interval: null,
     };
 
     dataFilter = null;
@@ -56,7 +56,7 @@ class Feeder extends events.EventEmitter {
             holdReason: this.state.holdReason,
             queue: this.state.queue.length,
             pending: this.state.pending,
-            changed: this.state.changed
+            changed: this.state.changed,
         };
     }
 
@@ -68,9 +68,11 @@ class Feeder extends events.EventEmitter {
 
         data = [].concat(data);
         if (data.length > 0) {
-            this.state.queue = this.state.queue.concat(data.map(command => {
-                return { command: command, context: context };
-            }));
+            this.state.queue = this.state.queue.concat(
+                data.map((command) => {
+                    return { command: command, context: context };
+                }),
+            );
             this.emit('change');
         }
     }
@@ -129,7 +131,8 @@ class Feeder extends events.EventEmitter {
 
             if (this.dataFilter) {
                 command = this.dataFilter(command, context) || '';
-                if (!command) { // Ignore blank lines
+                if (!command) {
+                    // Ignore blank lines
                     continue;
                 }
             }

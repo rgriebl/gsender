@@ -26,7 +26,11 @@ import cx from 'classnames';
 import CreatableSelect from 'react-select/creatable';
 
 import store from 'app/store';
-import { TOUCHPLATE_TYPE_AUTOZERO, PROBE_TYPE_AUTO, PROBE_TYPE_TIP } from 'app/lib/constants';
+import {
+    TOUCHPLATE_TYPE_AUTOZERO,
+    PROBE_TYPE_AUTO,
+    PROBE_TYPE_TIP,
+} from 'app/lib/constants';
 
 import styles from './index.styl';
 import { METRIC_UNITS } from '../../constants';
@@ -36,10 +40,13 @@ const convertAvailableTools = (tools, units) => {
 
     for (let tool of tools) {
         if (tool !== PROBE_TYPE_AUTO || tool !== PROBE_TYPE_TIP) {
-            let diameter = (units === METRIC_UNITS) ? tool.metricDiameter : tool.imperialDiameter;
+            let diameter =
+                units === METRIC_UNITS
+                    ? tool.metricDiameter
+                    : tool.imperialDiameter;
             optionLabels.push({
                 value: diameter,
-                label: `${diameter} ${units}`
+                label: `${diameter} ${units}`,
             });
         }
     }
@@ -47,10 +54,10 @@ const convertAvailableTools = (tools, units) => {
 };
 
 const inputStyle = {
-    container: base => ({
+    container: (base) => ({
         ...base,
-        flex: 1
-    })
+        flex: 1,
+    }),
 };
 
 const ProbeDiameter = ({ actions, state, probeCommand }) => {
@@ -82,7 +89,11 @@ const ProbeDiameter = ({ actions, state, probeCommand }) => {
     options.push(...toolsObjects);
 
     return (
-        <div className={cx(styles.probeDiameterWrapper, { [styles.hidden]: !probeCommand.tool })}>
+        <div
+            className={cx(styles.probeDiameterWrapper, {
+                [styles.hidden]: !probeCommand.tool,
+            })}
+        >
             <CreatableSelect
                 isClearable
                 styles={inputStyle}

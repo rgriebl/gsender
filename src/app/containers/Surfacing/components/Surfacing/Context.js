@@ -1,3 +1,3 @@
 import { createContext } from 'react';
 
-export const SurfacingContext = createContext({ });
+export const SurfacingContext = createContext({});

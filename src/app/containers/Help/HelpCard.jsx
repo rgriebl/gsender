@@ -38,20 +38,18 @@ const HelpCard = ({ title, text, link, icon, linkText }) => {
             <div className={styles.externalIcon}>
                 <i className="fas fa-external-link-alt" />
             </div>
-            <h2>{ title }</h2>
+            <h2>{title}</h2>
             <div className={styles.cardIcon}>
                 <i className={`fa ${icon}`} />
             </div>
-            <div className={styles.cardText}>
-                { text }
-            </div>
+            <div className={styles.cardText}>{text}</div>
             <a
                 className={styles.cardLink}
                 target="_blank"
                 rel="noreferrer"
                 href={link}
             >
-                { linkText }
+                {linkText}
             </a>
         </div>
     );

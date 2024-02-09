@@ -32,9 +32,12 @@ const SearchBar = () => {
             <Input
                 className="form-control"
                 placeholder="Search Firmware Settings..."
-                value={filterText} onChange={(e) => setFilterText(e.target.value)}
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
             />
-            <Button onClick={() => setFilterText('')} disabled={!filterText}>Clear Search</Button>
+            <Button onClick={() => setFilterText('')} disabled={!filterText}>
+                Clear Search
+            </Button>
         </Wrapper>
     );
 };

@@ -36,7 +36,6 @@ import styles from './Overrides.styl';
 const Overrides = ({ state }) => {
     return (
         <div className={styles.wrapper}>
-
             <ProgressArea state={state} />
 
             <SettingsArea state={state} />

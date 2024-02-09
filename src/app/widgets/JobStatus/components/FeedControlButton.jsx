@@ -28,7 +28,11 @@ const FeedControlButton = ({ children, hideOnSmallScreens, ...props }) => {
     return (
         <button
             type="button"
-            className={hideOnSmallScreens ? styles.feedControlButtonHidden : styles.feedControlButton}
+            className={
+                hideOnSmallScreens
+                    ? styles.feedControlButtonHidden
+                    : styles.feedControlButton
+            }
             {...props}
         >
             {children}

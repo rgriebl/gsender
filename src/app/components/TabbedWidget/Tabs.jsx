@@ -41,25 +41,23 @@ const Tabs = ({ className, tabs, activeTabIndex, onClick, sx, ...props }) => {
             }}
             {...props}
         >
-            {
-                tabs.map((tab) => (
-                    <Tab
-                        key={`tab-${tab.widgetId}`}
-                        label={tab.label}
-                        disabled={tab.disabled}
-                        sx={{
-                            minWidth: '75px',
-                            minHeight: '16px',
-                            padding: '8px',
-                            flexGrow: '1',
-                            fontFamily: '\'Open Sans\', sans-serif',
-                            textTransform: 'none',
-                            fontSize: '1.1rem',
-                            color: '#6b7280',
-                        }}
-                    />
-                ))
-            }
+            {tabs.map((tab) => (
+                <Tab
+                    key={`tab-${tab.widgetId}`}
+                    label={tab.label}
+                    disabled={tab.disabled}
+                    sx={{
+                        minWidth: '75px',
+                        minHeight: '16px',
+                        padding: '8px',
+                        flexGrow: '1',
+                        fontFamily: "'Open Sans', sans-serif",
+                        textTransform: 'none',
+                        fontSize: '1.1rem',
+                        color: '#6b7280',
+                    }}
+                />
+            ))}
         </MuiTabs>
     );
 };

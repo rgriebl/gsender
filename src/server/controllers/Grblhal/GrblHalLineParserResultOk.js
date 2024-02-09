@@ -32,7 +32,7 @@ class GrblHalLineParserResultOk {
 
         return {
             type: GrblHalLineParserResultOk,
-            payload: payload
+            payload: payload,
         };
     }
 }

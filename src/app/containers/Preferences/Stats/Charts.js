@@ -37,19 +37,19 @@ const Charts = ({ state, actions }) => {
 
     return (
         <Fieldset legend="Charts">
-            <div className={[styles.addMargin, styles.chartsContainer].join(' ')}>
-                {
-                    jobsFinished === 0 && jobsCancelled === 0
-                        ? <span>No jobs run</span>
-                        : (
-                            <CustomPieChart
-                                propsData={data}
-                                height={300}
-                                width={340}
-                                showAnimation={false}
-                            />
-                        )
-                }
+            <div
+                className={[styles.addMargin, styles.chartsContainer].join(' ')}
+            >
+                {jobsFinished === 0 && jobsCancelled === 0 ? (
+                    <span>No jobs run</span>
+                ) : (
+                    <CustomPieChart
+                        propsData={data}
+                        height={300}
+                        width={340}
+                        showAnimation={false}
+                    />
+                )}
             </div>
         </Fieldset>
     );

@@ -73,9 +73,8 @@ const evaluateExpression = (src, vars) => {
             const obj = {};
             for (let i = 0; i < node.properties.length; i++) {
                 const prop = node.properties[i];
-                const value = (prop.value === null)
-                    ? prop.value
-                    : walk(prop.value);
+                const value =
+                    prop.value === null ? prop.value : walk(prop.value);
                 if (value === UNRESOLVED) {
                     return UNRESOLVED;
                 }
@@ -84,7 +83,10 @@ const evaluateExpression = (src, vars) => {
             return obj;
         }
 
-        if (node.type === 'BinaryExpression' || node.type === 'LogicalExpression') {
+        if (
+            node.type === 'BinaryExpression' ||
+            node.type === 'LogicalExpression'
+        ) {
             const l = walk(node.left);
             if (l === UNRESOLVED) {
                 return UNRESOLVED;
@@ -177,7 +179,9 @@ const evaluateExpression = (src, vars) => {
             if (typeof callee !== 'function') {
                 return UNRESOLVED;
             }
-            let ctx = node.callee.object ? walk(node.callee.object) : UNRESOLVED;
+            let ctx = node.callee.object
+                ? walk(node.callee.object)
+                : UNRESOLVED;
             if (ctx === UNRESOLVED) {
                 ctx = null;
             }
@@ -232,7 +236,7 @@ const evaluateExpression = (src, vars) => {
 
             // Create a "scope" for our arguments
             const oldVars = {};
-            Object.keys(vars).forEach(element => {
+            Object.keys(vars).forEach((element) => {
                 oldVars[element] = vars[element];
             });
 
@@ -255,11 +259,15 @@ const evaluateExpression = (src, vars) => {
             vars = oldVars;
 
             const keys = Object.keys(vars);
-            const vals = keys.map(key => {
+            const vals = keys.map((key) => {
                 return vars[key];
             });
 
-            return Function(keys.join(', '), 'return ' + generate(node)).apply(null, vals); // eslint-disable-line no-new-func
+            // eslint-disable-next-line no-new-func
+            return Function(keys.join(', '), 'return ' + generate(node)).apply(
+                null,
+                vals
+            ); // eslint-disable-line no-new-func
         }
 
         if (node.type === 'TemplateLiteral') {
@@ -305,7 +313,7 @@ const evaluateExpression = (src, vars) => {
         log.error(e);
     }
 
-    return (result === UNRESOLVED) ? undefined : result;
+    return result === UNRESOLVED ? undefined : result;
 };
 
 export default evaluateExpression;

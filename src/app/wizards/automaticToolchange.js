@@ -23,7 +23,11 @@
 import controller from 'app/lib/controller';
 import store from 'app/store';
 import React from 'react';
-import { getProbeSettings, getUnitModal, getToolString } from 'app/lib/toolChangeUtils';
+import {
+    getProbeSettings,
+    getUnitModal,
+    getToolString,
+} from 'app/lib/toolChangeUtils';
 import reduxStore from 'app/store/redux';
 import { get } from 'lodash';
 
@@ -42,7 +46,8 @@ const calculateMaxZProbeDistance = (zProbeDistance = 30) => {
 const wizard = {
     intro: {
         icon: 'fas fa-caution',
-        description: 'Tool Change detected, stay clear of the machine! Wait until initial movements are complete!'
+        description:
+            'Tool Change detected, stay clear of the machine! Wait until initial movements are complete!',
     },
     onStart: () => {
         const settings = getProbeSettings();
@@ -50,9 +55,11 @@ const wizard = {
         // Get $13 value for adjustment of Z Safe Height
         const state = reduxStore.getState();
         const $13 = get(state, 'controller.settings.settings.$13', '0');
-        const zSafe = ($13 === '1') ? '-0.5' : '-10';
+        const zSafe = $13 === '1' ? '-0.5' : '-10';
 
-        const zProbeDistance = calculateMaxZProbeDistance(settings.zProbeDistance);
+        const zProbeDistance = calculateMaxZProbeDistance(
+            settings.zProbeDistance,
+        );
 
         controller.command('gcode', [
             '%wait',
@@ -86,7 +93,8 @@ const wizard = {
             substeps: [
                 {
                     title: 'Safety First',
-                    description: 'Ensure that your router/spindle is turned off and has fully stopped spinning and prepare to check the length of the current, initial cutting tool.',
+                    description:
+                        'Ensure that your router/spindle is turned off and has fully stopped spinning and prepare to check the length of the current, initial cutting tool.',
                     overlay: false,
                     actions: [
                         {
@@ -103,20 +111,26 @@ const wizard = {
                                     '%global.toolchange.TOOL_OFFSET=posz+global.toolchange.RETRACT',
                                     '(TLO set: [global.toolchange.TOOL_OFFSET])',
                                     'G90 G21',
-                                    'G53 G0 Z[global.toolchange.Z_SAFE_HEIGHT]'
+                                    'G53 G0 Z[global.toolchange.Z_SAFE_HEIGHT]',
                                 ]);
-                            }
-                        }
-                    ]
+                            },
+                        },
+                    ],
                 },
-            ]
+            ],
         },
         {
             title: 'Probe New Tool',
             substeps: [
                 {
                     title: 'Change Tool',
-                    description: () => <div>Change over to the next tool ({getToolString()}), and once secured prepare to check the length of the new cutting tool.</div>,
+                    description: () => (
+                        <div>
+                            Change over to the next tool ({getToolString()}),
+                            and once secured prepare to check the length of the
+                            new cutting tool.
+                        </div>
+                    ),
                     overlay: false,
                     actions: [
                         {
@@ -140,18 +154,19 @@ const wizard = {
                                     'G53 G21 G0 Z[global.toolchange.Z_SAFE_HEIGHT]',
                                     'G21 G91',
                                 ]);
-                            }
-                        }
-                    ]
+                            },
+                        },
+                    ],
                 },
-            ]
+            ],
         },
         {
             title: 'Resume Job',
             substeps: [
                 {
                     title: 'Resume Job',
-                    description: 'If everything looks good, prepare for your machine to move back to the cutting area and continue as expected. Turn on your router if you have one.',
+                    description:
+                        'If everything looks good, prepare for your machine to move back to the cutting area and continue as expected. Turn on your router if you have one.',
                     overlay: false,
                     actions: [
                         {
@@ -165,15 +180,15 @@ const wizard = {
                                     `G90 ${unit} G0 Z[global.toolchange.ZPOS]`,
                                     '(Restore initial modals)',
                                     'M3 [global.toolchange.UNITS] [global.toolchange.DISTANCE] [global.toolchange.FEEDRATE]',
-                                    '%toolchange_complete'
+                                    '%toolchange_complete',
                                 ]);
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
 };
 
 export default wizard;

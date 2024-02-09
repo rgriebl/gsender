@@ -23,7 +23,11 @@
 import controller from 'app/lib/controller';
 import React from 'react';
 import reduxStore from 'app/store/redux';
-import { getProbeSettings, getUnitModal, getToolString } from 'app/lib/toolChangeUtils';
+import {
+    getProbeSettings,
+    getUnitModal,
+    getToolString,
+} from 'app/lib/toolChangeUtils';
 import { get } from 'lodash';
 
 const $13 = get(reduxStore, 'controller.settings.settings.$13', '0');
@@ -32,7 +36,9 @@ const moveAmount = $13 ? '0.4in' : '10mm';
 // $132 is max z travel, if soft limits ($20) enabled we need to make sure probe distance will not exceed max limits
 const calculateMaxZProbeDistance = (zProbeDistance = 30) => {
     const state = reduxStore.getState();
-    const softLimits = Number(get(state, 'controller.settings.settings.$20', 0));
+    const softLimits = Number(
+        get(state, 'controller.settings.settings.$20', 0),
+    );
 
     // Can safely use configured Z probe distance if soft limits not enabled
     if (softLimits === 0) {
@@ -52,12 +58,15 @@ const calculateMaxZProbeDistance = (zProbeDistance = 30) => {
 const wizard = {
     intro: {
         icon: 'fas fa-caution',
-        description: 'Tool Change detected, stay clear of the machine! Wait until initial movements are complete!'
+        description:
+            'Tool Change detected, stay clear of the machine! Wait until initial movements are complete!',
     },
     onStart: () => {
         const settings = getProbeSettings();
 
-        const zProbeDistance = calculateMaxZProbeDistance(settings.zProbeDistance);
+        const zProbeDistance = calculateMaxZProbeDistance(
+            settings.zProbeDistance,
+        );
 
         return [
             '%wait',
@@ -84,17 +93,29 @@ const wizard = {
             substeps: [
                 {
                     title: 'Safety First',
-                    description: () => <div>Ensure that your router/spindle is turned off and has fully stopped spinning then jog to a place you can reach using the jog controls.</div>,
+                    description: () => (
+                        <div>
+                            Ensure that your router/spindle is turned off and
+                            has fully stopped spinning then jog to a place you
+                            can reach using the jog controls.
+                        </div>
+                    ),
                     overlay: false,
                 },
-            ]
+            ],
         },
         {
             title: 'Probe New Tool',
             substeps: [
                 {
                     title: 'Change Tool',
-                    description: () => <div>Change over to the next tool ({getToolString()}). Once ready, jog back to {moveAmount} above the probe location, attach the magnet, and prepare to probe.</div>,
+                    description: () => (
+                        <div>
+                            Change over to the next tool ({getToolString()}).
+                            Once ready, jog back to {moveAmount} above the probe
+                            location, attach the magnet, and prepare to probe.
+                        </div>
+                    ),
                     overlay: false,
                     actions: [
                         {
@@ -110,18 +131,19 @@ const wizard = {
                                     'G4 P0.3',
                                     `${modal} G10 L20 P0 Z[global.toolchange.TOOL_OFFSET + global.toolchange.RETRACT]`,
                                 ]);
-                            }
-                        }
-                    ]
-                }
-            ]
+                            },
+                        },
+                    ],
+                },
+            ],
         },
         {
             title: 'Resume Job',
             substeps: [
                 {
                     title: 'Resume Job',
-                    description: 'If everything looks good, prepare for your machine to move back to the cutting area and continue as expected. Remove the touch plate magnet and turn on your router if you have them.',
+                    description:
+                        'If everything looks good, prepare for your machine to move back to the cutting area and continue as expected. Remove the touch plate magnet and turn on your router if you have them.',
                     overlay: false,
                     actions: [
                         {
@@ -135,15 +157,15 @@ const wizard = {
                                     `G90 ${unit} G0 Z[global.toolchange.ZPOS]`,
                                     '(Restore initial modals)',
                                     'M3 [global.toolchange.UNITS] [global.toolchange.DISTANCE] [global.toolchange.FEEDRATE]',
-                                    '%toolchange_complete'
+                                    '%toolchange_complete',
                                 ]);
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
 };
 
 export default wizard;

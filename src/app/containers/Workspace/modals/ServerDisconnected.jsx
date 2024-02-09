@@ -28,7 +28,11 @@ import Button from 'app/components/FunctionButton/FunctionButton';
 import controller from 'app/lib/controller';
 import Modal from 'app/components/ToolModal/ToolModal';
 import i18n from 'app/lib/i18n';
-import { Toaster, TOASTER_SUCCESS, TOASTER_DANGER } from 'app/lib/toaster/ToasterLib';
+import {
+    Toaster,
+    TOASTER_SUCCESS,
+    TOASTER_DANGER,
+} from 'app/lib/toaster/ToasterLib';
 
 import styles from './serverdisconnected.styl';
 
@@ -64,32 +68,38 @@ const ServerDisconnected = ({ reason, onClose }) => {
         }, 3000);
     };
 
-    const status = useMemo(() => ({
-        'connect': {
-            icon: 'fas fa-times-circle',
-            iconStyle: styles.errorIcon,
-            title: 'Server Connection Lost',
-            details: 'It looks like the server connection has been lost, attempt to reconnect?',
-            showReconnectButton: true,
-            allowModalClose: true,
-        },
-        'connect_error': {
-            icon: 'fas fa-times-circle',
-            iconStyle: styles.errorIcon,
-            title: 'Server Connection Error',
-            details: 'It looks like there was a problem connecting to the server, attempt to reconnect?',
-            showReconnectButton: true,
-            allowModalClose: true,
-        },
-        'disconnect': {
-            icon: 'fas fa-times-circle',
-            iconStyle: styles.errorIcon,
-            title: 'Server Disconnected',
-            details: 'It looks like you have been disconnected from the server, attempt to reconnect?',
-            showReconnectButton: true,
-            allowModalClose: true,
-        },
-    }[reason || 'connect']));
+    const status = useMemo(
+        () =>
+            ({
+                connect: {
+                    icon: 'fas fa-times-circle',
+                    iconStyle: styles.errorIcon,
+                    title: 'Server Connection Lost',
+                    details:
+                        'It looks like the server connection has been lost, attempt to reconnect?',
+                    showReconnectButton: true,
+                    allowModalClose: true,
+                },
+                connect_error: {
+                    icon: 'fas fa-times-circle',
+                    iconStyle: styles.errorIcon,
+                    title: 'Server Connection Error',
+                    details:
+                        'It looks like there was a problem connecting to the server, attempt to reconnect?',
+                    showReconnectButton: true,
+                    allowModalClose: true,
+                },
+                disconnect: {
+                    icon: 'fas fa-times-circle',
+                    iconStyle: styles.errorIcon,
+                    title: 'Server Disconnected',
+                    details:
+                        'It looks like you have been disconnected from the server, attempt to reconnect?',
+                    showReconnectButton: true,
+                    allowModalClose: true,
+                },
+            })[reason || 'connect'],
+    );
 
     return (
         <Modal
@@ -113,7 +123,11 @@ const ServerDisconnected = ({ reason, onClose }) => {
                         onClick={handleReconnect}
                         className={styles.primaryButton}
                     >
-                        {i18n._(reconnectLoading ? 'Reconnecting...' : 'Reconnect to Server')}
+                        {i18n._(
+                            reconnectLoading
+                                ? 'Reconnecting...'
+                                : 'Reconnect to Server',
+                        )}
                     </Button>
                 )}
             </div>

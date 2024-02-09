@@ -14,8 +14,12 @@ import { collectUserUsageData } from '../../../lib/heatmap';
 import { USAGE_TOOL_NAME } from '../../../constants';
 
 const SpindleLaser = ({ active, state, actions }) => {
-    const [machineProfile, setMachineProfile] = useState(store.get('workspace.machineProfile', {}));
-    const [delay, setDelay] = useState(store.get('widgets.spindle.delay', false));
+    const [machineProfile, setMachineProfile] = useState(
+        store.get('workspace.machineProfile', {}),
+    );
+    const [delay, setDelay] = useState(
+        store.get('widgets.spindle.delay', false),
+    );
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -33,7 +37,7 @@ const SpindleLaser = ({ active, state, actions }) => {
         const updatedObj = {
             ...machineProfile,
             spindle: value,
-            laserOnOutline: value === false ? false : laserOn
+            laserOnOutline: value === false ? false : laserOn,
         };
 
         store.replace('workspace.machineProfile', updatedObj);
@@ -43,10 +47,12 @@ const SpindleLaser = ({ active, state, actions }) => {
     };
 
     const handleONToggle = () => {
-        const value = !machineProfile.laserOnOutline ? !machineProfile.laserOnOutline : false;
+        const value = !machineProfile.laserOnOutline
+            ? !machineProfile.laserOnOutline
+            : false;
         const updatedObj = {
             ...machineProfile,
-            laserOnOutline: value
+            laserOnOutline: value,
         };
 
         store.replace('workspace.machineProfile', updatedObj);
@@ -68,7 +74,10 @@ const SpindleLaser = ({ active, state, actions }) => {
             <GeneralArea>
                 <GeneralArea.Half>
                     <Fieldset legend="Toggle">
-                        <TooltipCustom content="Enable or Disable Spindle/Laser" location="default">
+                        <TooltipCustom
+                            content="Enable or Disable Spindle/Laser"
+                            location="default"
+                        >
                             <ToggleSwitch
                                 label="Spindle/Laser"
                                 checked={spindle}
@@ -76,7 +85,10 @@ const SpindleLaser = ({ active, state, actions }) => {
                                 style={{ marginBottom: '1rem' }}
                             />
                         </TooltipCustom>
-                        <TooltipCustom content="Enable or Disable Laser ON during Outline" location="default">
+                        <TooltipCustom
+                            content="Enable or Disable Laser ON during Outline"
+                            location="default"
+                        >
                             <ToggleSwitch
                                 label="Laser ON during Outline"
                                 disabled={!spindle}
@@ -85,7 +97,10 @@ const SpindleLaser = ({ active, state, actions }) => {
                                 style={{ marginBottom: '1rem' }}
                             />
                         </TooltipCustom>
-                        <TooltipCustom content="Add delay after spindle ON" location="default">
+                        <TooltipCustom
+                            content="Add delay after spindle ON"
+                            location="default"
+                        >
                             <ToggleSwitch
                                 label="Delay After Start"
                                 checked={delay}

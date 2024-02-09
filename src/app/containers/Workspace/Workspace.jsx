@@ -31,10 +31,7 @@ import React, { PureComponent, createRef } from 'react';
 import { withRouter } from 'react-router-dom';
 import api from 'app/api';
 import { Confirm } from 'app/components/ConfirmationDialog/ConfirmationDialogLib';
-import {
-    WORKFLOW_STATE_IDLE,
-    USER_DATA_COLLECTION
-} from 'app/constants';
+import { WORKFLOW_STATE_IDLE, USER_DATA_COLLECTION } from 'app/constants';
 import controller from 'app/lib/controller';
 import i18n from 'app/lib/i18n';
 import log from 'app/lib/log';
@@ -53,14 +50,13 @@ import {
     MODAL_NONE,
     MODAL_FEEDER_PAUSED,
     MODAL_FEEDER_WAIT,
-    MODAL_SERVER_DISCONNECTED
+    MODAL_SERVER_DISCONNECTED,
 } from './constants';
 import UpdateAvailableAlert from './UpdateAvailableAlert/UpdateAvailableAlert';
 import Toaster from '../../lib/toaster/Toaster';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
 import DataCollectionPopup from './DataCollectionPopup';
 import MobileWorkflow from './MobileWorkflow';
-
 
 const WAIT = '%wait';
 const TOOLCHANGE = '%toolchange';
@@ -79,7 +75,7 @@ const stopWaiting = () => {
 
 class Workspace extends PureComponent {
     static propTypes = {
-        ...withRouter.propTypes
+        ...withRouter.propTypes,
     };
 
     state = {
@@ -88,7 +84,7 @@ class Workspace extends PureComponent {
         port: '',
         modal: {
             name: MODAL_NONE,
-            params: {}
+            params: {},
         },
         isDraggingFile: false,
         isDraggingWidget: false,
@@ -107,35 +103,35 @@ class Workspace extends PureComponent {
 
     action = {
         openModal: (name = MODAL_NONE, params = {}) => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 modal: {
                     name: name,
-                    params: params
-                }
+                    params: params,
+                },
             }));
         },
         closeModal: () => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 modal: {
                     name: MODAL_NONE,
-                    params: {}
-                }
+                    params: {},
+                },
             }));
         },
         closePrompt: () => {
-            this.setState(state => ({
-                shouldShowRotate: false
+            this.setState((state) => ({
+                shouldShowRotate: false,
             }));
         },
         updateModalParams: (params = {}) => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 modal: {
                     ...state.modal,
                     params: {
                         ...state.modal.params,
-                        ...params
-                    }
-                }
+                        ...params,
+                    },
+                },
             }));
         },
         sendRestartCommand: () => {
@@ -145,7 +141,7 @@ class Workspace extends PureComponent {
         },
         reconnect: () => {
             controller.reconnect();
-        }
+        },
     };
 
     primaryContainer = null;
@@ -154,15 +150,15 @@ class Workspace extends PureComponent {
 
     defaultContainer = null;
 
-    dataCollectionRef = createRef()
+    dataCollectionRef = createRef();
 
     controllerEvents = {
-        'hPong': () => {
+        hPong: () => {
             this.setState({
-                lastHealthUpdate: new Date()
+                lastHealthUpdate: new Date(),
             });
         },
-        'connect': () => {
+        connect: () => {
             this.setState({ disabled: false });
             if (controller.connected) {
                 this.action.closeModal();
@@ -175,7 +171,7 @@ class Workspace extends PureComponent {
                 this.action.openModal(MODAL_SERVER_DISCONNECTED);
             }
         },
-        'connect_error': () => {
+        connect_error: () => {
             if (controller.connected) {
                 this.action.closeModal();
                 Toast.pop({
@@ -187,7 +183,7 @@ class Workspace extends PureComponent {
                 this.action.openModal(MODAL_SERVER_DISCONNECTED);
             }
         },
-        'disconnect': () => {
+        disconnect: () => {
             this.setState({ disabled: true });
             if (controller.connected) {
                 this.action.closeModal();
@@ -214,7 +210,12 @@ class Workspace extends PureComponent {
             const { modal } = this.state;
             const { hold, holdReason } = { ...status };
             if (!hold) {
-                if (_.includes([MODAL_FEEDER_PAUSED, MODAL_FEEDER_WAIT], modal.name)) {
+                if (
+                    _.includes(
+                        [MODAL_FEEDER_PAUSED, MODAL_FEEDER_WAIT],
+                        modal.name,
+                    )
+                ) {
                     this.action.closeModal();
                 }
                 return;
@@ -224,14 +225,14 @@ class Workspace extends PureComponent {
 
             if (err) {
                 this.action.openModal(MODAL_FEEDER_PAUSED, {
-                    title: i18n._('Error')
+                    title: i18n._('Error'),
                 });
                 return;
             }
 
             if (data === WAIT) {
                 this.action.openModal(MODAL_FEEDER_WAIT, {
-                    title: '%wait'
+                    title: '%wait',
                 });
                 return;
             }
@@ -240,20 +241,30 @@ class Workspace extends PureComponent {
                 return;
             }
 
-            const title = {
-                'M0': i18n._('M0 Program Pause'),
-                'M1': i18n._('M1 Program Pause'),
-                'M2': i18n._('M2 Program End'),
-                'M30': i18n._('M30 Program End'),
-                'M6': i18n._('M6 Tool Change'),
-                'M109': i18n._('M109 Set Extruder Temperature'),
-                'M190': i18n._('M190 Set Heated Bed Temperature')
-            }[data] || data;
+            const title =
+                {
+                    M0: i18n._('M0 Program Pause'),
+                    M1: i18n._('M1 Program Pause'),
+                    M2: i18n._('M2 Program End'),
+                    M30: i18n._('M30 Program End'),
+                    M6: i18n._('M6 Tool Change'),
+                    M109: i18n._('M109 Set Extruder Temperature'),
+                    M190: i18n._('M190 Set Heated Bed Temperature'),
+                }[data] || data;
 
             const commentString = comment || '';
-            const content = (commentString.length > 0)
-                ? <div><p>Press Resume to continue operation.</p><p>Line contained following comment: <b>{commentString}</b></p></div>
-                : 'Press Resume to continue operation.';
+            const content =
+                commentString.length > 0 ? (
+                    <div>
+                        <p>Press Resume to continue operation.</p>
+                        <p>
+                            Line contained following comment:{' '}
+                            <b>{commentString}</b>
+                        </p>
+                    </div>
+                ) : (
+                    'Press Resume to continue operation.'
+                );
 
             if (hold && strategy !== 'Manual' && strategy !== 'Pause') {
                 Confirm({
@@ -266,10 +277,10 @@ class Workspace extends PureComponent {
                     },
                     onClose: () => {
                         controller.command('feeder:stop');
-                    }
+                    },
                 });
             }
-        }
+        },
     };
 
     widgetEventHandler = {
@@ -291,7 +302,7 @@ class Workspace extends PureComponent {
             if (isDraggingWidget) {
                 this.setState({ isDraggingWidget: false });
             }
-        }
+        },
     };
 
     resizeDefaultContainer = () => {
@@ -306,9 +317,10 @@ class Workspace extends PureComponent {
         document.documentElement.style.setProperty('--vh', `${vh}px`);
         document.documentElement.style.setProperty('--vw', `${vw}px`);*/
 
-        { // Mobile-Friendly View
+        {
+            // Mobile-Friendly View
             const { location } = this.props;
-            const disableHorizontalScroll = !(showPrimaryContainer);
+            const disableHorizontalScroll = !showPrimaryContainer;
 
             if (location.pathname === '/workspace' && disableHorizontalScroll) {
                 // Disable horizontal scroll
@@ -326,11 +338,11 @@ class Workspace extends PureComponent {
     updateScreenSize = () => {
         const isMobile = window.screen.width <= 639;
         this.setState({
-            mobile: isMobile
+            mobile: isMobile,
         });
         const isTablet = window.screen.width > 639; //width smaller than height and wider than a phone
         this.setState({
-            tablet: isTablet
+            tablet: isTablet,
         });
     };
 
@@ -352,14 +364,17 @@ class Workspace extends PureComponent {
                 return;
             }
 
-            log.debug('FileReader:', _.pick(file, [
-                'lastModified',
-                'lastModifiedDate',
-                'meta',
-                'name',
-                'size',
-                'type'
-            ]));
+            log.debug(
+                'FileReader:',
+                _.pick(file, [
+                    'lastModified',
+                    'lastModifiedDate',
+                    'meta',
+                    'name',
+                    'size',
+                    'type',
+                ]),
+            );
 
             startWaiting();
             this.setState({ isUploading: true });
@@ -405,13 +420,16 @@ class Workspace extends PureComponent {
 
         if (collectUserDataStatus === ACCEPTED) {
             try {
-                const machineProfile = store.get('workspace.machineProfile', {});
+                const machineProfile = store.get(
+                    'workspace.machineProfile',
+                    {},
+                );
                 await api.metrics.sendData(machineProfile);
             } catch (error) {
                 console.log(error);
             }
         }
-    }
+    };
 
     componentDidMount() {
         this.updateScreenSize();
@@ -433,20 +451,23 @@ class Workspace extends PureComponent {
     }
 
     componentDidUpdate() {
-        store.set('workspace.container.primary.show', this.state.showPrimaryContainer);
+        store.set(
+            'workspace.container.primary.show',
+            this.state.showPrimaryContainer,
+        );
 
         this.resizeDefaultContainer();
     }
 
     addControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.addListener(eventName, callback);
         });
     }
 
     removeControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.removeListener(eventName, callback);
         });
@@ -469,9 +490,9 @@ class Workspace extends PureComponent {
         const tokens = [
             pubsub.subscribe('widgets:reverse', (msg, value) => {
                 this.setState({
-                    reverseWidgets: value
+                    reverseWidgets: value,
                 });
-            })
+            }),
         ];
         this.pubsubTokens = this.pubsubTokens.concat(tokens);
     }
@@ -482,7 +503,6 @@ class Workspace extends PureComponent {
         });
         this.pubsubTokens = [];
     }
-
 
     render() {
         const { style, className } = this.props;
@@ -495,29 +515,52 @@ class Workspace extends PureComponent {
             showPrimaryContainer,
             reverseWidgets,
             mobile,
-            serverDisconnectReason
+            serverDisconnectReason,
         } = this.state;
         const hidePrimaryContainer = !showPrimaryContainer;
-        const tableStyle = mobile ? styles.workspaceTableMobile : styles.workspaceTable;
-        const rowStyle = mobile ? styles.workspaceTableRowMobile : styles.workspaceTableRow;
-        const primaryContainerStyle = mobile ? styles.primaryContainerMobile : styles.primaryContainer;
+        const tableStyle = mobile
+            ? styles.workspaceTableMobile
+            : styles.workspaceTable;
+        const rowStyle = mobile
+            ? styles.workspaceTableRowMobile
+            : styles.workspaceTableRow;
+        const primaryContainerStyle = mobile
+            ? styles.primaryContainerMobile
+            : styles.primaryContainer;
 
         const modalItem = {
-            [MODAL_FEEDER_PAUSED]: <FeederPaused title={modal.params.title} onClose={this.action.closeModal} />,
-            [MODAL_FEEDER_WAIT]: <FeederWait title={modal.params.title} onClose={this.action.closeModal} />,
-            [MODAL_SERVER_DISCONNECTED]: <ServerDisconnected reason={serverDisconnectReason} onClose={this.action.closeModal} />
+            [MODAL_FEEDER_PAUSED]: (
+                <FeederPaused
+                    title={modal.params.title}
+                    onClose={this.action.closeModal}
+                />
+            ),
+            [MODAL_FEEDER_WAIT]: (
+                <FeederWait
+                    title={modal.params.title}
+                    onClose={this.action.closeModal}
+                />
+            ),
+            [MODAL_SERVER_DISCONNECTED]: (
+                <ServerDisconnected
+                    reason={serverDisconnectReason}
+                    onClose={this.action.closeModal}
+                />
+            ),
         }[modal.name];
 
         return (
             <ScreenAwake>
-                <div style={style} className={classNames(className, styles.workspace)}>
+                <div
+                    style={style}
+                    className={classNames(className, styles.workspace)}
+                >
                     {modalItem}
 
                     <div
-                        className={classNames(
-                            styles.dropzoneOverlay,
-                            { [styles.hidden]: !(port && isDraggingFile) }
-                        )}
+                        className={classNames(styles.dropzoneOverlay, {
+                            [styles.hidden]: !(port && isDraggingFile),
+                        })}
                     >
                         <div className={styles.textBlock}>
                             {i18n._('Drop G-code file here')}
@@ -525,14 +568,18 @@ class Workspace extends PureComponent {
                     </div>
                     <Dropzone
                         className={styles.dropzone}
-                        disabled={controller.workflow.state !== WORKFLOW_STATE_IDLE}
+                        disabled={
+                            controller.workflow.state !== WORKFLOW_STATE_IDLE
+                        }
                         disableClick={true}
                         disablePreview={true}
                         multiple={false}
-                        onDragStart={(event) => {
-                        }}
+                        onDragStart={(event) => {}}
                         onDragEnter={(event) => {
-                            if (controller.workflow.state !== WORKFLOW_STATE_IDLE) {
+                            if (
+                                controller.workflow.state !==
+                                WORKFLOW_STATE_IDLE
+                            ) {
                                 return;
                             }
                             if (isDraggingWidget) {
@@ -543,7 +590,10 @@ class Workspace extends PureComponent {
                             }
                         }}
                         onDragLeave={(event) => {
-                            if (controller.workflow.state !== WORKFLOW_STATE_IDLE) {
+                            if (
+                                controller.workflow.state !==
+                                WORKFLOW_STATE_IDLE
+                            ) {
                                 return;
                             }
                             if (isDraggingWidget) {
@@ -554,7 +604,10 @@ class Workspace extends PureComponent {
                             }
                         }}
                         onDrop={(acceptedFiles, rejectedFiles) => {
-                            if (controller.workflow.state !== WORKFLOW_STATE_IDLE) {
+                            if (
+                                controller.workflow.state !==
+                                WORKFLOW_STATE_IDLE
+                            ) {
                                 return;
                             }
                             if (isDraggingWidget) {
@@ -567,44 +620,56 @@ class Workspace extends PureComponent {
                         }}
                     >
                         <div className={tableStyle}>
-                            <UpdateAvailableAlert restartHandler={this.action.sendRestartCommand} />
+                            <UpdateAvailableAlert
+                                restartHandler={this.action.sendRestartCommand}
+                            />
                             <Toaster />
                             <DataCollectionPopup ref={this.dataCollectionRef} />
                             <Header />
                             <ConfirmationDialog />
-                            <div className={classNames(rowStyle, { [styles.reverseWorkspace]: reverseWidgets })}>
-                                {
-                                    !mobile && (
-                                        <DefaultWidgets
-                                            ref={node => {
-                                                this.defaultContainer = node;
-                                            }}
-                                        />
-                                    )
-                                }
+                            <div
+                                className={classNames(rowStyle, {
+                                    [styles.reverseWorkspace]: reverseWidgets,
+                                })}
+                            >
+                                {!mobile && (
+                                    <DefaultWidgets
+                                        ref={(node) => {
+                                            this.defaultContainer = node;
+                                        }}
+                                    />
+                                )}
                                 <div
-                                    ref={node => {
+                                    ref={(node) => {
                                         this.primaryContainer = node;
                                     }}
                                     className={classNames(
                                         primaryContainerStyle,
-                                        { [styles.hidden]: hidePrimaryContainer },
-                                        { [styles.disabled]: disabled }
+                                        {
+                                            [styles.hidden]:
+                                                hidePrimaryContainer,
+                                        },
+                                        { [styles.disabled]: disabled },
                                     )}
                                 >
-                                    {
-                                        mobile && (
-                                            <MobileWorkflow />
-                                        )
-                                    }
+                                    {mobile && <MobileWorkflow />}
                                     <PrimaryWidgets
-                                        ref={node => {
+                                        ref={(node) => {
                                             this.primaryWidgets = node;
                                         }}
-                                        onForkWidget={this.widgetEventHandler.onForkWidget}
-                                        onRemoveWidget={this.widgetEventHandler.onRemoveWidget}
-                                        onDragStart={this.widgetEventHandler.onDragStart}
-                                        onDragEnd={this.widgetEventHandler.onDragEnd}
+                                        onForkWidget={
+                                            this.widgetEventHandler.onForkWidget
+                                        }
+                                        onRemoveWidget={
+                                            this.widgetEventHandler
+                                                .onRemoveWidget
+                                        }
+                                        onDragStart={
+                                            this.widgetEventHandler.onDragStart
+                                        }
+                                        onDragEnd={
+                                            this.widgetEventHandler.onDragEnd
+                                        }
                                     />
                                 </div>
                             </div>

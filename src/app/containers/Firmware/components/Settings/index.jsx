@@ -17,16 +17,20 @@ import NotConnectedWarning from '../NotConnected/NotConnectedWarning';
 
 import styles from '../../index.styl';
 
-const getMachineProfileLabel = ({ name, type }) => `${name} ${type && type}`.trim();
+const getMachineProfileLabel = ({ name, type }) =>
+    `${name} ${type && type}`.trim();
 
 const SettingsArea = ({ firmwareType }) => {
-    const { hasSettings, machineProfile, setMachineProfile } = useContext(FirmwareContext);
+    const { hasSettings, machineProfile, setMachineProfile } =
+        useContext(FirmwareContext);
     const label = getMachineProfileLabel(machineProfile);
     const connectionConfig = new WidgetConfig('connection');
     const port = connectionConfig.get('port');
 
     const handleSelect = ({ value = 0 }) => {
-        const foundProfile = machineProfiles.find(profile => profile.id === value);
+        const foundProfile = machineProfiles.find(
+            (profile) => profile.id === value,
+        );
 
         if (foundProfile) {
             const updatedObj = {
@@ -38,7 +42,7 @@ const SettingsArea = ({ firmwareType }) => {
                     xmax: foundProfile.mm.width,
                     ymax: foundProfile.mm.depth,
                     zmax: foundProfile.mm.height,
-                }
+                },
             };
             store.replace('workspace.machineProfile', updatedObj);
             setMachineProfile(updatedObj);
@@ -46,46 +50,57 @@ const SettingsArea = ({ firmwareType }) => {
         }
     };
 
-    const Settings = {
-        [GRBL]: SettingsList,
-        [GRBLHAL]: HalSettings,
-    }[firmwareType] ?? SettingsList;
+    const Settings =
+        {
+            [GRBL]: SettingsList,
+            [GRBLHAL]: HalSettings,
+        }[firmwareType] ?? SettingsList;
 
     return (
         <div className={styles.settingsAreaContainer}>
-            {
-                (machineProfile) && (
-                    <>
-                        <div className={styles.profileSelect}><span>Profile: </span>
-                            <Select
-                                className={styles.profileSelectDropdown}
-                                value={{ label: label }}
-                                options={
-                                    machineProfiles
-                                        .sort((a, b) => a.id - b.id)
-                                        .map(({ id, name, type }) => ({ key: id, value: id, label: getMachineProfileLabel({ name, type }) }))
-                                }
-                                onChange={handleSelect}
-                                clearable={false}
-                            />
-                        </div>
-                    </>
-                )
-            }
+            {machineProfile && (
+                <>
+                    <div className={styles.profileSelect}>
+                        <span>Profile: </span>
+                        <Select
+                            className={styles.profileSelectDropdown}
+                            value={{ label: label }}
+                            options={machineProfiles
+                                .sort((a, b) => a.id - b.id)
+                                .map(({ id, name, type }) => ({
+                                    key: id,
+                                    value: id,
+                                    label: getMachineProfileLabel({
+                                        name,
+                                        type,
+                                    }),
+                                }))}
+                            onChange={handleSelect}
+                            clearable={false}
+                        />
+                    </div>
+                </>
+            )}
 
-            {
-                hasSettings
-                    ? (
-                        <>
-                            <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
-                                <Settings />
-                            </div>
-                            <SearchBar />
-                        </>
-                    ) : (
-                        <NotConnectedWarning onReconnectClick={() => connectToLastDevice()} disabled={!port} />
-                    )
-            }
+            {hasSettings ? (
+                <>
+                    <div
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            overflow: 'auto',
+                        }}
+                    >
+                        <Settings />
+                    </div>
+                    <SearchBar />
+                </>
+            ) : (
+                <NotConnectedWarning
+                    onReconnectClick={() => connectToLastDevice()}
+                    disabled={!port}
+                />
+            )}
         </div>
     );
 };
@@ -94,6 +109,6 @@ export default connect((store) => {
     const firmwareType = get(store, 'controller.type');
 
     return {
-        firmwareType
+        firmwareType,
     };
 })(SettingsArea);

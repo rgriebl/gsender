@@ -24,17 +24,13 @@
 import constants from 'namespace-constants';
 import { createAction } from 'redux-action';
 
-export const {
-    OPEN_CONNECTION,
-    CLOSE_CONNECTION,
-    LIST_PORTS,
-    SCAN_NETWORK,
-} = constants('connection', [
-    'OPEN_CONNECTION',
-    'CLOSE_CONNECTION',
-    'LIST_PORTS',
-    'SCAN_NETWORK',
-]);
+export const { OPEN_CONNECTION, CLOSE_CONNECTION, LIST_PORTS, SCAN_NETWORK } =
+    constants('connection', [
+        'OPEN_CONNECTION',
+        'CLOSE_CONNECTION',
+        'LIST_PORTS',
+        'SCAN_NETWORK',
+    ]);
 
 export const openConnection = createAction(OPEN_CONNECTION);
 export const closeConnection = createAction(CLOSE_CONNECTION);

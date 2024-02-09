@@ -29,12 +29,15 @@ function useKeybinding(shuttleControlEvents) {
     // update stored shuttle control events
     shuttleEvents.updateShuttleEvents(shuttleControlEvents);
 
-    Object.keys(shuttleControlEvents).forEach(eventName => {
+    Object.keys(shuttleControlEvents).forEach((eventName) => {
         const defaultCommand = shuttleControlEvents[eventName];
         if (eventName !== 'MACRO') {
             // add keybindings
             const currentCommandKeys = store.get('commandKeys', {});
-            if (_.isEmpty(currentCommandKeys) || !currentCommandKeys[defaultCommand.cmd]) {
+            if (
+                _.isEmpty(currentCommandKeys) ||
+                !currentCommandKeys[defaultCommand.cmd]
+            ) {
                 // add to store
                 let updatedCommandKeys = currentCommandKeys;
                 const key = defaultCommand.keys || '';
@@ -90,7 +93,10 @@ export function removeOldKeybindings() {
         const event = allShuttleControlEvents[key];
         // if the category doesn't exist, it's not a macro
         // but if it's an old keybinding that still stores the category info, make sure it's not a macro
-        if (event === undefined && (!keybinding.category || keybinding.category !== MACRO_CATEGORY)) {
+        if (
+            event === undefined &&
+            (!keybinding.category || keybinding.category !== MACRO_CATEGORY)
+        ) {
             delete updatedCommandKeys[key];
         }
     });

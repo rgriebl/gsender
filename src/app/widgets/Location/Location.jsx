@@ -45,7 +45,7 @@ const Location = (props) => {
 
 Location.propTypes = {
     state: PropTypes.object,
-    actions: PropTypes.object
+    actions: PropTypes.object,
 };
 
 export default Location;

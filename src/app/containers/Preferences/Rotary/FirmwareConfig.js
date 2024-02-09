@@ -15,9 +15,10 @@ const FirmwareConfig = ({ state = {}, actions }) => {
 
     const handleResetToDefault = () => {
         Confirm({
-            content: 'Are you sure you reset the firmware configuration for Rotary Mode?',
+            content:
+                'Are you sure you reset the firmware configuration for Rotary Mode?',
             title: 'Reset Firmware Configuration',
-            onConfirm: actions.rotary.resetFirmwareToDefault
+            onConfirm: actions.rotary.resetFirmwareToDefault,
         });
     };
 
@@ -36,7 +37,12 @@ const FirmwareConfig = ({ state = {}, actions }) => {
                     <Input
                         label="A-axis Travel Resolution"
                         value={$101}
-                        onChange={(e) => actions.rotary.updateFirmwareSetting('$101', e.target.value)}
+                        onChange={(e) =>
+                            actions.rotary.updateFirmwareSetting(
+                                '$101',
+                                e.target.value,
+                            )
+                        }
                         units="step/deg"
                     />
                 </Tooltip>
@@ -50,7 +56,12 @@ const FirmwareConfig = ({ state = {}, actions }) => {
                     <Input
                         label="A-axis Maximum Rate"
                         value={$111}
-                        onChange={(e) => actions.rotary.updateFirmwareSetting('$111', e.target.value)}
+                        onChange={(e) =>
+                            actions.rotary.updateFirmwareSetting(
+                                '$111',
+                                e.target.value,
+                            )
+                        }
                         units="deg/min"
                     />
                 </Tooltip>
@@ -62,7 +73,12 @@ const FirmwareConfig = ({ state = {}, actions }) => {
                     location="default"
                 >
                     <ToggleSwitch
-                        onChange={(value) => actions.rotary.updateFirmwareSetting('$21', (+value).toString())}
+                        onChange={(value) =>
+                            actions.rotary.updateFirmwareSetting(
+                                '$21',
+                                (+value).toString(),
+                            )
+                        }
                         checked={$21}
                         label="Force Hard Limits"
                         size="small"
@@ -76,7 +92,12 @@ const FirmwareConfig = ({ state = {}, actions }) => {
                     location="default"
                 >
                     <ToggleSwitch
-                        onChange={(value) => actions.rotary.updateFirmwareSetting('$20', (+value).toString())}
+                        onChange={(value) =>
+                            actions.rotary.updateFirmwareSetting(
+                                '$20',
+                                (+value).toString(),
+                            )
+                        }
                         checked={$20}
                         label="Force Soft Limits"
                         size="small"
@@ -84,7 +105,12 @@ const FirmwareConfig = ({ state = {}, actions }) => {
                 </Tooltip>
             </div>
 
-            <Button style={{ marginBottom: '1rem' }} onClick={handleResetToDefault}>Reset to Default</Button>
+            <Button
+                style={{ marginBottom: '1rem' }}
+                onClick={handleResetToDefault}
+            >
+                Reset to Default
+            </Button>
         </Fieldset>
     );
 };

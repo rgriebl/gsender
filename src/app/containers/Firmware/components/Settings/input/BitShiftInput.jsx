@@ -7,7 +7,11 @@ import { convertValueToArray } from '../../../utils';
 import styles from './index.styl';
 
 const BitShiftInput = ({ value, onChange }) => {
-    const [bitShiftSettings, setBitShiftSettings] = useState([false, false, false]); //X, Y, Z
+    const [bitShiftSettings, setBitShiftSettings] = useState([
+        false,
+        false,
+        false,
+    ]); //X, Y, Z
 
     /*useEffect(() => {
         updateValues(bitShiftSettings);
@@ -18,7 +22,7 @@ const BitShiftInput = ({ value, onChange }) => {
     }, [value]);
 
     const handleSwitch = (value, index) => {
-        setBitShiftSettings(prev => {
+        setBitShiftSettings((prev) => {
             const newBitShiftSettings = [...prev];
             newBitShiftSettings[index] = value;
             updateValues(newBitShiftSettings);
@@ -65,15 +69,24 @@ const BitShiftInput = ({ value, onChange }) => {
         <div className={styles.controlWrapper}>
             <div className={styles.controlRow}>
                 <div className={styles.maskTwoTitles}>X: </div>
-                <ToggleSwitch checked={X} onChange={(value) => handleSwitch(value, 0)} />
+                <ToggleSwitch
+                    checked={X}
+                    onChange={(value) => handleSwitch(value, 0)}
+                />
             </div>
             <div className={styles.controlRow}>
                 <div className={styles.maskTwoTitles}>Y: </div>
-                <ToggleSwitch checked={Y} onChange={(value) => handleSwitch(value, 1)} />
+                <ToggleSwitch
+                    checked={Y}
+                    onChange={(value) => handleSwitch(value, 1)}
+                />
             </div>
             <div className={styles.controlRow}>
                 <div className={styles.maskTwoTitles}>Z: </div>
-                <ToggleSwitch checked={Z} onChange={(value) => handleSwitch(value, 2)} />
+                <ToggleSwitch
+                    checked={Z}
+                    onChange={(value) => handleSwitch(value, 2)}
+                />
             </div>
         </div>
     );

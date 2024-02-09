@@ -37,7 +37,7 @@ class ShuttleXpress extends PureComponent {
         feedrateMin: PropTypes.number,
         feedrateMax: PropTypes.number,
         hertz: PropTypes.number,
-        overshoot: PropTypes.number
+        overshoot: PropTypes.number,
     };
 
     state = this.getInitialState();
@@ -47,7 +47,7 @@ class ShuttleXpress extends PureComponent {
 
         this.setState({
             feedrateMin: min,
-            feedrateMax: max
+            feedrateMax: max,
         });
     };
 
@@ -63,24 +63,14 @@ class ShuttleXpress extends PureComponent {
     };
 
     getInitialState() {
-        const {
-            feedrateMin,
-            feedrateMax,
-            hertz,
-            overshoot
-        } = this.props;
+        const { feedrateMin, feedrateMax, hertz, overshoot } = this.props;
 
         return { feedrateMin, feedrateMax, hertz, overshoot };
     }
 
     // eslint-disable-next-line camelcase
     UNSAFE_componentWillReceiveProps(nextProps) {
-        const {
-            feedrateMin,
-            feedrateMax,
-            hertz,
-            overshoot
-        } = nextProps;
+        const { feedrateMin, feedrateMax, hertz, overshoot } = nextProps;
 
         this.setState({ feedrateMin, feedrateMax, hertz, overshoot });
     }
@@ -92,7 +82,10 @@ class ShuttleXpress extends PureComponent {
             <div>
                 <FormGroup>
                     <p>
-                        {i18n._('Feed Rate Range: {{min}} - {{max}} mm/min', { min: feedrateMin, max: feedrateMax })}
+                        {i18n._('Feed Rate Range: {{min}} - {{max}} mm/min', {
+                            min: feedrateMin,
+                            max: feedrateMax,
+                        })}
                     </p>
                     <Slider.Range
                         allowCross={false}
@@ -112,18 +105,36 @@ class ShuttleXpress extends PureComponent {
                         defaultValue={hertz}
                         onChange={this.onChangeHertz}
                     >
-                        <option value="60">{i18n._('60 Times per Second')}</option>
-                        <option value="45">{i18n._('45 Times per Second')}</option>
-                        <option value="30">{i18n._('30 Times per Second')}</option>
-                        <option value="15">{i18n._('15 Times per Second')}</option>
-                        <option value="10">{i18n._('10 Times per Second')}</option>
-                        <option value="5">{i18n._('5 Times per Second')}</option>
-                        <option value="2">{i18n._('2 Times per Second')}</option>
+                        <option value="60">
+                            {i18n._('60 Times per Second')}
+                        </option>
+                        <option value="45">
+                            {i18n._('45 Times per Second')}
+                        </option>
+                        <option value="30">
+                            {i18n._('30 Times per Second')}
+                        </option>
+                        <option value="15">
+                            {i18n._('15 Times per Second')}
+                        </option>
+                        <option value="10">
+                            {i18n._('10 Times per Second')}
+                        </option>
+                        <option value="5">
+                            {i18n._('5 Times per Second')}
+                        </option>
+                        <option value="2">
+                            {i18n._('2 Times per Second')}
+                        </option>
                         <option value="1">{i18n._('Once Every Second')}</option>
                     </select>
                 </FormGroup>
                 <FormGroup>
-                    <p>{i18n._('Distance Overshoot: {{overshoot}}x', { overshoot: overshoot })}</p>
+                    <p>
+                        {i18n._('Distance Overshoot: {{overshoot}}x', {
+                            overshoot: overshoot,
+                        })}
+                    </p>
                     <Slider
                         defaultValue={overshoot}
                         min={OVERSHOOT_RANGE[0]}

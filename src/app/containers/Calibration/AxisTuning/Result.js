@@ -16,7 +16,7 @@ const setEepromSetting = (setting, value) => {
     controller.command('gcode', '$$');
     Toaster.pop({
         msg: 'Successfully updated EEPROM values',
-        type: TOASTER_SUCCESS
+        type: TOASTER_SUCCESS,
     });
 };
 
@@ -31,8 +31,11 @@ const getEEPROMSetting = (axis) => {
     }
 };
 
-
-const calculateNewStepsPerMM = (originalSteps, requestedDistance, actualDistance) => {
+const calculateNewStepsPerMM = (
+    originalSteps,
+    requestedDistance,
+    actualDistance,
+) => {
     originalSteps = Number(originalSteps);
     requestedDistance = Number(requestedDistance);
     actualDistance = Number(actualDistance);
@@ -46,11 +49,29 @@ const Result = ({ options, onClose, xSteps, ySteps, zSteps }) => {
         const { currentAxis, requestedDistance, actualDistance } = options;
 
         if (currentAxis === 'x') {
-            setResult(calculateNewStepsPerMM(xSteps, requestedDistance, actualDistance));
+            setResult(
+                calculateNewStepsPerMM(
+                    xSteps,
+                    requestedDistance,
+                    actualDistance,
+                ),
+            );
         } else if (currentAxis === 'y') {
-            setResult(calculateNewStepsPerMM(ySteps, requestedDistance, actualDistance));
+            setResult(
+                calculateNewStepsPerMM(
+                    ySteps,
+                    requestedDistance,
+                    actualDistance,
+                ),
+            );
         } else {
-            setResult(calculateNewStepsPerMM(zSteps, requestedDistance, actualDistance));
+            setResult(
+                calculateNewStepsPerMM(
+                    zSteps,
+                    requestedDistance,
+                    actualDistance,
+                ),
+            );
         }
     }, []);
 
@@ -72,47 +93,67 @@ const Result = ({ options, onClose, xSteps, ySteps, zSteps }) => {
         const roundedResult = result.toFixed(3);
 
         if (requestedDistance === actualDistance) {
-            return <p>Your {currentAxis} is tuned, no need to update steps/mm.</p>;
+            return (
+                <p>Your {currentAxis} is tuned, no need to update steps/mm.</p>
+            );
         }
 
         return (
             <>
-                <p>Optimal steps/mm for the { currentAxis } axis: <b>{ roundedResult } step/mm</b></p>
+                <p>
+                    Optimal steps/mm for the {currentAxis} axis:{' '}
+                    <b>{roundedResult} step/mm</b>
+                </p>
 
                 <div>How we got this:</div>
 
                 <div>
-                    You requested to move <b>{ requestedDistance }mm</b> but actually moved <b>{ actualDistance }mm</b>.
-                    Your current <b>{ eepromSetting }</b> value is currently set to <b>{ eepromValue }</b>
+                    You requested to move <b>{requestedDistance}mm</b> but
+                    actually moved <b>{actualDistance}mm</b>. Your current{' '}
+                    <b>{eepromSetting}</b> value is currently set to{' '}
+                    <b>{eepromValue}</b>
                 </div>
 
-                {
-                    result > RESULT_OFFSET_THRESHOLD && (
-                        <p style={{ padding: '1rem', backgroundColor: 'gold', border: '3px solid black', borderRadius: '10px' }}>
-                            Warning. Your machine is off by a large amount, updating the EEPROM values for improved accuracy may cause issues.
-                        </p>
-                    )
-                }
+                {result > RESULT_OFFSET_THRESHOLD && (
+                    <p
+                        style={{
+                            padding: '1rem',
+                            backgroundColor: 'gold',
+                            border: '3px solid black',
+                            borderRadius: '10px',
+                        }}
+                    >
+                        Warning. Your machine is off by a large amount, updating
+                        the EEPROM values for improved accuracy may cause
+                        issues.
+                    </p>
+                )}
 
-                <div><b><i>{ eepromValue } × ({ requestedDistance } ÷ { actualDistance }) = { roundedResult }</i></b></div>
+                <div>
+                    <b>
+                        <i>
+                            {eepromValue} × ({requestedDistance} ÷{' '}
+                            {actualDistance}) = {roundedResult}
+                        </i>
+                    </b>
+                </div>
             </>
         );
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            height: '100%',
-            width: '80%',
-            margin: 'auto'
-        }}
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                height: '100%',
+                width: '80%',
+                margin: 'auto',
+            }}
         >
             <div className={styles.resultWrapper}>
-                <div className={styles.result}>
-                    {renderResult()}
-                </div>
+                <div className={styles.result}>{renderResult()}</div>
             </div>
 
             <div style={{ display: 'flex', gap: '1rem' }}>
@@ -120,21 +161,31 @@ const Result = ({ options, onClose, xSteps, ySteps, zSteps }) => {
                     primary
                     onClick={() => {
                         Confirm({
-                            content: 'Are you sure you want to update your EEPROM value to the new steps/mm?',
+                            content:
+                                'Are you sure you want to update your EEPROM value to the new steps/mm?',
                             title: 'Update EEPROM settings',
-                            onConfirm: () => setEepromSetting(getEEPROMSetting(options.currentAxis), result.toFixed(3))
+                            onConfirm: () =>
+                                setEepromSetting(
+                                    getEEPROMSetting(options.currentAxis),
+                                    result.toFixed(3),
+                                ),
                         });
-                    }
-                    }
+                    }}
                 >
-                    Set EEPROM setting {getEEPROMSetting(options.currentAxis)} to {result.toFixed(3)}
+                    Set EEPROM setting {getEEPROMSetting(options.currentAxis)}{' '}
+                    to {result.toFixed(3)}
                 </FunctionButton>
 
                 <FunctionButton onClick={onClose}>Restart Tool</FunctionButton>
             </div>
         </div>
     );
-}; Result.propTypes = { options: PropTypes.object, onBack: PropTypes.func, onClose: PropTypes.func, };
+};
+Result.propTypes = {
+    options: PropTypes.object,
+    onBack: PropTypes.func,
+    onClose: PropTypes.func,
+};
 
 export default connect((store) => {
     const settings = get(store, 'controller.settings.settings');
@@ -144,6 +195,6 @@ export default connect((store) => {
     return {
         xSteps,
         ySteps,
-        zSteps
+        zSteps,
     };
 })(Result);

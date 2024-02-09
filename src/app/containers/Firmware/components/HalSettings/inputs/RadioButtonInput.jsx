@@ -24,18 +24,22 @@ const RadioButtonInput = ({ info, setting, onChange }) => {
 
     return (
         <div className={styles.column}>
-            {
-                format.map((opt, index) => {
-                    let checked = index === localValue;
-                    let key = `${setting.setting}-${index}-key`;
-                    return (
-                        <div className={styles.row} key={key}>
-                            <span>{opt}:</span>
-                            <input type="radio" name={fieldKey} value={index} checked={checked} onChange={rbOnClick} />
-                        </div>
-                    );
-                })
-            }
+            {format.map((opt, index) => {
+                let checked = index === localValue;
+                let key = `${setting.setting}-${index}-key`;
+                return (
+                    <div className={styles.row} key={key}>
+                        <span>{opt}:</span>
+                        <input
+                            type="radio"
+                            name={fieldKey}
+                            value={index}
+                            checked={checked}
+                            onChange={rbOnClick}
+                        />
+                    </div>
+                );
+            })}
         </div>
     );
 };

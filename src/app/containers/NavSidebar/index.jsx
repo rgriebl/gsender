@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2021 Sienci Labs Inc.
  *
@@ -47,19 +46,23 @@ import Surfacing from '../Surfacing';
 import Calibration from '../Calibration';
 import useKeybinding from '../../lib/useKeybinding';
 
-
 class NavSidebar extends PureComponent {
     state = this.getInitialState();
 
     reconnectToLastDevice(port, baudrate, controllerType) {
-        controller.openPort(port, controllerType, {
-            baudrate: baudrate,
-            rtscts: false
-        }, (err) => {
-            if (err) {
-                return;
-            }
-        });
+        controller.openPort(
+            port,
+            controllerType,
+            {
+                baudrate: baudrate,
+                rtscts: false,
+            },
+            (err) => {
+                if (err) {
+                    return;
+                }
+            },
+        );
     }
 
     shuttleControlFunctions = {
@@ -81,8 +84,8 @@ class NavSidebar extends PureComponent {
                     this.actions.openModal(toolbar);
                 }
             }
-        }
-    }
+        },
+    };
 
     shuttleControlEvents = {
         OPEN_TOOLBAR_CONN: {
@@ -93,7 +96,7 @@ class NavSidebar extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: TOOLBAR_CATEGORY,
-            callback: this.shuttleControlFunctions.OPEN_TOOLBAR
+            callback: this.shuttleControlFunctions.OPEN_TOOLBAR,
         },
         OPEN_TOOLBAR_SURF: {
             title: 'Surfacing',
@@ -103,7 +106,7 @@ class NavSidebar extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: TOOLBAR_CATEGORY,
-            callback: this.shuttleControlFunctions.OPEN_TOOLBAR
+            callback: this.shuttleControlFunctions.OPEN_TOOLBAR,
         },
         OPEN_TOOLBAR_MAP: {
             title: 'Heightmap',
@@ -113,7 +116,7 @@ class NavSidebar extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: TOOLBAR_CATEGORY,
-            callback: this.shuttleControlFunctions.OPEN_TOOLBAR
+            callback: this.shuttleControlFunctions.OPEN_TOOLBAR,
         },
         OPEN_TOOLBAR_CALI: {
             title: 'Calibrate',
@@ -123,7 +126,7 @@ class NavSidebar extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: TOOLBAR_CATEGORY,
-            callback: this.shuttleControlFunctions.OPEN_TOOLBAR
+            callback: this.shuttleControlFunctions.OPEN_TOOLBAR,
         },
         OPEN_TOOLBAR_FIRM: {
             title: 'Firmware',
@@ -133,7 +136,7 @@ class NavSidebar extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: TOOLBAR_CATEGORY,
-            callback: this.shuttleControlFunctions.OPEN_TOOLBAR
+            callback: this.shuttleControlFunctions.OPEN_TOOLBAR,
         },
         OPEN_TOOLBAR_HELP: {
             title: 'Help',
@@ -143,7 +146,7 @@ class NavSidebar extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: TOOLBAR_CATEGORY,
-            callback: this.shuttleControlFunctions.OPEN_TOOLBAR
+            callback: this.shuttleControlFunctions.OPEN_TOOLBAR,
         },
         OPEN_TOOLBAR_SETT: {
             title: 'Settings',
@@ -153,21 +156,21 @@ class NavSidebar extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: TOOLBAR_CATEGORY,
-            callback: this.shuttleControlFunctions.OPEN_TOOLBAR
+            callback: this.shuttleControlFunctions.OPEN_TOOLBAR,
         },
-    }
+    };
 
     addShuttleControlEvents() {
         combokeys.reload();
 
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
     }
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
@@ -178,25 +181,30 @@ class NavSidebar extends PureComponent {
             this.setState({
                 modal: {
                     name: name,
-                    params: {}
-                }
+                    params: {},
+                },
             });
         },
         closeModal: () => {
             this.setState({
                 modal: {
                     name: MODAL_NONE,
-                    params: {}
-                }
+                    params: {},
+                },
             });
-        }
-    }
+        },
+    };
 
     componentDidMount() {
         this.addShuttleControlEvents();
         useKeybinding(this.shuttleControlEvents);
 
-        gamepad.on('gamepad:button', (event) => runAction({ event, shuttleControlEvents: this.shuttleControlEvents }));
+        gamepad.on('gamepad:button', (event) =>
+            runAction({
+                event,
+                shuttleControlEvents: this.shuttleControlEvents,
+            }),
+        );
     }
 
     componentWillUnmount() {
@@ -207,8 +215,8 @@ class NavSidebar extends PureComponent {
         return {
             modal: {
                 name: MODAL_NONE,
-                params: {}
-            }
+                params: {},
+            },
         };
     }
 
@@ -227,12 +235,10 @@ class NavSidebar extends PureComponent {
                     label="Surfacing"
                     onClick={() => actions.openModal(MODAL_SURFACING)}
                 />
-                {
-                    /*<NavSidebarLink
+                {/*<NavSidebarLink
                         url="" icon="fa fa-mountain" label="Heightmap"
                         disabled
-                    />*/
-                }
+                    />*/}
                 <NavSidebarLink
                     url=""
                     onClick={() => actions.openModal(MODAL_CALIBRATE)}
@@ -254,14 +260,36 @@ class NavSidebar extends PureComponent {
                     onClick={() => actions.openModal(MODAL_HELP)}
                 />
                 <NavSidebarLink
-                    url="" onClick={() => actions.openModal(MODAL_PREFERENCES)} icon="fa fa-cog"
+                    url=""
+                    onClick={() => actions.openModal(MODAL_PREFERENCES)}
+                    icon="fa fa-cog"
                     label=""
                 />
-                { state.modal.name === MODAL_FIRMWARE && <Firmware state={state} modalClose={actions.closeModal} /> }
-                { state.modal.name === MODAL_PREFERENCES && <Preferences state={state} modalClose={actions.closeModal} /> }
-                { state.modal.name === MODAL_SURFACING && <Surfacing state={state} modalClose={actions.closeModal} isDisabled={isDisabled} /> }
-                { state.modal.name === MODAL_CALIBRATE && <Calibration state={state} modalClose={actions.closeModal} /> }
-                { state.modal.name === MODAL_HELP && <HelpModal modalClose={actions.closeModal} /> }
+                {state.modal.name === MODAL_FIRMWARE && (
+                    <Firmware state={state} modalClose={actions.closeModal} />
+                )}
+                {state.modal.name === MODAL_PREFERENCES && (
+                    <Preferences
+                        state={state}
+                        modalClose={actions.closeModal}
+                    />
+                )}
+                {state.modal.name === MODAL_SURFACING && (
+                    <Surfacing
+                        state={state}
+                        modalClose={actions.closeModal}
+                        isDisabled={isDisabled}
+                    />
+                )}
+                {state.modal.name === MODAL_CALIBRATE && (
+                    <Calibration
+                        state={state}
+                        modalClose={actions.closeModal}
+                    />
+                )}
+                {state.modal.name === MODAL_HELP && (
+                    <HelpModal modalClose={actions.closeModal} />
+                )}
             </div>
         );
     }

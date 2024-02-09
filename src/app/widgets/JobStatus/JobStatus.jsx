@@ -40,7 +40,6 @@ import Overrides from './components/Overrides';
 import styles from './index.styl';
 import useKeybinding from '../../lib/useKeybinding';
 
-
 // TODO: This component needs an overhaul
 
 /**
@@ -58,28 +57,36 @@ class JobStatus extends PureComponent {
             const feedRate = ovF + (Number(amount) || 0);
 
             if (fileLoaded && connection.isConnected) {
-                if (get(reduxStore.getState(), 'visualizer.jobOverrides.toggleStatus') === 'jobStatus') {
+                if (
+                    get(
+                        reduxStore.getState(),
+                        'visualizer.jobOverrides.toggleStatus',
+                    ) === 'jobStatus'
+                ) {
                     this.handleOverrideToggle();
                 }
-                if (feedRate <= OVERRIDE_VALUE_RANGES.MAX && feedRate >= OVERRIDE_VALUE_RANGES.MIN) {
+                if (
+                    feedRate <= OVERRIDE_VALUE_RANGES.MAX &&
+                    feedRate >= OVERRIDE_VALUE_RANGES.MIN
+                ) {
                     switch (Number(amount)) {
-                    case 1:
-                        controller.write('\x93');
-                        break;
-                    case -1:
-                        controller.write('\x94');
-                        break;
-                    case 10:
-                        controller.write('\x91');
-                        break;
-                    case -10:
-                        controller.write('\x92');
-                        break;
-                    case 0:
-                        controller.write('\x90');
-                        break;
-                    default:
-                        break;
+                        case 1:
+                            controller.write('\x93');
+                            break;
+                        case -1:
+                            controller.write('\x94');
+                            break;
+                        case 10:
+                            controller.write('\x91');
+                            break;
+                        case -10:
+                            controller.write('\x92');
+                            break;
+                        case 0:
+                            controller.write('\x90');
+                            break;
+                        default:
+                            break;
                     }
                     pubsub.publish('feedrate:change', feedRate);
                 } else {
@@ -92,28 +99,36 @@ class JobStatus extends PureComponent {
             const spindleSpeed = ovS + (Number(amount) || 0);
 
             if (fileLoaded && connection.isConnected) {
-                if (get(reduxStore.getState(), 'visualizer.jobOverrides.toggleStatus') === 'jobStatus') {
+                if (
+                    get(
+                        reduxStore.getState(),
+                        'visualizer.jobOverrides.toggleStatus',
+                    ) === 'jobStatus'
+                ) {
                     this.handleOverrideToggle();
                 }
-                if (spindleSpeed <= OVERRIDE_VALUE_RANGES.MAX && spindleSpeed >= OVERRIDE_VALUE_RANGES.MIN) {
+                if (
+                    spindleSpeed <= OVERRIDE_VALUE_RANGES.MAX &&
+                    spindleSpeed >= OVERRIDE_VALUE_RANGES.MIN
+                ) {
                     switch (Number(amount)) {
-                    case 1:
-                        controller.write('\x9C');
-                        break;
-                    case -1:
-                        controller.write('\x9D');
-                        break;
-                    case 10:
-                        controller.write('\x9A');
-                        break;
-                    case -10:
-                        controller.write('\x9B');
-                        break;
-                    case 0:
-                        controller.write('\x99');
-                        break;
-                    default:
-                        break;
+                        case 1:
+                            controller.write('\x9C');
+                            break;
+                        case -1:
+                            controller.write('\x9D');
+                            break;
+                        case 10:
+                            controller.write('\x9A');
+                            break;
+                        case -10:
+                            controller.write('\x9B');
+                            break;
+                        case 0:
+                            controller.write('\x99');
+                            break;
+                        default:
+                            break;
                     }
                     pubsub.publish('spindlespeed:change', spindleSpeed);
                 } else {
@@ -121,7 +136,7 @@ class JobStatus extends PureComponent {
                 }
             }
         },
-    }
+    };
 
     shuttleControlEvents = {
         FEEDRATE_OVERRIDE_P: {
@@ -194,7 +209,7 @@ class JobStatus extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         SPINDLE_OVERRIDE_PP: {
             title: 'Spindle/Laser ++',
@@ -206,7 +221,7 @@ class JobStatus extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         SPINDLE_OVERRIDE_M: {
             title: 'Spindle/Laser -',
@@ -218,7 +233,7 @@ class JobStatus extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         SPINDLE_OVERRIDE_MM: {
             title: 'Spindle/Laser --',
@@ -230,7 +245,7 @@ class JobStatus extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
         SPINDLE_OVERRIDE_RESET: {
             title: 'Spindle/Laser Reset',
@@ -242,9 +257,9 @@ class JobStatus extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: OVERRIDES_CATEGORY,
-            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE
+            callback: this.shuttleControlFunctions.SPINDLE_OVERRIDE,
         },
-    }
+    };
 
     /**
      * Determine the file size format between bytes, kilobytes (KB) and megabytes (MB)
@@ -263,48 +278,73 @@ class JobStatus extends PureComponent {
     };
 
     handleOverrideToggle = () => {
-        if (get(reduxStore.getState(), 'visualizer.jobOverrides.toggleStatus') === 'jobStatus') {
-            localStorage.setItem('jobOverrideToggle', JSON.stringify({
-                isChecked: true,
-                toggleStatus: 'overrides',
-            }));
+        if (
+            get(
+                reduxStore.getState(),
+                'visualizer.jobOverrides.toggleStatus',
+            ) === 'jobStatus'
+        ) {
+            localStorage.setItem(
+                'jobOverrideToggle',
+                JSON.stringify({
+                    isChecked: true,
+                    toggleStatus: 'overrides',
+                }),
+            );
         } else {
-            localStorage.setItem('jobOverrideToggle', JSON.stringify({
-                isChecked: false,
-                toggleStatus: 'jobStatus',
-            }));
+            localStorage.setItem(
+                'jobOverrideToggle',
+                JSON.stringify({
+                    isChecked: false,
+                    toggleStatus: 'jobStatus',
+                }),
+            );
         }
-        reduxStore.dispatch({ type: UPDATE_JOB_OVERRIDES, payload: JSON.parse(localStorage.getItem('jobOverrideToggle')) });
-    }
+        reduxStore.dispatch({
+            type: UPDATE_JOB_OVERRIDES,
+            payload: JSON.parse(localStorage.getItem('jobOverrideToggle')),
+        });
+    };
 
     addShuttleControlEvents() {
         combokeys.reload();
 
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
-            const callback = eventName === 'MACRO' ? this.shuttleControlEvents[eventName] : this.shuttleControlEvents[eventName].callback;
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
+            const callback =
+                eventName === 'MACRO'
+                    ? this.shuttleControlEvents[eventName]
+                    : this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
     }
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
-            const callback = eventName === 'MACRO' ? this.shuttleControlEvents[eventName] : this.shuttleControlEvents[eventName].callback;
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
+            const callback =
+                eventName === 'MACRO'
+                    ? this.shuttleControlEvents[eventName]
+                    : this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
     }
 
     componentDidUpdate() {
         if (!this.props.fileLoaded || !this.props.connection.isConnected) {
-            localStorage.setItem('jobOverrideToggle', JSON.stringify({ isChecked: false,
-                toggleStatus: 'jobStatus', }));
+            localStorage.setItem(
+                'jobOverrideToggle',
+                JSON.stringify({ isChecked: false, toggleStatus: 'jobStatus' }),
+            );
         }
     }
 
     componentDidMount() {
-        localStorage.setItem('jobOverrideToggle', JSON.stringify({
-            isChecked: false,
-            toggleStatus: 'jobStatus',
-        }));
+        localStorage.setItem(
+            'jobOverrideToggle',
+            JSON.stringify({
+                isChecked: false,
+                toggleStatus: 'jobStatus',
+            }),
+        );
         this.addShuttleControlEvents();
         useKeybinding(this.shuttleControlEvents);
     }
@@ -314,50 +354,95 @@ class JobStatus extends PureComponent {
     }
 
     render() {
-        const { state, name, size, total, fileLoaded, path, filteredPath, connection } = this.props;
+        const {
+            state,
+            name,
+            size,
+            total,
+            fileLoaded,
+            path,
+            filteredPath,
+            connection,
+        } = this.props;
 
         return (
-            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
                 <div className={styles['file-info']}>
-                    {
-                        fileLoaded
-                            ? (
-                                <>
-                                    <div className={styles['file-name']}>
-                                        <TooltipCustom content={`${name} (${this.fileSizeFormat(size)}, ${total} lines)`} style={{ wordWrap: 'break-word' }}>
-                                            <span className={styles['file-text']}>{name}</span>{' '}<span style={{ marginRight: '2rem' }}>({this.fileSizeFormat(size)}, {total} lines)</span>
-                                        </TooltipCustom>
-                                        {connection.isConnected
-                                            ? (
-                                                <ToggleSwitch
-                                                    label="Overrides"
-                                                    onChange={() => this.handleOverrideToggle()}
-                                                    className={styles.litetoggle}
-                                                    checked={get(reduxStore.getState(), 'visualizer.jobOverrides.isChecked')}
-                                                    size="md"
-                                                    style={{ minWidth: '10rem' }}
-                                                />
-                                            ) : null
+                    {fileLoaded ? (
+                        <>
+                            <div className={styles['file-name']}>
+                                <TooltipCustom
+                                    content={`${name} (${this.fileSizeFormat(size)}, ${total} lines)`}
+                                    style={{ wordWrap: 'break-word' }}
+                                >
+                                    <span className={styles['file-text']}>
+                                        {name}
+                                    </span>{' '}
+                                    <span style={{ marginRight: '2rem' }}>
+                                        ({this.fileSizeFormat(size)}, {total}{' '}
+                                        lines)
+                                    </span>
+                                </TooltipCustom>
+                                {connection.isConnected ? (
+                                    <ToggleSwitch
+                                        label="Overrides"
+                                        onChange={() =>
+                                            this.handleOverrideToggle()
                                         }
-                                    </div>
+                                        className={styles.litetoggle}
+                                        checked={get(
+                                            reduxStore.getState(),
+                                            'visualizer.jobOverrides.isChecked',
+                                        )}
+                                        size="md"
+                                        style={{ minWidth: '10rem' }}
+                                    />
+                                ) : null}
+                            </div>
 
-                                    {filteredPath && (
-                                        <div className={styles['file-path']}>
-                                            <TooltipCustom content={`File Path: ${path}`} style={{ wordWrap: 'break-word' }}>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <span>Path:</span> <span className={styles['file-text']}>{filteredPath}</span>
-                                                </div>
-                                            </TooltipCustom>
+                            {filteredPath && (
+                                <div className={styles['file-path']}>
+                                    <TooltipCustom
+                                        content={`File Path: ${path}`}
+                                        style={{ wordWrap: 'break-word' }}
+                                    >
+                                        <div style={{ textAlign: 'right' }}>
+                                            <span>Path:</span>{' '}
+                                            <span
+                                                className={styles['file-text']}
+                                            >
+                                                {filteredPath}
+                                            </span>
                                         </div>
-                                    )}
-                                </>
-                            )
-                            : (<div className={styles['file-name']}><span className={styles['file-text']}>No File Loaded</span></div>)}
+                                    </TooltipCustom>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className={styles['file-name']}>
+                            <span className={styles['file-text']}>
+                                No File Loaded
+                            </span>
+                        </div>
+                    )}
                 </div>
-                {get(reduxStore.getState(), 'visualizer.jobOverrides.isChecked') && state.senderStatus && fileLoaded
-                    ? <Overrides state={state} />
-                    : <IdleInfo state={state} />
-                }
+                {get(
+                    reduxStore.getState(),
+                    'visualizer.jobOverrides.isChecked',
+                ) &&
+                state.senderStatus &&
+                fileLoaded ? (
+                    <Overrides state={state} />
+                ) : (
+                    <IdleInfo state={state} />
+                )}
             </div>
         );
     }
@@ -369,7 +454,11 @@ export default connect((store) => {
     const name = get(file, 'name', '');
     const filteredPath = path.replace(name, '');
     const connection = get(store, 'connection');
-    const activeState = get(store, 'controller.state.status.activeState', 'Idle');
+    const activeState = get(
+        store,
+        'controller.state.status.activeState',
+        'Idle',
+    );
     const overrides = get(store, 'controller.state.status.ov', [0, 0, 0]);
 
     const ovF = overrides[0];

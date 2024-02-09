@@ -5,36 +5,60 @@ import FunctionButton from 'app/components/FunctionButton/FunctionButton';
 
 import styles from './index.styl';
 
-const ActionItem = ({ checked, onChange, id, isCurrentAction, hasBeenChanged, label: Label, hideCompleteButton, ...rest }) => {
+const ActionItem = ({
+    checked,
+    onChange,
+    id,
+    isCurrentAction,
+    hasBeenChanged,
+    label: Label,
+    hideCompleteButton,
+    ...rest
+}) => {
     return (
-        <div className={(isCurrentAction || hasBeenChanged) ? styles.action : styles.actionInactive}>
-            {
-                isCurrentAction
-                    ? <i className={classnames('fas fa-arrow-circle-right', styles.currentActionItem)} />
-                    : (
-                        <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={(e) => onChange({ id, checked: e.target.checked })}
-                            style={{ width: '20px', height: '20px', margin: 0 }}
-                            disabled={!(isCurrentAction || hasBeenChanged)}
-                        />
-                    )
+        <div
+            className={
+                isCurrentAction || hasBeenChanged
+                    ? styles.action
+                    : styles.actionInactive
             }
+        >
+            {isCurrentAction ? (
+                <i
+                    className={classnames(
+                        'fas fa-arrow-circle-right',
+                        styles.currentActionItem,
+                    )}
+                />
+            ) : (
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) =>
+                        onChange({ id, checked: e.target.checked })
+                    }
+                    style={{ width: '20px', height: '20px', margin: 0 }}
+                    disabled={!(isCurrentAction || hasBeenChanged)}
+                />
+            )}
 
-            {
-                !hideCompleteButton && (
-                    <FunctionButton
-                        style={{ margin: 0, width: '100px' }}
-                        disabled={(!isCurrentAction || hasBeenChanged)}
-                        onClick={() => onChange({ id, checked: true })}
-                    >
-                        Complete
-                    </FunctionButton>
-                )
-            }
+            {!hideCompleteButton && (
+                <FunctionButton
+                    style={{ margin: 0, width: '100px' }}
+                    disabled={!isCurrentAction || hasBeenChanged}
+                    onClick={() => onChange({ id, checked: true })}
+                >
+                    Complete
+                </FunctionButton>
+            )}
 
-            <Label {...rest} isCurrentAction={isCurrentAction} onChange={({ axis, value }) => onChange({ id, checked: true, axis, value })} />
+            <Label
+                {...rest}
+                isCurrentAction={isCurrentAction}
+                onChange={({ axis, value }) =>
+                    onChange({ id, checked: true, axis, value })
+                }
+            />
         </div>
     );
 };

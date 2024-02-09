@@ -26,7 +26,10 @@ module.exports = [
     '%wait\n',
     { type: 'header', text: 'User-defined global variables' },
     '%global.tool = Number(tool) || 0\n',
-    { type: 'header', text: 'Display a global variable using an inline comment' },
+    {
+        type: 'header',
+        text: 'Display a global variable using an inline comment',
+    },
     '(tool=[global.tool])\n',
     { type: 'header', text: 'Keep a backup of current work position' },
     '%X0=posx,Y0=posy,Z0=posz\n',
@@ -52,7 +55,10 @@ module.exports = [
     '[posa]',
     { type: 'header', text: 'Set bounding box' },
     '%xmin=0,xmax=100,ymin=0,ymax=100,zmin=0,zmax=50\n',
-    { type: 'header', text: 'Request current Parameters - must do before using parameters' },
+    {
+        type: 'header',
+        text: 'Request current Parameters - must do before using parameters',
+    },
     '$#\n%wait',
     { type: 'header', text: 'Get current Parameters' },
     '%PROBE_X=params.PRB.x\n',

@@ -41,7 +41,7 @@ import logger from '../../lib/logger';
 import {
     GRBL_HAL_ACTIVE_STATE_IDLE,
     GRBL_HAL_ACTIVE_STATE_ALARM,
-    GRBL_HAL_ACTIVE_STATE_CHECK
+    GRBL_HAL_ACTIVE_STATE_CHECK,
 } from './constants';
 import GrblHalLineParserResultInfo from './GrblHalLineParserResultInfo';
 import GrblHalLineParserResultSettingDetails from './GrblHalLineParserResultSettingDetails';
@@ -59,12 +59,12 @@ class GrblHalRunner extends events.EventEmitter {
             mpos: {
                 x: '0.000',
                 y: '0.000',
-                z: '0.000'
+                z: '0.000',
             },
             wpos: {
                 x: '0.000',
                 y: '0.000',
-                z: '0.000'
+                z: '0.000',
             },
             ov: [],
             alarmCode: '',
@@ -83,31 +83,26 @@ class GrblHalRunner extends events.EventEmitter {
                 program: 'M0', // M0, M1, M2, M30
                 spindle: 'M5', // M3: Spindle (cw), M4: Spindle (ccw), M5: Spindle off
                 coolant: 'M9', // M7: Mist coolant, M8: Flood coolant, M9: Coolant off, [M7,M8]: Both on
-                tool: '0' // Last non-0 parsed tool
+                tool: '0', // Last non-0 parsed tool
             },
             tool: '',
             feedrate: '',
             spindle: '',
             axes: {
                 count: 3,
-                axes: ['X', 'Y', 'Z']
+                axes: ['X', 'Y', 'Z'],
             },
-        }
+        },
     };
 
     settings = {
         version: '',
-        parameters: {
-        },
-        settings: {
-        },
-        groups: {
-        },
-        info: {
-        },
-        descriptions: {
-        },
-        alarms: {}
+        parameters: {},
+        settings: {},
+        groups: {},
+        info: {},
+        descriptions: {},
+        alarms: {},
     };
 
     parser = new GrblHalLineParser();
@@ -134,15 +129,27 @@ class GrblHalRunner extends events.EventEmitter {
                 payload.wpos = payload.wpos || {};
                 _.each(payload.mpos, (mpos, axis) => {
                     const digits = decimalPlaces(mpos);
-                    const wco = _.get((payload.wco || this.state.status.wco), axis, 0);
-                    payload.wpos[axis] = (Number(mpos) - Number(wco)).toFixed(digits);
+                    const wco = _.get(
+                        payload.wco || this.state.status.wco,
+                        axis,
+                        0,
+                    );
+                    payload.wpos[axis] = (Number(mpos) - Number(wco)).toFixed(
+                        digits,
+                    );
                 });
             } else if (_.has(payload, 'wpos') && !_.has(payload, 'mpos')) {
                 payload.mpos = payload.mpos || {};
                 _.each(payload.wpos, (wpos, axis) => {
                     const digits = decimalPlaces(wpos);
-                    const wco = _.get((payload.wco || this.state.status.wco), axis, 0);
-                    payload.mpos[axis] = (Number(wpos) + Number(wco)).toFixed(digits);
+                    const wco = _.get(
+                        payload.wco || this.state.status.wco,
+                        axis,
+                        0,
+                    );
+                    payload.mpos[axis] = (Number(wpos) + Number(wco)).toFixed(
+                        digits,
+                    );
                 });
             }
 
@@ -153,8 +160,8 @@ class GrblHalRunner extends events.EventEmitter {
                 status: {
                     ...this.state.status,
                     probeActive: probeActive,
-                    ...payload
-                }
+                    ...payload,
+                },
             };
 
             // Delete the raw key
@@ -176,19 +183,34 @@ class GrblHalRunner extends events.EventEmitter {
                 payload.wpos = payload.wpos || {};
                 _.each(payload.mpos, (mpos, axis) => {
                     const digits = decimalPlaces(mpos);
-                    const wco = _.get((payload.wco || this.state.status.wco), axis, 0);
-                    payload.wpos[axis] = (Number(mpos) - Number(wco)).toFixed(digits);
+                    const wco = _.get(
+                        payload.wco || this.state.status.wco,
+                        axis,
+                        0,
+                    );
+                    payload.wpos[axis] = (Number(mpos) - Number(wco)).toFixed(
+                        digits,
+                    );
                 });
             } else if (_.has(payload, 'wpos') && !_.has(payload, 'mpos')) {
                 payload.mpos = payload.mpos || {};
                 _.each(payload.wpos, (wpos, axis) => {
                     const digits = decimalPlaces(wpos);
-                    const wco = _.get((payload.wco || this.state.status.wco), axis, 0);
-                    payload.mpos[axis] = (Number(wpos) + Number(wco)).toFixed(digits);
+                    const wco = _.get(
+                        payload.wco || this.state.status.wco,
+                        axis,
+                        0,
+                    );
+                    payload.mpos[axis] = (Number(wpos) + Number(wco)).toFixed(
+                        digits,
+                    );
                 });
             }
 
-            if (payload.activeState === GRBL_HAL_ACTIVE_STATE_ALARM && payload.subState) {
+            if (
+                payload.activeState === GRBL_HAL_ACTIVE_STATE_ALARM &&
+                payload.subState
+            ) {
                 payload.alarmCode = Number(payload.subState);
             }
 
@@ -196,8 +218,8 @@ class GrblHalRunner extends events.EventEmitter {
                 ...this.state,
                 status: {
                     ...this.state.status,
-                    ...payload
-                }
+                    ...payload,
+                },
             };
 
             if (!_.isEqual(this.state.status, nextState.status)) {
@@ -222,8 +244,8 @@ class GrblHalRunner extends events.EventEmitter {
                 status: {
                     ...this.state.status,
                     activeState: GRBL_HAL_ACTIVE_STATE_ALARM,
-                    alarmCode: Number(payload.message)
-                }
+                    alarmCode: Number(payload.message),
+                },
             };
             if (!_.isEqual(this.state.status, nextState.status)) {
                 this.state = nextState; // enforce change
@@ -248,8 +270,8 @@ class GrblHalRunner extends events.EventEmitter {
                     modal: modal,
                     tool: tool,
                     feedrate: feedrate,
-                    spindle: spindle
-                }
+                    spindle: spindle,
+                },
             };
             if (!_.isEqual(this.state.parserstate, nextState.parserstate)) {
                 this.state = nextState; // enforce change
@@ -263,10 +285,15 @@ class GrblHalRunner extends events.EventEmitter {
                 ...this.settings,
                 parameters: {
                     ...this.settings.parameters,
-                    [name]: value
-                }
+                    [name]: value,
+                },
             };
-            if (!_.isEqual(this.settings.parameters[name], nextSettings.parameters[name])) {
+            if (
+                !_.isEqual(
+                    this.settings.parameters[name],
+                    nextSettings.parameters[name],
+                )
+            ) {
                 this.settings = nextSettings; // enforce change
             }
             this.emit('parameters', payload);
@@ -275,14 +302,14 @@ class GrblHalRunner extends events.EventEmitter {
         if (type === GrblHalLineParserResultAXS) {
             this.state.axes = {
                 count: payload.count,
-                axes: payload.axes
+                axes: payload.axes,
             };
             return;
         }
         if (type === GrblHalLineParserResultAlarmDetails) {
             this.settings.alarms[Number(payload.id)] = {
                 description: payload.description,
-                id: payload.id
+                id: payload.id,
             };
             this.emit('alarmDetail', this.settings.alarms);
             return;
@@ -302,8 +329,8 @@ class GrblHalRunner extends events.EventEmitter {
                 ...this.settings,
                 settings: {
                     ...this.settings.settings,
-                    [name]: value
-                }
+                    [name]: value,
+                },
             };
             if (this.settings.settings[name] !== nextSettings.settings[name]) {
                 this.settings = nextSettings; // enforce change
@@ -313,9 +340,10 @@ class GrblHalRunner extends events.EventEmitter {
         }
         if (type === GrblHalLineParserResultVersion) {
             const { version } = payload;
-            const nextSettings = { // enforce change
+            const nextSettings = {
+                // enforce change
                 ...this.settings,
-                version: version
+                version: version,
             };
             if (!_.isEqual(this.settings.version, nextSettings.version)) {
                 this.settings = nextSettings; // enforce change
@@ -331,8 +359,8 @@ class GrblHalRunner extends events.EventEmitter {
                     ...this.state.status,
                     activeState: GRBL_HAL_ACTIVE_STATE_ALARM,
                     alarmCode: Number(code),
-                    subState: Number(code)
-                }
+                    subState: Number(code),
+                },
             };
             if (!_.isEqual(this.state.status, nextState.status)) {
                 this.state = nextState; // enforce change
@@ -341,12 +369,13 @@ class GrblHalRunner extends events.EventEmitter {
         }
         if (type === GrblHalLineParserResultInfo) {
             const { name, value } = payload;
-            const nextSettings = { // enforce change
+            const nextSettings = {
+                // enforce change
                 ...this.settings,
                 info: {
                     ...this.settings.info,
-                    [name]: value
-                }
+                    [name]: value,
+                },
             };
             if (this.settings.info[name] !== nextSettings.info[name]) {
                 this.settings = nextSettings; // enforce change
@@ -360,7 +389,7 @@ class GrblHalRunner extends events.EventEmitter {
             const { id, ...details } = payload;
             this.settings.descriptions = {
                 ...this.settings.descriptions,
-                [id]: details
+                [id]: details,
             };
             this.emit('description', payload);
             return;
@@ -373,7 +402,7 @@ class GrblHalRunner extends events.EventEmitter {
             this.settings.descriptions[payload.id] = {
                 ...this.settings.descriptions[id],
                 unitString,
-                details
+                details,
             };
             this.emit('description');
             return;

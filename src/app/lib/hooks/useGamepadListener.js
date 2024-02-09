@@ -39,7 +39,11 @@ export const useGamepadListener = ({ profile, axisThreshold } = {}) => {
 
         // Map values under threshold to zero for easier hook usage when determining whether
         // that certain axis was changed or not
-        setAxes(gamepad.axes.map(axis => (Math.abs(axis) < axisThreshold ? 0 : axis)));
+        setAxes(
+            gamepad.axes.map((axis) =>
+                Math.abs(axis) < axisThreshold ? 0 : axis,
+            ),
+        );
     };
 
     return { buttons, axes };

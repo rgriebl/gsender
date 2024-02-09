@@ -37,149 +37,181 @@ import WidgetList from './WidgetList';
 class WidgetManager extends PureComponent {
     static propTypes = {
         onSave: PropTypes.func,
-        onClose: PropTypes.func.isRequired
+        onClose: PropTypes.func.isRequired,
     };
 
     state = {
-        show: true
+        show: true,
     };
 
     widgetList = [
         {
             id: 'visualizer',
             caption: i18n._('Visualizer Widget'),
-            details: i18n._('This widget visualizes a G-code file and simulates the tool path.'),
+            details: i18n._(
+                'This widget visualizes a G-code file and simulates the tool path.',
+            ),
             visible: true,
-            disabled: true
+            disabled: true,
         },
         {
             id: 'connection',
             caption: i18n._('Connection Widget'),
-            details: i18n._('This widget lets you establish a connection to a serial port.'),
+            details: i18n._(
+                'This widget lets you establish a connection to a serial port.',
+            ),
             visible: true,
-            disabled: true
+            disabled: true,
         },
         {
             id: 'console',
             caption: i18n._('Console Widget'),
-            details: i18n._('This widget lets you read and write data to the CNC controller connected to a serial port.'),
+            details: i18n._(
+                'This widget lets you read and write data to the CNC controller connected to a serial port.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'location',
             caption: i18n._('Location Widget'),
-            details: i18n._('This widget displays machine and work coordinates for all axes.'),
+            details: i18n._(
+                'This widget displays machine and work coordinates for all axes.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'grbl',
             caption: i18n._('Grbl Widget'),
-            details: i18n._('This widget shows the Grbl state and provides Grbl specific features.'),
+            details: i18n._(
+                'This widget shows the Grbl state and provides Grbl specific features.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'job_status',
             caption: i18n._('Job Status Widget'),
-            details: i18n._('This widget displays the job progression and feed and spindle overrides.'),
+            details: i18n._(
+                'This widget displays the job progression and feed and spindle overrides.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'marlin',
             caption: i18n._('Marlin Widget'),
-            details: i18n._('This widget shows the Marlin state and provides Marlin specific features.'),
+            details: i18n._(
+                'This widget shows the Marlin state and provides Marlin specific features.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'smoothie',
             caption: i18n._('Smoothie Widget'),
-            details: i18n._('This widget shows the Smoothie state and provides Smoothie specific features.'),
+            details: i18n._(
+                'This widget shows the Smoothie state and provides Smoothie specific features.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'tinyg',
             caption: i18n._('TinyG Widget'),
-            details: i18n._('This widget shows the TinyG state and provides TinyG specific features.'),
+            details: i18n._(
+                'This widget shows the TinyG state and provides TinyG specific features.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'axes',
             caption: i18n._('JogControl Widget'),
-            details: i18n._('This widget shows the XYZ position. It includes jog controls, homing, and axis zeroing.'),
+            details: i18n._(
+                'This widget shows the XYZ position. It includes jog controls, homing, and axis zeroing.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'location',
             caption: i18n._('Location Widget'),
-            details: i18n._('This widget displays machine and work coordinates for all axes'),
+            details: i18n._(
+                'This widget displays machine and work coordinates for all axes',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'gcode',
             caption: i18n._('G-code Widget'),
-            details: i18n._('This widget shows the current status of G-code commands.'),
+            details: i18n._(
+                'This widget shows the current status of G-code commands.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'laser',
             caption: i18n._('Laser Widget'),
-            details: i18n._('This widget allows you control laser intensity and turn the laser on/off.'),
+            details: i18n._(
+                'This widget allows you control laser intensity and turn the laser on/off.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'macro',
             caption: i18n._('Macro Widget'),
-            details: i18n._('This widget can use macros to automate routine tasks.'),
+            details: i18n._(
+                'This widget can use macros to automate routine tasks.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'probe',
             caption: i18n._('Probe Widget'),
-            details: i18n._('This widget helps you use a touch plate to set your Z zero offset.'),
+            details: i18n._(
+                'This widget helps you use a touch plate to set your Z zero offset.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'spindle',
             caption: i18n._('Spindle Widget'),
             details: i18n._('This widget provides the spindle control.'),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'custom',
             caption: i18n._('Custom Widget'),
-            details: i18n._('This widget gives you a communication interface for creating your own widget.'),
+            details: i18n._(
+                'This widget gives you a communication interface for creating your own widget.',
+            ),
             visible: true,
-            disabled: false
+            disabled: false,
         },
         {
             id: 'webcam',
             caption: i18n._('Webcam Widget'),
             details: i18n._('This widget lets you monitor a webcam.'),
             visible: true,
-            disabled: false
-        }
+            disabled: false,
+        },
     ];
 
     handleSave = () => {
         this.setState({ show: false });
 
-        const allWidgets = this.widgetList.map(item => item.id);
+        const allWidgets = this.widgetList.map((item) => item.id);
         const activeWidgets = this.widgetList
-            .filter(item => item.visible)
-            .map(item => item.id);
+            .filter((item) => item.visible)
+            .map((item) => item.id);
         const inactiveWidgets = difference(allWidgets, activeWidgets);
 
         this.props.onSave(activeWidgets, inactiveWidgets);
@@ -192,17 +224,29 @@ class WidgetManager extends PureComponent {
     constructor(props) {
         super(props);
 
-        this.widgetList = this.widgetList.filter(widgetItem => {
-            if (widgetItem.id === 'grbl' && !includes(controller.loadedControllers, GRBL)) {
+        this.widgetList = this.widgetList.filter((widgetItem) => {
+            if (
+                widgetItem.id === 'grbl' &&
+                !includes(controller.loadedControllers, GRBL)
+            ) {
                 return false;
             }
-            if (widgetItem.id === 'marlin' && !includes(controller.loadedControllers, MARLIN)) {
+            if (
+                widgetItem.id === 'marlin' &&
+                !includes(controller.loadedControllers, MARLIN)
+            ) {
                 return false;
             }
-            if (widgetItem.id === 'smoothie' && !includes(controller.loadedControllers, SMOOTHIE)) {
+            if (
+                widgetItem.id === 'smoothie' &&
+                !includes(controller.loadedControllers, SMOOTHIE)
+            ) {
                 return false;
             }
-            if (widgetItem.id === 'tinyg' && !includes(controller.loadedControllers, TINYG)) {
+            if (
+                widgetItem.id === 'tinyg' &&
+                !includes(controller.loadedControllers, TINYG)
+            ) {
                 return false;
             }
             return true;
@@ -210,21 +254,28 @@ class WidgetManager extends PureComponent {
     }
 
     componentDidUpdate() {
-        if (!(this.state.show)) {
+        if (!this.state.show) {
             this.props.onClose();
         }
     }
 
     render() {
-        const defaultWidgets = store.get('workspace.container.default.widgets', [])
-            .map(widgetId => widgetId.split(':')[0]);
-        const primaryWidgets = store.get('workspace.container.primary.widgets', [])
-            .map(widgetId => widgetId.split(':')[0]);
-        const secondaryWidgets = store.get('workspace.container.secondary.widgets', [])
-            .map(widgetId => widgetId.split(':')[0]);
-        const activeWidgets = union(defaultWidgets, primaryWidgets, secondaryWidgets);
+        const defaultWidgets = store
+            .get('workspace.container.default.widgets', [])
+            .map((widgetId) => widgetId.split(':')[0]);
+        const primaryWidgets = store
+            .get('workspace.container.primary.widgets', [])
+            .map((widgetId) => widgetId.split(':')[0]);
+        const secondaryWidgets = store
+            .get('workspace.container.secondary.widgets', [])
+            .map((widgetId) => widgetId.split(':')[0]);
+        const activeWidgets = union(
+            defaultWidgets,
+            primaryWidgets,
+            secondaryWidgets,
+        );
 
-        this.widgetList.forEach(widget => {
+        this.widgetList.forEach((widget) => {
             if (includes(activeWidgets, widget.id)) {
                 widget.visible = true;
             } else {
@@ -233,11 +284,7 @@ class WidgetManager extends PureComponent {
         });
 
         return (
-            <Modal
-                size="md"
-                onClose={this.handleCancel}
-                show={this.state.show}
-            >
+            <Modal size="md" onClose={this.handleCancel} show={this.state.show}>
                 <Modal.Header>
                     <Modal.Title>{i18n._('Widgets')}</Modal.Title>
                 </Modal.Header>

@@ -9,6 +9,7 @@ const ShowTooltip = ({ tooltip, children }) => {
     }
 
     return children;
-}; ShowTooltip.propTypes = { tooltip: PropTypes.object };
+};
+ShowTooltip.propTypes = { tooltip: PropTypes.object };
 
 export default ShowTooltip;

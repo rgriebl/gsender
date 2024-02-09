@@ -1,12 +1,14 @@
 import config from '../services/configstore';
-import {
-    ERR_INTERNAL_SERVER_ERROR
-} from '../constants';
+import { ERR_INTERNAL_SERVER_ERROR } from '../constants';
 
 const CONFIG_KEY = 'remoteSettings';
 
 const getRemoteSettings = () => {
-    const headlessSettings = config.get(CONFIG_KEY, { ip: '', port: 8000, headlessStatus: false });
+    const headlessSettings = config.get(CONFIG_KEY, {
+        ip: '',
+        port: 8000,
+        headlessStatus: false,
+    });
     return headlessSettings;
 };
 
@@ -22,7 +24,9 @@ export const update = (req, res) => {
         res.send({ message: 'headless settings saved' });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save settings' + JSON.stringify(headlessSettings.rcfile)
+            msg:
+                'Failed to save settings' +
+                JSON.stringify(headlessSettings.rcfile),
         });
     }
 };

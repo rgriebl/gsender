@@ -2,7 +2,6 @@ import React from 'react';
 import Modal from 'app/components/ToolModal/ToolModal';
 import PropType from 'prop-types';
 
-
 const DialogBox = ({ title = '', show = false, children, onClose }) => {
     return (
         <Modal

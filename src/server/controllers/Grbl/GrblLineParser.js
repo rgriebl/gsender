@@ -91,7 +91,7 @@ class GrblLineParser {
             GrblLineParserResultSettings,
 
             // Grbl X.Xx ['$' for help]
-            GrblLineParserResultStartup
+            GrblLineParserResultStartup,
         ];
 
         for (let parser of parsers) {
@@ -105,8 +105,8 @@ class GrblLineParser {
         return {
             type: null,
             payload: {
-                raw: line
-            }
+                raw: line,
+            },
         };
     }
 }

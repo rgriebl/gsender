@@ -45,11 +45,14 @@ class AutoUpdater {
         //     log.debug('A new update is available');
         // });
         // On Windows only `releaseName` is available.
-        autoUpdater.addListener('update-downloaded', (event, releaseNotes, releaseName, releaseDate, updateURL) => {
-            const title = 'A new update is ready to install';
-            const message = `Version ${releaseName} is downloaded and will be automatically installed on quit`;
-            notify(title, message);
-        });
+        autoUpdater.addListener(
+            'update-downloaded',
+            (event, releaseNotes, releaseName, releaseDate, updateURL) => {
+                const title = 'A new update is ready to install';
+                const message = `Version ${releaseName} is downloaded and will be automatically installed on quit`;
+                notify(title, message);
+            },
+        );
         autoUpdater.addListener('error', (err) => {
             log.error(err);
         });

@@ -12,12 +12,12 @@ class GrblHalLineParserResultAXS {
 
         const payload = {
             count: axisCount,
-            axes: axes
+            axes: axes,
         };
 
         return {
             type: GrblHalLineParserResultAXS,
-            payload
+            payload,
         };
     }
 }

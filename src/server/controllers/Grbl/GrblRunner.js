@@ -35,10 +35,7 @@ import GrblLineParserResultFeedback from './GrblLineParserResultFeedback';
 import GrblLineParserResultSettings from './GrblLineParserResultSettings';
 import GrblLineParserResultStartup from './GrblLineParserResultStartup';
 import logger from '../../lib/logger';
-import {
-    GRBL_ACTIVE_STATE_IDLE,
-    GRBL_ACTIVE_STATE_ALARM
-} from './constants';
+import { GRBL_ACTIVE_STATE_IDLE, GRBL_ACTIVE_STATE_ALARM } from './constants';
 
 const log = logger('controller:Grbl');
 
@@ -49,17 +46,17 @@ class GrblRunner extends events.EventEmitter {
             mpos: {
                 x: '0.000',
                 y: '0.000',
-                z: '0.000'
+                z: '0.000',
             },
             wpos: {
                 x: '0.000',
                 y: '0.000',
-                z: '0.000'
+                z: '0.000',
             },
             ov: [],
             alarmCode: 'Homing',
             probeActive: false,
-            pinState: {}
+            pinState: {},
         },
         parserstate: {
             modal: {
@@ -72,20 +69,18 @@ class GrblRunner extends events.EventEmitter {
                 program: 'M0', // M0, M1, M2, M30
                 spindle: 'M5', // M3: Spindle (cw), M4: Spindle (ccw), M5: Spindle off
                 coolant: 'M9', // M7: Mist coolant, M8: Flood coolant, M9: Coolant off, [M7,M8]: Both on
-                tool: '0' // Last non-0 parsed tool
+                tool: '0', // Last non-0 parsed tool
             },
             tool: '',
             feedrate: '',
             spindle: '',
-        }
+        },
     };
 
     settings = {
         version: '',
-        parameters: {
-        },
-        settings: {
-        }
+        parameters: {},
+        settings: {},
     };
 
     parser = new GrblLineParser();
@@ -112,15 +107,27 @@ class GrblRunner extends events.EventEmitter {
                 payload.wpos = payload.wpos || {};
                 _.each(payload.mpos, (mpos, axis) => {
                     const digits = decimalPlaces(mpos);
-                    const wco = _.get((payload.wco || this.state.status.wco), axis, 0);
-                    payload.wpos[axis] = (Number(mpos) - Number(wco)).toFixed(digits);
+                    const wco = _.get(
+                        payload.wco || this.state.status.wco,
+                        axis,
+                        0,
+                    );
+                    payload.wpos[axis] = (Number(mpos) - Number(wco)).toFixed(
+                        digits,
+                    );
                 });
             } else if (_.has(payload, 'wpos') && !_.has(payload, 'mpos')) {
                 payload.mpos = payload.mpos || {};
                 _.each(payload.wpos, (wpos, axis) => {
                     const digits = decimalPlaces(wpos);
-                    const wco = _.get((payload.wco || this.state.status.wco), axis, 0);
-                    payload.mpos[axis] = (Number(wpos) + Number(wco)).toFixed(digits);
+                    const wco = _.get(
+                        payload.wco || this.state.status.wco,
+                        axis,
+                        0,
+                    );
+                    payload.mpos[axis] = (Number(wpos) + Number(wco)).toFixed(
+                        digits,
+                    );
                 });
             }
 
@@ -131,8 +138,8 @@ class GrblRunner extends events.EventEmitter {
                 status: {
                     ...this.state.status,
                     probeActive: probeActive,
-                    ...payload
-                }
+                    ...payload,
+                },
             };
 
             // Delete the raw key
@@ -161,8 +168,8 @@ class GrblRunner extends events.EventEmitter {
                 status: {
                     ...this.state.status,
                     activeState: GRBL_ACTIVE_STATE_ALARM,
-                    alarmCode: Number(payload.message)
-                }
+                    alarmCode: Number(payload.message),
+                },
             };
             if (!_.isEqual(this.state.status, nextState.status)) {
                 this.state = nextState; // enforce change
@@ -187,8 +194,8 @@ class GrblRunner extends events.EventEmitter {
                     modal: modal,
                     tool: modal.tool,
                     feedrate: feedrate,
-                    spindle: spindle
-                }
+                    spindle: spindle,
+                },
             };
             if (!_.isEqual(this.state.parserstate, nextState.parserstate)) {
                 this.state = nextState; // enforce change
@@ -202,10 +209,15 @@ class GrblRunner extends events.EventEmitter {
                 ...this.settings,
                 parameters: {
                     ...this.settings.parameters,
-                    [name]: value
-                }
+                    [name]: value,
+                },
             };
-            if (!_.isEqual(this.settings.parameters[name], nextSettings.parameters[name])) {
+            if (
+                !_.isEqual(
+                    this.settings.parameters[name],
+                    nextSettings.parameters[name],
+                )
+            ) {
                 this.settings = nextSettings; // enforce change
             }
             this.emit('parameters', payload);
@@ -221,8 +233,8 @@ class GrblRunner extends events.EventEmitter {
                 ...this.settings,
                 settings: {
                     ...this.settings.settings,
-                    [name]: value
-                }
+                    [name]: value,
+                },
             };
             if (this.settings.settings[name] !== nextSettings.settings[name]) {
                 this.settings = nextSettings; // enforce change
@@ -232,9 +244,10 @@ class GrblRunner extends events.EventEmitter {
         }
         if (type === GrblLineParserResultStartup) {
             const { version } = payload;
-            const nextSettings = { // enforce change
+            const nextSettings = {
+                // enforce change
                 ...this.settings,
-                version: version
+                version: version,
             };
             if (!_.isEqual(this.settings.version, nextSettings.version)) {
                 this.settings = nextSettings; // enforce change

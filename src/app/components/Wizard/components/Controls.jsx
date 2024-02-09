@@ -30,11 +30,21 @@ import StepButton from 'app/components/Wizard/components/StepButton';
 import styles from '../index.styl';
 
 const Controls = () => {
-    const { completeSubStep, decrementStep, scrollToActiveStep, hasIncompleteActions, updateSubstepOverlay } = useWizardAPI();
+    const {
+        completeSubStep,
+        decrementStep,
+        scrollToActiveStep,
+        hasIncompleteActions,
+        updateSubstepOverlay,
+    } = useWizardAPI();
 
     const isNotIdle = () => {
         const state = reduxStore.getState();
-        const activeState = get(state, 'controller.state.status.activeState', '');
+        const activeState = get(
+            state,
+            'controller.state.status.activeState',
+            '',
+        );
         return activeState !== GRBL_ACTIVE_STATE_IDLE;
     };
 

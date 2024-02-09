@@ -29,12 +29,12 @@ import styles from './index.styl';
 class Widget extends PureComponent {
     static propTypes = {
         borderless: PropTypes.bool,
-        fullscreen: PropTypes.bool
+        fullscreen: PropTypes.bool,
     };
 
     static defaultProps = {
         borderless: false,
-        fullscreen: false
+        fullscreen: false,
     };
 
     render() {
@@ -47,7 +47,7 @@ class Widget extends PureComponent {
                     className,
                     styles.widget,
                     { [styles.widgetBorderless]: borderless },
-                    { [styles.widgetFullscreen]: fullscreen }
+                    { [styles.widgetFullscreen]: fullscreen },
                 )}
             />
         );

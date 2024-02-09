@@ -37,17 +37,16 @@ import MacroWidget from '../Macro';
 import ConsoleWidget from '../Console';
 import SpindleWidget from '../Spindle';
 
-import { MODAL_NONE, } from './constants';
+import { MODAL_NONE } from './constants';
 import { collectUserUsageData } from '../../lib/heatmap';
 import { USAGE_TOOL_NAME } from '../../constants';
-
 
 class SecondaryFunctionality extends PureComponent {
     static propTypes = {
         widgetId: PropTypes.string.isRequired,
         onFork: PropTypes.func.isRequired,
         onRemove: PropTypes.func.isRequired,
-        sortable: PropTypes.object
+        sortable: PropTypes.object,
     };
 
     config = new WidgetConfig(this.props.widgetId);
@@ -65,7 +64,7 @@ class SecondaryFunctionality extends PureComponent {
             const { minimized, isFullscreen } = this.state;
             this.setState({
                 minimized: isFullscreen ? minimized : false,
-                isFullscreen: !isFullscreen
+                isFullscreen: !isFullscreen,
             });
         },
         toggleMinimized: () => {
@@ -76,16 +75,16 @@ class SecondaryFunctionality extends PureComponent {
             this.setState({
                 modal: {
                     name: name,
-                    params: params
-                }
+                    params: params,
+                },
             });
         },
         closeModal: () => {
             this.setState({
                 modal: {
                     name: MODAL_NONE,
-                    params: {}
-                }
+                    params: {},
+                },
             });
         },
         refreshContent: () => {
@@ -96,9 +95,9 @@ class SecondaryFunctionality extends PureComponent {
         },
         handleTabSelect: (index) => {
             this.setState({
-                selectedTab: index
+                selectedTab: index,
             });
-        }
+        },
     };
 
     content = null;
@@ -109,11 +108,14 @@ class SecondaryFunctionality extends PureComponent {
      * Function to listen for store changes and display certain tabs
      */
     handleStoreChange = () => {
-        this.setState(prev => ({
+        this.setState((prev) => ({
             ...prev,
-            tabs: prev.tabs.map(tab => {
+            tabs: prev.tabs.map((tab) => {
                 if (tab.widgetId === 'spindle') {
-                    const machineProfile = store.get('workspace.machineProfile', {});
+                    const machineProfile = store.get(
+                        'workspace.machineProfile',
+                        {},
+                    );
 
                     return { ...tab, show: machineProfile.spindle };
                 }
@@ -124,9 +126,9 @@ class SecondaryFunctionality extends PureComponent {
                     return { ...tab, show };
                 }
                 return tab;
-            })
+            }),
         }));
-    }
+    };
 
     componentDidMount() {
         store.on('change', this.handleStoreChange);
@@ -138,13 +140,7 @@ class SecondaryFunctionality extends PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const {
-            disabled,
-            minimized,
-            title,
-            url,
-            selectedTab
-        } = this.state;
+        const { disabled, minimized, title, url, selectedTab } = this.state;
 
         this.config.set('disabled', disabled);
         this.config.set('minimized', minimized);
@@ -160,7 +156,7 @@ class SecondaryFunctionality extends PureComponent {
                 USAGE_TOOL_NAME.CONSOLE,
                 USAGE_TOOL_NAME.SPINDLE_LASER,
                 USAGE_TOOL_NAME.COOLANT,
-                USAGE_TOOL_NAME.ROTARY
+                USAGE_TOOL_NAME.ROTARY,
             ][selectedTab];
 
             this.collectHeatMapDataTimeout = setTimeout(() => {
@@ -223,42 +219,50 @@ class SecondaryFunctionality extends PureComponent {
         const { onFork, onRemove, sortable } = this.props;
         const actions = { ...this.actions };
 
-        const filteredTabs = tabs.filter(tab => tab.show);
-        const activeTab = filteredTabs[selectedTab] !== undefined ? selectedTab : 0;
+        const filteredTabs = tabs.filter((tab) => tab.show);
+        const activeTab =
+            filteredTabs[selectedTab] !== undefined ? selectedTab : 0;
 
         return (
             <TabbedWidget fullscreen={isFullscreen}>
-                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '100%',
+                    }}
+                >
                     <TabbedWidget.Tabs
                         tabs={filteredTabs}
                         activeTabIndex={activeTab}
                         onClick={actions.handleTabSelect}
                         sx={{
                             [`& .${tabsClasses.flexContainer}`]: {
-                                justifyContent: 'space-between'
+                                justifyContent: 'space-between',
                             },
                         }}
                     />
                     <TabbedWidget.Content>
-                        {
-                            filteredTabs.map((tab, index) => {
-                                const active = index === activeTab;
+                        {filteredTabs.map((tab, index) => {
+                            const active = index === activeTab;
 
-                                return (
-                                    <TabbedWidget.ChildComponent key={tab.widgetId} active={active}>
-                                        <tab.component
-                                            onFork={onFork}
-                                            onRemove={onRemove}
-                                            sortable={sortable}
-                                            widgetId={tab.widgetId}
-                                            embedded
-                                            active={active}
-                                            isMainWindow={true}
-                                        />
-                                    </TabbedWidget.ChildComponent>
-                                );
-                            })
-                        }
+                            return (
+                                <TabbedWidget.ChildComponent
+                                    key={tab.widgetId}
+                                    active={active}
+                                >
+                                    <tab.component
+                                        onFork={onFork}
+                                        onRemove={onRemove}
+                                        sortable={sortable}
+                                        widgetId={tab.widgetId}
+                                        embedded
+                                        active={active}
+                                        isMainWindow={true}
+                                    />
+                                </TabbedWidget.ChildComponent>
+                            );
+                        })}
                     </TabbedWidget.Content>
                 </div>
             </TabbedWidget>

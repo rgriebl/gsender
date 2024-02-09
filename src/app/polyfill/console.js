@@ -22,16 +22,34 @@
  */
 
 // Avoid `console` errors in browsers that lack a console.
-(function(global) {
+(function (global) {
     window.console = window.console || {};
 
     const noop = function noop() {};
     const console = window.console;
     const methods = [
-        'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
-        'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
-        'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
-        'timeStamp', 'trace', 'warn'
+        'assert',
+        'clear',
+        'count',
+        'debug',
+        'dir',
+        'dirxml',
+        'error',
+        'exception',
+        'group',
+        'groupCollapsed',
+        'groupEnd',
+        'info',
+        'log',
+        'markTimeline',
+        'profile',
+        'profileEnd',
+        'table',
+        'time',
+        'timeEnd',
+        'timeStamp',
+        'trace',
+        'warn',
     ];
     let length = methods.length;
 
@@ -44,9 +62,13 @@
         }
 
         // http://stackoverflow.com/questions/5538972/console-log-apply-not-working-in-ie9
-        if (Function.prototype.bind && window.console && typeof console.log === 'object') {
+        if (
+            Function.prototype.bind &&
+            window.console &&
+            typeof console.log === 'object'
+        ) {
             const that = Function.prototype.call;
             console[method] = that.bind(console[method], console);
         }
     }
-}(this));
+})(this);

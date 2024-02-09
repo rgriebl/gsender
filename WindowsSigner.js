@@ -1,6 +1,5 @@
 const { execSync } = require('child_process');
 
-
 /**
  * Custom signing utility
  * Required environment variables:
@@ -8,7 +7,6 @@ const { execSync } = require('child_process');
  * @param config
  * @returns {Promise<void>}
  */
-
 
 // eslint-disable-next-line require-await
 exports.default = async (config) => {

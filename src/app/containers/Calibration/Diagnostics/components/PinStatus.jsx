@@ -25,6 +25,6 @@ export default connect((store) => {
     const pins = get(store, 'controller.state.status.pinState', {});
 
     return {
-        pins
+        pins,
     };
 })(PinStatus);

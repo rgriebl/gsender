@@ -72,11 +72,7 @@ class GcodeToolpath {
     };
 
     offsetAddLine = (start, end) => {
-        this.fn.addLine(
-            this.modal,
-            this.offsetG92(start),
-            this.offsetG92(end),
-        );
+        this.fn.addLine(this.modal, this.offsetG92(start), this.offsetG92(end));
     };
 
     offsetAddCurve = (start, end) => {
@@ -92,7 +88,7 @@ class GcodeToolpath {
             this.modal,
             this.offsetG92(start),
             this.offsetG92(end),
-            this.offsetG92(center)
+            this.offsetG92(center),
         );
     };
 
@@ -156,7 +152,7 @@ class GcodeToolpath {
 
     handlers = {
         // G0: Rapid Linear Move
-        'G0': (params) => {
+        G0: (params) => {
             if (this.modal.motion !== 'G0') {
                 this.setModal({ motion: 'G0' });
             }
@@ -192,7 +188,7 @@ class GcodeToolpath {
                 targetPosition.x,
                 targetPosition.y,
                 targetPosition.z,
-                targetPosition.a
+                targetPosition.a,
             );
         },
         // G1: Linear Move
@@ -209,7 +205,7 @@ class GcodeToolpath {
         //   G1 F1500 (Set the feedrate to 1500mm/minute)
         //   G1 X90.6 Y13.8 E22.4 (Move to 90.6mm on the X axis and 13.8mm on the Y axis while extruding 22.4mm of material)
         //
-        'G1': (params) => {
+        G1: (params) => {
             if (this.modal.motion !== 'G1') {
                 this.setModal({ motion: 'G1' });
             }
@@ -245,7 +241,7 @@ class GcodeToolpath {
                 targetPosition.x,
                 targetPosition.y,
                 targetPosition.z,
-                targetPosition.a
+                targetPosition.a,
             );
         },
         // G2 & G3: Controlled Arc Move
@@ -266,7 +262,7 @@ class GcodeToolpath {
         // Referring
         //   http://linuxcnc.org/docs/2.5/html/gcode/gcode.html#sec:G2-G3-Arc
         //   https://github.com/grbl/grbl/issues/236
-        'G2': (params) => {
+        G2: (params) => {
             if (this.modal.motion !== 'G2') {
                 this.setModal({ motion: 'G2' });
             }
@@ -337,10 +333,10 @@ class GcodeToolpath {
             this.setPosition(
                 targetPosition.x,
                 targetPosition.y,
-                targetPosition.z
+                targetPosition.z,
             );
         },
-        'G3': (params) => {
+        G3: (params) => {
             if (this.modal.motion !== 'G3') {
                 this.setModal({ motion: 'G3' });
             }
@@ -411,7 +407,7 @@ class GcodeToolpath {
             this.setPosition(
                 targetPosition.x,
                 targetPosition.y,
-                targetPosition.z
+                targetPosition.z,
             );
         },
         // G4: Dwell
@@ -420,36 +416,36 @@ class GcodeToolpath {
         //   Snnn Time to wait, in seconds (Only on Marlin and Smoothie)
         // Example
         //   G4 P200
-        'G4': (params) => {},
+        G4: (params) => {},
         // G10: Coordinate System Data Tool and Work Offset Tables
-        'G10': (params) => {},
+        G10: (params) => {},
         // G17..19: Plane Selection
         // G17: XY (default)
-        'G17': (params) => {
+        G17: (params) => {
             if (this.modal.plane !== 'G17') {
                 this.setModal({ plane: 'G17' });
             }
         },
         // G18: XZ
-        'G18': (params) => {
+        G18: (params) => {
             if (this.modal.plane !== 'G18') {
                 this.setModal({ plane: 'G18' });
             }
         },
         // G19: YZ
-        'G19': (params) => {
+        G19: (params) => {
             if (this.modal.plane !== 'G19') {
                 this.setModal({ plane: 'G19' });
             }
         },
         // G20: Use inches for length units
-        'G20': (params) => {
+        G20: (params) => {
             if (this.modal.units !== 'G20') {
                 this.setModal({ units: 'G20' });
             }
         },
         // G21: Use millimeters for length units
-        'G21': (params) => {
+        G21: (params) => {
             if (this.modal.units !== 'G21') {
                 this.setModal({ units: 'G21' });
             }
@@ -486,44 +482,44 @@ class GcodeToolpath {
             }
         },
         // G49: No Tool Length Offset
-        'G49': () => {
+        G49: () => {
             if (this.modal.tlo !== 'G49') {
                 this.setModal({ tlo: 'G49' });
             }
         },
         // G54..59: Coordinate System Select
-        'G54': () => {
+        G54: () => {
             if (this.modal.wcs !== 'G54') {
                 this.setModal({ wcs: 'G54' });
             }
         },
-        'G55': () => {
+        G55: () => {
             if (this.modal.wcs !== 'G55') {
                 this.setModal({ wcs: 'G55' });
             }
         },
-        'G56': () => {
+        G56: () => {
             if (this.modal.wcs !== 'G56') {
                 this.setModal({ wcs: 'G56' });
             }
         },
-        'G57': () => {
+        G57: () => {
             if (this.modal.wcs !== 'G57') {
                 this.setModal({ wcs: 'G57' });
             }
         },
-        'G58': () => {
+        G58: () => {
             if (this.modal.wcs !== 'G58') {
                 this.setModal({ wcs: 'G58' });
             }
         },
-        'G59': () => {
+        G59: () => {
             if (this.modal.wcs !== 'G59') {
                 this.setModal({ wcs: 'G59' });
             }
         },
         // G80: Cancel Canned Cycle
-        'G80': () => {
+        G80: () => {
             if (this.modal.motion !== 'G80') {
                 this.setModal({ motion: 'G80' });
             }
@@ -532,7 +528,7 @@ class GcodeToolpath {
         // Example
         //   G90
         // All coordinates from now on are absolute relative to the origin of the machine.
-        'G90': () => {
+        G90: () => {
             if (this.modal.distance !== 'G90') {
                 this.setModal({ distance: 'G90' });
             }
@@ -541,7 +537,7 @@ class GcodeToolpath {
         // Example
         //   G91
         // All coordinates from now on are relative to the last position.
-        'G91': () => {
+        G91: () => {
             if (this.modal.distance !== 'G91') {
                 this.setModal({ distance: 'G91' });
             }
@@ -557,7 +553,7 @@ class GcodeToolpath {
         // Allows programming of absolute zero point, by reseting the current position to the params specified.
         // This would set the machine's X coordinate to 10. No physical motion will occur.
         // A G92 without coordinates will reset all axes to zero.
-        'G92': (params) => {
+        G92: (params) => {
             // A G92 without coordinates will reset all axes to zero.
             if (
                 params.X === undefined &&
@@ -605,7 +601,7 @@ class GcodeToolpath {
         // In inverse time feed rate mode, an F word means the move should be completed in
         // [one divided by the F number] minutes.
         // For example, if the F number is 2.0, the move should be completed in half a minute.
-        'G93': () => {
+        G93: () => {
             if (this.modal.feedmode !== 'G93') {
                 this.setModal({ feedmode: 'G93' });
             }
@@ -615,7 +611,7 @@ class GcodeToolpath {
         // controlled point should move at a certain number of inches per minute,
         // millimeters per minute or degrees per minute, depending upon what length units
         // are being used and which axis or axes are moving.
-        'G94': () => {
+        G94: () => {
             if (this.modal.feedmode !== 'G94') {
                 this.setModal({ feedmode: 'G94' });
             }
@@ -625,63 +621,63 @@ class GcodeToolpath {
         // controlled point should move at a certain number of inches per spindle revolution,
         // millimeters per spindle revolution or degrees per spindle revolution, depending upon
         // what length units are being used and which axis or axes are moving.
-        'G95': () => {
+        G95: () => {
             if (this.modal.feedmode !== 'G95') {
                 this.setModal({ feedmode: 'G95' });
             }
         },
         // M0: Program Pause
-        'M0': () => {
+        M0: () => {
             if (this.modal.program !== 'M0') {
                 this.setModal({ program: 'M0' });
             }
         },
         // M1: Program Pause
-        'M1': () => {
+        M1: () => {
             if (this.modal.program !== 'M1') {
                 this.setModal({ program: 'M1' });
             }
         },
         // M2: Program End
-        'M2': () => {
+        M2: () => {
             if (this.modal.program !== 'M2') {
                 this.setModal({ program: 'M2' });
             }
         },
         // M30: Program End
-        'M30': () => {
+        M30: () => {
             if (this.modal.program !== 'M30') {
                 this.setModal({ program: 'M30' });
             }
         },
         // Spindle Control
         // M3: Start the spindle turning clockwise at the currently programmed speed
-        'M3': (params) => {
+        M3: (params) => {
             if (this.modal.spindle !== 'M3') {
                 this.setModal({ spindle: 'M3' });
             }
         },
         // M4: Start the spindle turning counterclockwise at the currently programmed speed
-        'M4': (params) => {
+        M4: (params) => {
             if (this.modal.spindle !== 'M4') {
                 this.setModal({ spindle: 'M4' });
             }
         },
         // M5: Stop the spindle from turning
-        'M5': () => {
+        M5: () => {
             if (this.modal.spindle !== 'M5') {
                 this.setModal({ spindle: 'M5' });
             }
         },
         // M6: Tool Change
-        'M6': (params) => {
+        M6: (params) => {
             if (params && params.T !== undefined) {
                 this.setModal({ tool: params.T });
             }
         },
         // Coolant Control
         // M7: Turn mist coolant on
-        'M7': () => {
+        M7: () => {
             const coolants = this.modal.coolant.split(',');
             if (coolants.indexOf('M7') >= 0) {
                 return;
@@ -692,7 +688,7 @@ class GcodeToolpath {
             });
         },
         // M8: Turn flood coolant on
-        'M8': () => {
+        M8: () => {
             const coolants = this.modal.coolant.split(',');
             if (coolants.indexOf('M8') >= 0) {
                 return;
@@ -703,12 +699,12 @@ class GcodeToolpath {
             });
         },
         // M9: Turn all coolant off
-        'M9': () => {
+        M9: () => {
             if (this.modal.coolant !== 'M9') {
                 this.setModal({ coolant: 'M9' });
             }
         },
-        'T': (tool) => {
+        T: (tool) => {
             if (tool !== undefined) {
                 this.setModal({ tool: tool });
             }

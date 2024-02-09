@@ -21,7 +21,14 @@
  *
  */
 import { createReducer } from 'redux-action';
-import { UNLOAD_FILE_INFO, UPDATE_FILE_INFO, UPDATE_FILE_CONTENT, UPDATE_FILE_PROCESSING, UPDATE_FILE_RENDER_STATE, UPDATE_FILE_PARSED_DATA } from 'app/actions/fileInfoActions';
+import {
+    UNLOAD_FILE_INFO,
+    UPDATE_FILE_INFO,
+    UPDATE_FILE_CONTENT,
+    UPDATE_FILE_PROCESSING,
+    UPDATE_FILE_RENDER_STATE,
+    UPDATE_FILE_PARSED_DATA,
+} from 'app/actions/fileInfoActions';
 import { METRIC_UNITS, RENDER_NO_FILE } from 'app/constants';
 
 const initialState = {
@@ -41,7 +48,7 @@ const initialState = {
     bbox: {
         min: { x: 0, y: 0, z: 0 },
         max: { x: 0, y: 0, z: 0 },
-        delta: { x: 0, y: 0, z: 0 }
+        delta: { x: 0, y: 0, z: 0 },
     },
     content: '',
     fileType: null,
@@ -55,14 +62,14 @@ const normalizeBBox = (bbox) => {
     };
     return {
         ...defaultBBox,
-        ...bbox
+        ...bbox,
     };
 };
 
 const reducer = createReducer(initialState, {
     [UNLOAD_FILE_INFO]: (context, reducerState) => {
         return {
-            ...initialState
+            ...initialState,
         };
     },
     [UPDATE_FILE_INFO]: (payload, reducerState) => {
@@ -71,7 +78,7 @@ const reducer = createReducer(initialState, {
             ...payload,
             fileLoaded: true,
             fileProcessing: false,
-            ...bbox
+            ...bbox,
         };
     },
     [UPDATE_FILE_CONTENT]: ({ content, name, size }, reducerState) => {
@@ -79,22 +86,22 @@ const reducer = createReducer(initialState, {
             fileLoaded: true,
             content,
             name,
-            size
+            size,
         };
     },
     [UPDATE_FILE_PROCESSING]: ({ value }, reducerState) => {
         return {
-            fileProcessing: value
+            fileProcessing: value,
         };
     },
     [UPDATE_FILE_RENDER_STATE]: ({ state }, reducerState) => {
         return {
-            renderState: state
+            renderState: state,
         };
     },
     [UPDATE_FILE_PARSED_DATA]: ({ value }, reducerState) => {
         return {
-            parsedData: value
+            parsedData: value,
         };
     },
 });

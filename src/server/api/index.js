@@ -58,5 +58,5 @@ export {
     metrics,
     jobStats,
     maintenance,
-    alarmList
+    alarmList,
 };

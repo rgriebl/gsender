@@ -25,7 +25,6 @@ import React from 'react';
 import cx from 'classnames';
 import styles from './index.styl';
 
-
 const RemoteAlert = () => {
     return (
         <div className={cx(styles.remoteAlert, styles.pulse)}>

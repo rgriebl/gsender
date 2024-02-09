@@ -24,12 +24,9 @@
 import constants from 'namespace-constants';
 
 // Modal
-export const {
-    MODAL_NONE,
-    MODAL_SETTINGS
-} = constants('widgets/JogControl', [
+export const { MODAL_NONE, MODAL_SETTINGS } = constants('widgets/JogControl', [
     'MODAL_NONE',
-    'MODAL_SETTINGS'
+    'MODAL_SETTINGS',
 ]);
 
 // JogControl

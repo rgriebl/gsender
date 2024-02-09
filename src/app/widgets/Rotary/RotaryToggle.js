@@ -10,7 +10,9 @@ import { get } from 'lodash';
 const { DEFAULT, ROTARY } = WORKSPACE_MODE;
 
 const RotaryToggle = () => {
-    const [workspaceMode, setWorkspaceMode] = useState(store.get('workspace.mode', DEFAULT));
+    const [workspaceMode, setWorkspaceMode] = useState(
+        store.get('workspace.mode', DEFAULT),
+    );
 
     useEffect(() => {
         const updateWorkspaceMode = (data) => {

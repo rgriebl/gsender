@@ -10,9 +10,9 @@ test('resolved', (t) => {
         },
         obj: {
             x: {
-                y: 555
-            }
-        }
+                y: 555,
+            },
+        },
     });
     t.deepEqual(res, [1, 2, 49, 800, 555]);
     t.end();
@@ -27,9 +27,9 @@ test('unresolved', (t) => {
         },
         obj: {
             x: {
-                y: 555
-            }
-        }
+                y: 555,
+            },
+        },
     });
     t.equal(res, undefined);
     t.end();
@@ -56,12 +56,12 @@ test('array methods with vars', (t) => {
 test('evaluate this', (t) => {
     const src = 'this.x + this.y.z';
     const res = evaluateExpression(src, {
-        'this': {
+        this: {
             x: 1,
             y: {
-                z: 100
-            }
-        }
+                z: 100,
+            },
+        },
     });
     t.equal(res, 101);
     t.end();
@@ -88,13 +88,13 @@ test('function property', (t) => {
         beep: {
             boop: function (x) {
                 return x * 100;
-            }
+            },
         },
         obj: {
             x: {
-                y: 555
-            }
-        }
+                y: 555,
+            },
+        },
     });
     t.deepEqual(res, [1, 2, 49, 800, 555]);
     t.end();
@@ -103,7 +103,7 @@ test('function property', (t) => {
 test('untagged template strings', (t) => {
     const src = '`${1},${2 + n},${"4,5"}`'; // eslint-disable-line no-template-curly-in-string
     const res = evaluateExpression(src, {
-        n: 6
+        n: 6,
     });
     t.deepEqual(res, '1,8,4,5');
     t.end();
@@ -117,7 +117,7 @@ test('tagged template strings', (t) => {
             t.deepEqual(values, [1, 8, '4,5']);
             return 'foo';
         },
-        n: 6
+        n: 6,
     });
     t.deepEqual(res, 'foo');
     t.end();

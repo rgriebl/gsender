@@ -42,7 +42,11 @@ import AddMacro from './AddMacro';
 import EditMacro from './EditMacro';
 import RunMacro from './RunMacro';
 import FunctionButton from '../../components/FunctionButton/FunctionButton';
-import { Toaster, TOASTER_SUCCESS, TOASTER_DANGER } from '../../lib/toaster/ToasterLib';
+import {
+    Toaster,
+    TOASTER_SUCCESS,
+    TOASTER_DANGER,
+} from '../../lib/toaster/ToasterLib';
 import {
     // Grbl
     GRBL,
@@ -56,13 +60,13 @@ import {
     // TinyG
     TINYG,
     // Workflow
-    WORKFLOW_STATE_RUNNING
+    WORKFLOW_STATE_RUNNING,
 } from '../../constants';
 import {
     MODAL_NONE,
     MODAL_ADD_MACRO,
     MODAL_EDIT_MACRO,
-    MODAL_RUN_MACRO
+    MODAL_RUN_MACRO,
 } from './constants';
 import styles from './index.styl';
 
@@ -72,15 +76,19 @@ class MacroWidget extends PureComponent {
         onFork: PropTypes.func.isRequired,
         onRemove: PropTypes.func.isRequired,
         sortable: PropTypes.object,
-        embedded: PropTypes.bool
+        embedded: PropTypes.bool,
     };
 
-    toast = _.throttle(({ msg, type }) => {
-        Toaster.pop({
-            msg,
-            type
-        });
-    }, 3000, { 'trailing': false });
+    toast = _.throttle(
+        ({ msg, type }) => {
+            Toaster.pop({
+                msg,
+                type,
+            });
+        },
+        3000,
+        { trailing: false },
+    );
 
     inputRef = React.createRef();
 
@@ -102,7 +110,7 @@ class MacroWidget extends PureComponent {
             const { minimized, isFullscreen } = this.state;
             this.setState({
                 minimized: isFullscreen ? minimized : false,
-                isFullscreen: !isFullscreen
+                isFullscreen: !isFullscreen,
             });
         },
         toggleMinimized: () => {
@@ -113,16 +121,16 @@ class MacroWidget extends PureComponent {
             this.setState({
                 modal: {
                     name: name,
-                    params: params
-                }
+                    params: params,
+                },
             });
         },
         closeModal: () => {
             this.setState({
                 modal: {
                     name: MODAL_NONE,
-                    params: {}
-                }
+                    params: {},
+                },
             });
         },
         updateModalParams: (params = {}) => {
@@ -131,9 +139,9 @@ class MacroWidget extends PureComponent {
                     ...this.state.modal,
                     params: {
                         ...this.state.modal.params,
-                        ...params
-                    }
-                }
+                        ...params,
+                    },
+                },
             });
         },
         addMacro: async ({ name, content, description }) => {
@@ -174,7 +182,11 @@ class MacroWidget extends PureComponent {
         updateMacro: async (id, { name, content, description }) => {
             try {
                 let res;
-                res = await api.macros.update(id, { name, content, description });
+                res = await api.macros.update(id, {
+                    name,
+                    content,
+                    description,
+                });
                 res = await api.macros.fetch();
                 const { records: macros } = res.body;
                 this.setState({ macros: macros });
@@ -186,8 +198,21 @@ class MacroWidget extends PureComponent {
             try {
                 if (macros.length > 0) {
                     for await (const macro of macros) {
-                        const { id, name, content, column, description, rowIndex } = macro;
-                        api.macros.update(id, { name, content, description, column, rowIndex });
+                        const {
+                            id,
+                            name,
+                            content,
+                            column,
+                            description,
+                            rowIndex,
+                        } = macro;
+                        api.macros.update(id, {
+                            name,
+                            content,
+                            description,
+                            column,
+                            rowIndex,
+                        });
                     }
                 }
             } catch (err) {
@@ -195,26 +220,40 @@ class MacroWidget extends PureComponent {
             }
         },
         runMacro: (id, { name }) => {
-            controller.command('macro:run', id, controller.context, (err, data) => {
-                if (err) {
-                    log.error(`Failed to run the macro: id=${id}, name="${name}"`);
-                    return;
-                }
-            });
+            controller.command(
+                'macro:run',
+                id,
+                controller.context,
+                (err, data) => {
+                    if (err) {
+                        log.error(
+                            `Failed to run the macro: id=${id}, name="${name}"`,
+                        );
+                        return;
+                    }
+                },
+            );
         },
         loadMacro: async (id, { name }) => {
             try {
                 let res;
                 res = await api.macros.read(id);
                 const { name } = res.body;
-                controller.command('macro:load', id, controller.context, (err, data) => {
-                    if (err) {
-                        log.error(`Failed to load the macro: id=${id}, name="${name}"`);
-                        return;
-                    }
+                controller.command(
+                    'macro:load',
+                    id,
+                    controller.context,
+                    (err, data) => {
+                        if (err) {
+                            log.error(
+                                `Failed to load the macro: id=${id}, name="${name}"`,
+                            );
+                            return;
+                        }
 
-                    log.debug(data); // TODO
-                });
+                        log.debug(data); // TODO
+                    },
+                );
             } catch (err) {
                 // Ignore error
             }
@@ -223,19 +262,22 @@ class MacroWidget extends PureComponent {
             this.actions.openModal(MODAL_ADD_MACRO);
         },
         openRunMacroModal: (id) => {
-            api.macros.read(id)
-                .then((res) => {
-                    const { id, name, content } = res.body;
-                    this.actions.openModal(MODAL_RUN_MACRO, { id, name, content });
-                });
+            api.macros.read(id).then((res) => {
+                const { id, name, content } = res.body;
+                this.actions.openModal(MODAL_RUN_MACRO, { id, name, content });
+            });
         },
         openEditMacroModal: (id) => {
-            api.macros.read(id)
-                .then((res) => {
-                    const { id, name, content, description } = res.body;
-                    this.actions.openModal(MODAL_EDIT_MACRO, { id, name, content, description });
+            api.macros.read(id).then((res) => {
+                const { id, name, content, description } = res.body;
+                this.actions.openModal(MODAL_EDIT_MACRO, {
+                    id,
+                    name,
+                    content,
+                    description,
                 });
-        }
+            });
+        },
     };
 
     controllerEvents = {
@@ -261,10 +303,13 @@ class MacroWidget extends PureComponent {
             return;
         }
 
-        const macrosClean = this.state.macros.map(({ name, content }) => ({ name, content }));
+        const macrosClean = this.state.macros.map(({ name, content }) => ({
+            name,
+            content,
+        }));
         const macros = JSON.stringify(macrosClean, null, 1);
         const data = new Blob([macros], {
-            type: 'application/json'
+            type: 'application/json',
         });
 
         const today = new Date();
@@ -299,13 +344,19 @@ class MacroWidget extends PureComponent {
                     }
                 }
 
-                this.toast({ msg: 'Macros Imported Succesfully', type: TOASTER_SUCCESS });
+                this.toast({
+                    msg: 'Macros Imported Succesfully',
+                    type: TOASTER_SUCCESS,
+                });
             };
             reader.onerror = () => {
-                this.toast({ msg: 'Error Importing Macros', type: TOASTER_DANGER });
+                this.toast({
+                    msg: 'Error Importing Macros',
+                    type: TOASTER_DANGER,
+                });
             };
         }
-    }
+    };
 
     componentDidMount() {
         this.fetchMacros();
@@ -317,9 +368,7 @@ class MacroWidget extends PureComponent {
     }
 
     componentDidUpdate() {
-        const {
-            minimized
-        } = this.state;
+        const { minimized } = this.state;
 
         this.config.set('minimized', minimized);
     }
@@ -331,20 +380,20 @@ class MacroWidget extends PureComponent {
             macros: [],
             modal: {
                 name: MODAL_NONE,
-                params: {}
+                params: {},
             },
         };
     }
 
     addControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.addListener(eventName, callback);
         });
     }
 
     removeControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.removeListener(eventName, callback);
         });
@@ -364,10 +413,7 @@ class MacroWidget extends PureComponent {
         }
 
         const activeState = get(state, 'status.activeState');
-        const states = [
-            GRBL_ACTIVE_STATE_IDLE,
-            GRBL_ACTIVE_STATE_RUN
-        ];
+        const states = [GRBL_ACTIVE_STATE_IDLE, GRBL_ACTIVE_STATE_RUN];
         return includes(states, activeState);
     }
 
@@ -377,19 +423,22 @@ class MacroWidget extends PureComponent {
         const isForkedWidget = widgetId.match(/\w+:[\w\-]+/);
         const state = {
             ...this.state,
-            canClick: this.canClick()
+            canClick: this.canClick(),
         };
         const actions = {
-            ...this.actions
+            ...this.actions,
         };
 
         return (
             <Widget fullscreen={isFullscreen}>
                 <Widget.Header embedded={embedded}>
                     <Widget.Title>
-                        {isForkedWidget &&
-                        <i className="fa fa-code-fork" style={{ marginRight: 5 }} />
-                        }
+                        {isForkedWidget && (
+                            <i
+                                className="fa fa-code-fork"
+                                style={{ marginRight: 5 }}
+                            />
+                        )}
                         {i18n._('Macro')}
                     </Widget.Title>
                     <Widget.Controls>
@@ -401,14 +450,18 @@ class MacroWidget extends PureComponent {
                         </Widget.Button>
                         <Widget.Button
                             disabled={isFullscreen}
-                            title={minimized ? i18n._('Expand') : i18n._('Collapse')}
+                            title={
+                                minimized
+                                    ? i18n._('Expand')
+                                    : i18n._('Collapse')
+                            }
                             onClick={actions.toggleMinimized}
                         >
                             <i
                                 className={classNames(
                                     'fa',
                                     { 'fa-chevron-up': !minimized },
-                                    { 'fa-chevron-down': minimized }
+                                    { 'fa-chevron-down': minimized },
                                 )}
                             />
                         </Widget.Button>
@@ -431,11 +484,13 @@ class MacroWidget extends PureComponent {
                                         'fa',
                                         'fa-fw',
                                         { 'fa-expand': !isFullscreen },
-                                        { 'fa-compress': isFullscreen }
+                                        { 'fa-compress': isFullscreen },
                                     )}
                                 />
                                 <Space width="4" />
-                                {!isFullscreen ? i18n._('Enter Full Screen') : i18n._('Exit Full Screen')}
+                                {!isFullscreen
+                                    ? i18n._('Enter Full Screen')
+                                    : i18n._('Exit Full Screen')}
                             </Widget.DropdownMenuItem>
                             <Widget.DropdownMenuItem eventKey="fork">
                                 <i className="fa fa-fw fa-code-fork" />
@@ -454,20 +509,20 @@ class MacroWidget extends PureComponent {
                     className={classNames(
                         styles['widget-content'],
                         styles.heightOverride,
-                        { [styles.hidden]: minimized }
+                        { [styles.hidden]: minimized },
                     )}
                 >
-                    {state.modal.name === MODAL_ADD_MACRO &&
-                    <AddMacro state={state} actions={actions} />
-                    }
+                    {state.modal.name === MODAL_ADD_MACRO && (
+                        <AddMacro state={state} actions={actions} />
+                    )}
 
-                    {state.modal.name === MODAL_EDIT_MACRO &&
-                    <EditMacro state={state} actions={actions} />
-                    }
+                    {state.modal.name === MODAL_EDIT_MACRO && (
+                        <EditMacro state={state} actions={actions} />
+                    )}
 
-                    {state.modal.name === MODAL_RUN_MACRO &&
-                    <RunMacro state={state} actions={actions} />
-                    }
+                    {state.modal.name === MODAL_RUN_MACRO && (
+                        <RunMacro state={state} actions={actions} />
+                    )}
 
                     <Macro state={state} actions={actions} />
 
@@ -475,7 +530,7 @@ class MacroWidget extends PureComponent {
                         type="file"
                         onChange={this.importMacros}
                         onClick={(e) => {
-                            (e.target.value = null);
+                            e.target.value = null;
                         }}
                         accept=".json"
                         style={{ display: 'none' }}
@@ -524,6 +579,6 @@ export default connect((store) => {
         type,
         state,
         workflow,
-        isConnected
+        isConnected,
     };
 })(MacroWidget);

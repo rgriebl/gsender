@@ -29,10 +29,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 
 import DroppableColumn from './DroppableColumn';
 
-import {
-    WORKFLOW_STATE_IDLE,
-    WORKFLOW_STATE_PAUSED
-} from '../../constants';
+import { WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED } from '../../constants';
 
 import styles from './index.styl';
 
@@ -47,7 +44,7 @@ const Container = ({ columns, children }) => {
                 gridTemplateColumns,
                 overflowY: 'auto',
                 position: 'absolute',
-                height: '100%'
+                height: '100%',
             }}
         >
             {children}
@@ -63,7 +60,7 @@ const Macro = ({ state, actions, workflow }) => {
         column2: { items: [] },
     });
 
-    const setRowIndices = macros => {
+    const setRowIndices = (macros) => {
         for (let i = 0; i < macros.length; i++) {
             macros[i].rowIndex = i;
         }
@@ -71,7 +68,10 @@ const Macro = ({ state, actions, workflow }) => {
     };
 
     useEffect(() => {
-        const computedColumns = [computeColumn('column1'), computeColumn('column2')];
+        const computedColumns = [
+            computeColumn('column1'),
+            computeColumn('column2'),
+        ];
 
         setColumns({
             column1: { items: computedColumns[0] },
@@ -80,16 +80,23 @@ const Macro = ({ state, actions, workflow }) => {
     }, [macros]);
 
     useEffect(() => {
-        const combined = [...columns?.column1?.items, ...columns?.column2?.items];
+        const combined = [
+            ...columns?.column1?.items,
+            ...columns?.column2?.items,
+        ];
         actions.updateMacros(combined);
     }, [columns]);
 
     const canRunMacro = () => {
-        const {
-            canClick,
-        } = state;
+        const { canClick } = state;
 
-        return canClick && includes([WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED], workflow.state);
+        return (
+            canClick &&
+            includes(
+                [WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED],
+                workflow.state,
+            )
+        );
     };
 
     // https://codesandbox.io/s/i0ex5?file=/src/App.js
@@ -120,12 +127,12 @@ const Macro = ({ state, actions, workflow }) => {
                 ...columns,
                 [source.droppableId]: {
                     ...sourceColumn,
-                    items: sourceItems
+                    items: sourceItems,
                 },
                 [destination.droppableId]: {
                     ...destColumn,
-                    items: destItems
-                }
+                    items: destItems,
+                },
             });
         } else {
             const column = columns[source.droppableId];
@@ -137,42 +144,51 @@ const Macro = ({ state, actions, workflow }) => {
                 ...columns,
                 [source.droppableId]: {
                     ...column,
-                    items: copiedItems
-                }
+                    items: copiedItems,
+                },
             });
         }
     };
 
     // Set rowIndices after sorting to correct any invalid saved data, normally it should be a no-op
-    const computeColumn = (columnName) => setRowIndices(macros.filter(macro => macro.column === columnName).sort((a, b) => a.rowIndex - b.rowIndex));
+    const computeColumn = (columnName) =>
+        setRowIndices(
+            macros
+                .filter((macro) => macro.column === columnName)
+                .sort((a, b) => a.rowIndex - b.rowIndex),
+        );
 
     const disabled = !canRunMacro();
     const { column1, column2 } = columns;
 
     return (
         <>
-            {
-                macros.length === 0
-                    ? <div className={styles['macro-container']}><div className={styles.emptyResult}>No Macros...</div></div>
-                    : (
-                        <DragDropContext onDragEnd={result => onDragEnd(result, columns, setColumns)}>
-                            <Container columns={2}>
-                                <DroppableColumn
-                                    droppableId="column1"
-                                    macros={column1.items}
-                                    actions={actions}
-                                    disabled={disabled}
-                                />
-                                <DroppableColumn
-                                    droppableId="column2"
-                                    macros={column2.items}
-                                    actions={actions}
-                                    disabled={disabled}
-                                />
-                            </Container>
-                        </DragDropContext>
-                    )
-            }
+            {macros.length === 0 ? (
+                <div className={styles['macro-container']}>
+                    <div className={styles.emptyResult}>No Macros...</div>
+                </div>
+            ) : (
+                <DragDropContext
+                    onDragEnd={(result) =>
+                        onDragEnd(result, columns, setColumns)
+                    }
+                >
+                    <Container columns={2}>
+                        <DroppableColumn
+                            droppableId="column1"
+                            macros={column1.items}
+                            actions={actions}
+                            disabled={disabled}
+                        />
+                        <DroppableColumn
+                            droppableId="column2"
+                            macros={column2.items}
+                            actions={actions}
+                            disabled={disabled}
+                        />
+                    </Container>
+                </DragDropContext>
+            )}
         </>
     );
 };
@@ -180,6 +196,6 @@ const Macro = ({ state, actions, workflow }) => {
 export default connect((store) => {
     const workflow = get(store, 'controller.workflow');
     return {
-        workflow
+        workflow,
     };
 })(Macro);

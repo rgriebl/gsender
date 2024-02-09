@@ -34,14 +34,14 @@ const Fraction = (props) => {
                 display: 'inline-block',
                 verticalAlign: '-0.5em',
                 fontSize: '85%',
-                textAlign: 'center'
+                textAlign: 'center',
             }}
         >
             <span
                 style={{
                     display: 'block',
                     lineHeight: '1em',
-                    margin: '0 0.1em'
+                    margin: '0 0.1em',
                 }}
             >
                 {numerator}
@@ -53,7 +53,7 @@ const Fraction = (props) => {
                     top: 'auto',
                     width: 1,
                     height: 1,
-                    overflow: 'hidden'
+                    overflow: 'hidden',
                 }}
             >
                 /
@@ -64,7 +64,7 @@ const Fraction = (props) => {
                     display: 'block',
                     lineHeight: '1em',
                     margin: '0 0.1em',
-                    minWidth: 16
+                    minWidth: 16,
                 }}
             >
                 {denominator}
@@ -75,7 +75,7 @@ const Fraction = (props) => {
 
 Fraction.propTypes = {
     numerator: PropTypes.number,
-    denominator: PropTypes.number
+    denominator: PropTypes.number,
 };
 
 export default Fraction;

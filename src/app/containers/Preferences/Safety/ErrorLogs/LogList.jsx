@@ -17,23 +17,20 @@ const LogList = ({ logs }) => {
     }
 
     return (
-        <VerticalTimeline animate={false} layout="1-column-left" className={styles.verticalTimeline}>
-            {
-                logs.map((log) => {
-                    const [date, time] = convertISOStringToDateAndTime(log.time);
+        <VerticalTimeline
+            animate={false}
+            layout="1-column-left"
+            className={styles.verticalTimeline}
+        >
+            {logs.map((log) => {
+                const [date, time] = convertISOStringToDateAndTime(log.time);
 
-                    const key = uniqueID();
+                const key = uniqueID();
 
-                    return (
-                        <ErrorItem
-                            log={log}
-                            date={date}
-                            time={time}
-                            key={key}
-                        />
-                    );
-                })
-            }
+                return (
+                    <ErrorItem log={log} date={date} time={time} key={key} />
+                );
+            })}
         </VerticalTimeline>
     );
 };

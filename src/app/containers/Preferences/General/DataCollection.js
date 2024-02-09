@@ -29,9 +29,13 @@ const DataCollection = () => {
     const [collectUserData, setCollectUserData] = useGetCollectDataStatus();
 
     const handleCollectDataToggle = async (toggled) => {
-        const status = toggled ? USER_DATA_COLLECTION.ACCEPTED : USER_DATA_COLLECTION.REJECTED;
+        const status = toggled
+            ? USER_DATA_COLLECTION.ACCEPTED
+            : USER_DATA_COLLECTION.REJECTED;
 
-        await api.metrics.toggleCollectDataStatus({ collectUserDataStatus: status });
+        await api.metrics.toggleCollectDataStatus({
+            collectUserDataStatus: status,
+        });
 
         setCollectUserData(status);
     };
@@ -39,10 +43,15 @@ const DataCollection = () => {
     return (
         <Fieldset legend="Data Collection">
             <div style={{ marginBottom: '10px' }}>
-                <Tooltip content="Allow gSender to collect your data periodically" location="default">
+                <Tooltip
+                    content="Allow gSender to collect your data periodically"
+                    location="default"
+                >
                     <ToggleSwitch
                         label="Send Usage Data"
-                        checked={collectUserData === USER_DATA_COLLECTION.ACCEPTED}
+                        checked={
+                            collectUserData === USER_DATA_COLLECTION.ACCEPTED
+                        }
                         onChange={handleCollectDataToggle}
                         size="small"
                     />

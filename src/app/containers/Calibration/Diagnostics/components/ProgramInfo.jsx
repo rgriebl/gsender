@@ -82,9 +82,7 @@ const ProgramInfo = ({ type, settings, connection, modals }) => {
 
     const printModals = () => {
         if (isEmpty(modals)) {
-            return (
-                <div>-</div>
-            );
+            return <div>-</div>;
         }
         return (
             <b style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
@@ -94,10 +92,7 @@ const ProgramInfo = ({ type, settings, connection, modals }) => {
                 >
                     {modals.motion}
                 </Tooltip>
-                <Tooltip
-                    content="Current Workspace"
-                    location="default"
-                >
+                <Tooltip content="Current Workspace" location="default">
                     {modals.wcs}
                 </Tooltip>
                 <Tooltip
@@ -107,19 +102,28 @@ const ProgramInfo = ({ type, settings, connection, modals }) => {
                     {modals.plane}
                 </Tooltip>
                 <Tooltip
-                    content={'Units: ' + (modals.distance === 'G21' ? 'Metric' : 'Imperial')}
+                    content={
+                        'Units: ' +
+                        (modals.distance === 'G21' ? 'Metric' : 'Imperial')
+                    }
                     location="default"
                 >
                     {modals.units}
                 </Tooltip>
                 <Tooltip
-                    content={'Positioning: ' + (modals.distance === 'G90' ? 'Relative' : 'Absolute')}
+                    content={
+                        'Positioning: ' +
+                        (modals.distance === 'G90' ? 'Relative' : 'Absolute')
+                    }
                     location="default"
                 >
                     {modals.distance}
                 </Tooltip>
                 <Tooltip
-                    content={'Feedrate: ' + (modals.distance === 'G94' ? 'units/min' : 'units/rev')}
+                    content={
+                        'Feedrate: ' +
+                        (modals.distance === 'G94' ? 'units/min' : 'units/rev')
+                    }
                     location="default"
                 >
                     {modals.feedrate}
@@ -144,16 +148,31 @@ const ProgramInfo = ({ type, settings, connection, modals }) => {
         <div className={cx(styles.card)}>
             <h2>Your Machine</h2>
             <b>gSender {pkg.version}</b>
-            <div><b>{type}</b> - {settings.version}</div>
+            <div>
+                <b>{type}</b> - {settings.version}
+            </div>
             <h3>Selected Profile</h3>
-            <b>{company} {name}</b>
-            <div><i>{machineType}</i></div>
-            <div><b>Preferred units: </b>{units}</div>
+            <b>
+                {company} {name}
+            </b>
+            <div>
+                <i>{machineType}</i>
+            </div>
+            <div>
+                <b>Preferred units: </b>
+                {units}
+            </div>
             <h3>Firmware Modals: </h3>
             <div>{printModals()}</div>
             <h3>Connection Info</h3>
-            <div><b>Port: </b>{port}</div>
-            <div><b>Baudrate: </b>{baudrate}</div>
+            <div>
+                <b>Port: </b>
+                {port}
+            </div>
+            <div>
+                <b>Baudrate: </b>
+                {baudrate}
+            </div>
         </div>
     );
 };
@@ -167,6 +186,6 @@ export default connect((store) => {
         type,
         settings,
         connection,
-        modals
+        modals,
     };
 })(ProgramInfo);

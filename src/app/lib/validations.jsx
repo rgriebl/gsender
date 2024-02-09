@@ -25,9 +25,7 @@
 import React from 'react';
 import i18n from './i18n';
 
-const Error = (props) => (
-    <div {...props} style={{ color: '#A94442' }} />
-);
+const Error = (props) => <div {...props} style={{ color: '#A94442' }} />;
 
 const required = (value, props, components) => {
     if (props.type === 'radio') {
@@ -51,9 +49,7 @@ const required = (value, props, components) => {
             return null;
         }
 
-        return (
-            <Error>{i18n._('This field is required.')}</Error>
-        );
+        return <Error>{i18n._('This field is required.')}</Error>;
     }
 
     if (props.type === 'checkbox') {
@@ -61,35 +57,32 @@ const required = (value, props, components) => {
             return null;
         }
 
-        return (
-            <Error>{i18n._('This field is required.')}</Error>
-        );
+        return <Error>{i18n._('This field is required.')}</Error>;
     }
 
     value = ('' + value).trim();
     if (!value) {
-        return (
-            <Error>{i18n._('This field is required.')}</Error>
-        );
+        return <Error>{i18n._('This field is required.')}</Error>;
     }
 
     return null;
 };
 
 const password = (value, props, components) => {
-    const bothBlurred = components.password[0].blurred && components.confirm[0].blurred;
-    const bothChanged = components.password[0].changed && components.confirm[0].changed;
+    const bothBlurred =
+        components.password[0].blurred && components.confirm[0].blurred;
+    const bothChanged =
+        components.password[0].changed && components.confirm[0].changed;
 
-    if (bothBlurred && bothChanged && components.password[0].value !== components.confirm[0].value) {
-        return (
-            <Error>{i18n._('Passwords should be equal.')}</Error>
-        );
+    if (
+        bothBlurred &&
+        bothChanged &&
+        components.password[0].value !== components.confirm[0].value
+    ) {
+        return <Error>{i18n._('Passwords should be equal.')}</Error>;
     }
 
     return null;
 };
 
-export {
-    required,
-    password
-};
+export { required, password };

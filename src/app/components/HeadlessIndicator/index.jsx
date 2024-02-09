@@ -36,17 +36,27 @@ import DialogBox from './DialogBox';
 import controller from '../../lib/controller';
 import styles from './index.styl';
 
-
 const HeadlessIndicator = ({ address, port }) => {
-    const defaultHeadlessSettings = { ip: '0.0.0.0', port: 8000, headlessStatus: false };
-    const defaultErrorMessage = { ipError: '', ipHint: '', portError: '', portHint: '' };
+    const defaultHeadlessSettings = {
+        ip: '0.0.0.0',
+        port: 8000,
+        headlessStatus: false,
+    };
+    const defaultErrorMessage = {
+        ipError: '',
+        ipHint: '',
+        portError: '',
+        portHint: '',
+    };
     const [showConfig, setShowConfig] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [headlessSettings, setHeadlessSettings] = useState(defaultHeadlessSettings);
+    const [headlessSettings, setHeadlessSettings] = useState(
+        defaultHeadlessSettings,
+    );
     const [oldSettings, setOldSettings] = useState(defaultHeadlessSettings);
     const [settingErrors, setSettingErrors] = useState(defaultErrorMessage);
     const [ipList, setIpList] = useState(['']);
-    const [shouldRestart, setShouldRestart] = useState(false);//controls if app should restart when user hits OK
+    const [shouldRestart, setShouldRestart] = useState(false); //controls if app should restart when user hits OK
 
     const handleShowConfig = () => {
         setShowConfig(true);
@@ -60,28 +70,34 @@ const HeadlessIndicator = ({ address, port }) => {
         let hasError = false;
 
         switch (name) {
-        //IP
-        // 210.110 – must have 4 octets
-        // y.y.y.y – format allowed
-        // 255.0.0.y – format allowed
-        // 666.10.10.20 – digits must be between [0-255]
-        default:
-        case 'ip':
-            if (!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(value)) {
-                errors.ipError = 'Invalid IP Address';
-                errors.ipHint = 'Ip addresses should consist of 4 sets of numbers between 0 and 255 following the pattern X.X.X.X';
-                hasError = true;
-            }
-            break;
-        case 'port':
-            //Port
-        //Only values between 1025 and 65535
-            if (value < 1025 || value > 65535) {
-                errors.portError = 'Please enter a valid port number';
-                errors.portHint = 'A port number should range between 1025 and 65535';
-                hasError = true;
-            }
-            break;
+            //IP
+            // 210.110 – must have 4 octets
+            // y.y.y.y – format allowed
+            // 255.0.0.y – format allowed
+            // 666.10.10.20 – digits must be between [0-255]
+            default:
+            case 'ip':
+                if (
+                    !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+                        value,
+                    )
+                ) {
+                    errors.ipError = 'Invalid IP Address';
+                    errors.ipHint =
+                        'Ip addresses should consist of 4 sets of numbers between 0 and 255 following the pattern X.X.X.X';
+                    hasError = true;
+                }
+                break;
+            case 'port':
+                //Port
+                //Only values between 1025 and 65535
+                if (value < 1025 || value > 65535) {
+                    errors.portError = 'Please enter a valid port number';
+                    errors.portHint =
+                        'A port number should range between 1025 and 65535';
+                    hasError = true;
+                }
+                break;
         }
 
         setSettingErrors(errors);
@@ -90,10 +106,16 @@ const HeadlessIndicator = ({ address, port }) => {
     //handles enter key press in IP address input field
     const handleEnterKey = (event) => {
         if (event.keyCode === 13) {
-            setHeadlessSettings({ ...headlessSettings, ip: event.target.value });
+            setHeadlessSettings({
+                ...headlessSettings,
+                ip: event.target.value,
+            });
             validateInputs(event.target);
             if (settingErrors.ipError) {
-                setHeadlessSettings({ ...headlessSettings, ip: oldSettings.ip });
+                setHeadlessSettings({
+                    ...headlessSettings,
+                    ip: oldSettings.ip,
+                });
                 setSettingErrors({ ...settingErrors, ipError: '', ipHint: '' });
             }
         }
@@ -108,10 +130,19 @@ const HeadlessIndicator = ({ address, port }) => {
         }
         const { name, value } = event.target;
         //Reset errors when user starts typing
-        name === 'ip' ? setSettingErrors({ ...settingErrors, ipError: '', ipHint: '' }) : setSettingErrors({ ...settingErrors, portError: '', portHint: '' });
+        name === 'ip'
+            ? setSettingErrors({ ...settingErrors, ipError: '', ipHint: '' })
+            : setSettingErrors({
+                  ...settingErrors,
+                  portError: '',
+                  portHint: '',
+              });
         //handle toggle change
         if (name === 'headlessStatus') {
-            setHeadlessSettings({ ...headlessSettings, headlessStatus: !headlessSettings.headlessStatus });
+            setHeadlessSettings({
+                ...headlessSettings,
+                headlessStatus: !headlessSettings.headlessStatus,
+            });
             setSettingErrors(defaultErrorMessage);
             return;
         }
@@ -127,7 +158,11 @@ const HeadlessIndicator = ({ address, port }) => {
 
     const updateRemotePreferences = () => {
         if (headlessSettings.ip === '') {
-            setSettingErrors({ ...setSettingErrors, ipError: 'Invalid IP Address', ipHint: 'Ip addresses should consist of 4 sets of numbers between 0 and 255 following the pattern X.X.X.X' });
+            setSettingErrors({
+                ...setSettingErrors,
+                ipError: 'Invalid IP Address',
+                ipHint: 'Ip addresses should consist of 4 sets of numbers between 0 and 255 following the pattern X.X.X.X',
+            });
             return;
         }
         //Update settings logic
@@ -185,7 +220,11 @@ const HeadlessIndicator = ({ address, port }) => {
             <Tooltip content="Remote mode" placement="bottom" enterDelay={0}>
                 <div
                     className={styles.remoteAlert}
-                    style={oldSettings.headlessStatus ? { background: '#06B881' } : { background: '#747474' }}
+                    style={
+                        oldSettings.headlessStatus
+                            ? { background: '#06B881' }
+                            : { background: '#747474' }
+                    }
                     role="button"
                     tabIndex={-3}
                     onClick={handleShowConfig}
@@ -194,35 +233,38 @@ const HeadlessIndicator = ({ address, port }) => {
                     <i className="fa fa-satellite-dish" />
                 </div>
             </Tooltip>
-            {oldSettings.headlessStatus
-                ? (
-                    <div>
-                        <span
-                            className={styles.ip}
-                            onClick={copyToClipboard}
-                            tabIndex={-2}
-                            onKeyDown={() => {
-                                return;
-                            }}
-                            role="button"
-                        >Remote: {address}:{port}
-                        </span>
-                    </div>
-                )
-                : ''
-            }
-            {
-                shouldRestart ? (
-                    <div
-                        className={styles.restartLabel} onClick={() => setShowConfirmation(true)} role="button"
-                        tabIndex={-3}
+            {oldSettings.headlessStatus ? (
+                <div>
+                    <span
+                        className={styles.ip}
+                        onClick={copyToClipboard}
+                        tabIndex={-2}
                         onKeyDown={() => {
                             return;
                         }}
-                    >App restart pending
-                    </div>
-                ) : ''
-            }
+                        role="button"
+                    >
+                        Remote: {address}:{port}
+                    </span>
+                </div>
+            ) : (
+                ''
+            )}
+            {shouldRestart ? (
+                <div
+                    className={styles.restartLabel}
+                    onClick={() => setShowConfirmation(true)}
+                    role="button"
+                    tabIndex={-3}
+                    onKeyDown={() => {
+                        return;
+                    }}
+                >
+                    App restart pending
+                </div>
+            ) : (
+                ''
+            )}
             {/* Headless config dialog */}
             <DialogBox
                 show={showConfig}
@@ -245,85 +287,145 @@ const HeadlessIndicator = ({ address, port }) => {
                             Please choose your remote IP and Port below: <br />
                             <div className={styles.inputWrapper}>
                                 <div className={styles.ipInput}>
-                                    <span className={styles.titleIp}>IP: &#32;</span>
+                                    <span className={styles.titleIp}>
+                                        IP: &#32;
+                                    </span>
                                     <Creatable
                                         name="ip"
                                         placeholder="select or type IP"
-                                        value={{ value: headlessSettings.ip, label: headlessSettings.ip }}
+                                        value={{
+                                            value: headlessSettings.ip,
+                                            label: headlessSettings.ip,
+                                        }}
                                         options={ipList} //{value: , label: }
                                         onChange={handleInputChanges}
-                                        onBlur={
-                                            () => {
-                                                if (settingErrors.ipError) {
-                                                    setHeadlessSettings({ ...headlessSettings, ip: oldSettings.ip });
-                                                    setSettingErrors({ ...settingErrors, ipError: '', ipHint: '' });
-                                                }
+                                        onBlur={() => {
+                                            if (settingErrors.ipError) {
+                                                setHeadlessSettings({
+                                                    ...headlessSettings,
+                                                    ip: oldSettings.ip,
+                                                });
+                                                setSettingErrors({
+                                                    ...settingErrors,
+                                                    ipError: '',
+                                                    ipHint: '',
+                                                });
                                             }
+                                        }}
+                                        onKeyDown={(event) =>
+                                            handleEnterKey(event)
                                         }
-                                        onKeyDown={(event) => handleEnterKey(event)}
-                                        isDisabled={!headlessSettings.headlessStatus}
-                                        className={settingErrors.ipError ? styles.invalidInput : ''}
+                                        isDisabled={
+                                            !headlessSettings.headlessStatus
+                                        }
+                                        className={
+                                            settingErrors.ipError
+                                                ? styles.invalidInput
+                                                : ''
+                                        }
                                         styles={{
-                                            container: base => ({
+                                            container: (base) => ({
                                                 ...base,
                                                 width: '15rem',
-                                            })
+                                            }),
                                         }}
                                     />
-                                    {settingErrors.ipError ? <span className={styles.warningText}> <i className="fa fa-exclamation-circle" /> {settingErrors.ipError} </span> : ''}
+                                    {settingErrors.ipError ? (
+                                        <span className={styles.warningText}>
+                                            {' '}
+                                            <i className="fa fa-exclamation-circle" />{' '}
+                                            {settingErrors.ipError}{' '}
+                                        </span>
+                                    ) : (
+                                        ''
+                                    )}
                                 </div>
                                 {settingErrors.ipHint ? (
                                     <div className={styles.hints}>
                                         {settingErrors.ipHint}
                                     </div>
-                                ) : ''}
+                                ) : (
+                                    ''
+                                )}
                                 <div className={styles.portInput}>
-                                    <span className={styles.titlePort}>Port: &#32;</span>
+                                    <span className={styles.titlePort}>
+                                        Port: &#32;
+                                    </span>
                                     <input
                                         name="port"
                                         type="number"
                                         value={headlessSettings.port}
                                         min={0}
                                         onChange={handleInputChanges}
-                                        onBlur={
-                                            () => {
-                                                if (settingErrors.portError) {
-                                                    setHeadlessSettings({ ...headlessSettings, port: oldSettings.port });
-                                                    setSettingErrors({ ...settingErrors, portError: '', portHint: '' });
-                                                }
+                                        onBlur={() => {
+                                            if (settingErrors.portError) {
+                                                setHeadlessSettings({
+                                                    ...headlessSettings,
+                                                    port: oldSettings.port,
+                                                });
+                                                setSettingErrors({
+                                                    ...settingErrors,
+                                                    portError: '',
+                                                    portHint: '',
+                                                });
                                             }
-                                        }
+                                        }}
                                         placeholder="port number"
-                                        disabled={!headlessSettings.headlessStatus}
-                                        className={settingErrors.portError ? styles.invalidInput : ''}
+                                        disabled={
+                                            !headlessSettings.headlessStatus
+                                        }
+                                        className={
+                                            settingErrors.portError
+                                                ? styles.invalidInput
+                                                : ''
+                                        }
                                     />
-                                    {settingErrors.portError ? <span className={styles.warningText}> <i className="fa fa-exclamation-circle" /> {settingErrors.portError} </span> : ''}
+                                    {settingErrors.portError ? (
+                                        <span className={styles.warningText}>
+                                            {' '}
+                                            <i className="fa fa-exclamation-circle" />{' '}
+                                            {settingErrors.portError}{' '}
+                                        </span>
+                                    ) : (
+                                        ''
+                                    )}
                                     {settingErrors.portHint ? (
                                         <div className={styles.hints}>
                                             {settingErrors.portHint}
                                         </div>
-                                    ) : ''}
+                                    ) : (
+                                        ''
+                                    )}
                                 </div>
                             </div>
                         </div>
                         <div>
                             <div className={styles.warningWrapper}>
-                                <b>Warning: </b> Any changes to remote mode settings will require a restart of the application before taking effect.  You will be prompted to restart on clicking &quot;OK&quot;
+                                <b>Warning: </b> Any changes to remote mode
+                                settings will require a restart of the
+                                application before taking effect. You will be
+                                prompted to restart on clicking &quot;OK&quot;
                             </div>
                             <div className={styles.footer}>
                                 <div className={styles.buttonWrapper}>
-                                    <Button primary onClick={updateRemotePreferences}>OK</Button>
+                                    <Button
+                                        primary
+                                        onClick={updateRemotePreferences}
+                                    >
+                                        OK
+                                    </Button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className={styles.QRWrapper}>
-                        {
-                            !shouldRestart && headlessSettings.headlessStatus && <QRConnection ip={headlessSettings.ip} port={headlessSettings.port} />
-                        }
+                        {!shouldRestart && headlessSettings.headlessStatus && (
+                            <QRConnection
+                                ip={headlessSettings.ip}
+                                port={headlessSettings.port}
+                            />
+                        )}
                     </div>
-
-
                 </div>
             </DialogBox>
             {/* Restart confirmation dialog */}

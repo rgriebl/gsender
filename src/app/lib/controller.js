@@ -43,31 +43,31 @@ class Controller {
     listeners = {
         // Socket.IO Events
         // Fired upon a connection including a successful reconnection.
-        'connect': [],
+        connect: [],
         // Fired upon a connection error.
-        'connect_error': [],
+        connect_error: [],
         // Fired upon a connection timeout.
-        'connect_timeout': [],
+        connect_timeout: [],
         // Fired when an error occurs.
-        'error': [],
+        error: [],
         // Fired upon a disconnection.
-        'disconnect': [],
+        disconnect: [],
         // Fired upon a successful reconnection.
-        'reconnect': [],
+        reconnect: [],
         // Fired upon an attempt to reconnect.
-        'reconnect_attempt': [],
+        reconnect_attempt: [],
         // Fired upon an attempt to reconnect.
-        'reconnecting': [],
+        reconnecting: [],
         // Fired upon a reconnection attempt error.
-        'reconnect_error': [],
+        reconnect_error: [],
         // Fired when couldn't reconnect within reconnectionAttempts.
-        'reconnect_failed': [],
+        reconnect_failed: [],
         // Fired when gcode errors are found in files...
-        'gcode_error': [],
-        'gcode_error_checking_file': [],
+        gcode_error: [],
+        gcode_error_checking_file: [],
 
         // System ToolChange
-        'startup': [],
+        startup: [],
         'config:change': [],
         'task:start': [],
         'task:finish': [],
@@ -89,9 +89,9 @@ class Controller {
         'controller:state': [],
         'settings:description': [],
         'settings:alarm': [],
-        'message': [],
+        message: [],
         'toolchange:start': [],
-        'hPong': [],
+        hPong: [],
         'outline:start': [],
         'file:load': [],
         'file:unload': [],
@@ -101,13 +101,13 @@ class Controller {
         'sender:M0M1': [],
         'ip:list': [],
         'wizard:next': [],
-        'realtime_report': [],
-        'error_clear': [],
+        realtime_report: [],
+        error_clear: [],
         'toolchange:acknowledge': [],
-        'cyclestart_alt': [],
-        'feedhold_alt': [],
-        'virtual_stop_toggle': [],
-        'filetype': [],
+        cyclestart_alt: [],
+        feedhold_alt: [],
+        virtual_stop_toggle: [],
+        filetype: [],
         'toolchange:preHookComplete': [],
         'flash:end': [],
         'flash:message': [],
@@ -115,10 +115,10 @@ class Controller {
 
         //A-Axis A.K.A Rotary-Axis events
         'rotaryAxis:updateState': [],
-        'updateRotaryMode': [],
+        updateRotaryMode: [],
         'connection:new': [],
 
-        'requestEstimateData': [],
+        requestEstimateData: [],
     };
 
     context = {
@@ -127,7 +127,7 @@ class Controller {
         ymin: 0,
         ymax: 0,
         zmin: 0,
-        zmax: 0
+        zmax: 0,
     };
 
     // User-defined baud rates and ports
@@ -146,7 +146,7 @@ class Controller {
     state = {};
 
     workflow = {
-        state: 'idle' // running|paused|idle
+        state: 'idle', // running|paused|idle
     };
 
     // Connection options
@@ -159,7 +159,9 @@ class Controller {
     // @param {object} io The socket.io-client module.
     constructor(io) {
         if (!io) {
-            throw new Error(`Expected the socket.io-client module, but got: ${io}`);
+            throw new Error(
+                `Expected the socket.io-client module, but got: ${io}`,
+            );
         }
 
         this.io = io;
@@ -182,9 +184,9 @@ class Controller {
 
         options = {
             ...options,
-            'reconnection': true,
-            'reconnectionDelay': 500,
-            'reconnectionAttempts': 10
+            reconnection: true,
+            reconnectionDelay: 500,
+            reconnectionAttempts: 10,
         };
 
         this.host = host;
@@ -197,7 +199,6 @@ class Controller {
         this.socket.on('disconnect', () => {
             this.reconnect();
         });
-
 
         Object.keys(this.listeners).forEach((eventName) => {
             if (!this.socket) {
@@ -230,7 +231,7 @@ class Controller {
                 }
 
                 const listeners = ensureArray(this.listeners[eventName]);
-                listeners.forEach(listener => {
+                listeners.forEach((listener) => {
                     listener(...args);
                 });
             });
@@ -310,7 +311,8 @@ class Controller {
         if (typeof callback !== 'function') {
             callback = noop;
         }
-        this.socket && this.socket.emit('open', port, controllerType, options, callback);
+        this.socket &&
+            this.socket.emit('open', port, controllerType, options, callback);
     }
 
     // Closes an open connection.
@@ -327,7 +329,8 @@ class Controller {
     //@param {string} flashPort The port to be flashed
     //@param {string} imageType The type of image to be flashed to the port
     flashFirmware(flashPort, imageType, isHal, hex) {
-        this.socket && this.socket.emit('flash:start', flashPort, imageType, isHal, hex);
+        this.socket &&
+            this.socket.emit('flash:start', flashPort, imageType, isHal, hex);
     }
 
     // Retrieves a list of available serial ports with metadata.
@@ -410,7 +413,11 @@ class Controller {
         if (!port) {
             return;
         }
-        this.socket && this.socket.emit.apply(this.socket, ['command', port, cmd].concat(args));
+        this.socket &&
+            this.socket.emit.apply(
+                this.socket,
+                ['command', port, cmd].concat(args),
+            );
     }
 
     // Writes data to the serial port.

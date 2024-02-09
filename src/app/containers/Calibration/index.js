@@ -12,7 +12,6 @@ import AxisTuning from './AxisTuning';
 
 import styles from './index.styl';
 
-
 const Calibration = ({ modalClose }) => {
     const [tab, setTab] = useState(0);
 
@@ -55,16 +54,17 @@ const Calibration = ({ modalClose }) => {
                 <TabbedWidget.Content>
                     <ReduxProvider store={reduxStore}>
                         <div className={styles.container}>
-                            {
-                                tabs.map((t, index) => {
-                                    const active = index === tab;
-                                    return (
-                                        <TabbedWidget.ChildComponent key={t.id} active={active}>
-                                            {active && t.component}
-                                        </TabbedWidget.ChildComponent>
-                                    );
-                                })
-                            }
+                            {tabs.map((t, index) => {
+                                const active = index === tab;
+                                return (
+                                    <TabbedWidget.ChildComponent
+                                        key={t.id}
+                                        active={active}
+                                    >
+                                        {active && t.component}
+                                    </TabbedWidget.ChildComponent>
+                                );
+                            })}
                         </div>
                     </ReduxProvider>
                 </TabbedWidget.Content>

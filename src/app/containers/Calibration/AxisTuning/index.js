@@ -60,17 +60,17 @@ const AxisTuning = ({ onClose }) => {
     }, [currentAxis]);
 
     const onChange = ({ id, checked }) => {
-        const foundAction = actions.find(action => action.id === Number(id));
+        const foundAction = actions.find((action) => action.id === Number(id));
 
         if (foundAction && foundAction.hasBeenChanged) {
             return;
         }
 
-        const updatedActions = actions.map(action => (
+        const updatedActions = actions.map((action) =>
             action.id === id
-                ? ({ ...action, checked, hasBeenChanged: true })
-                : action
-        ));
+                ? { ...action, checked, hasBeenChanged: true }
+                : action,
+        );
         setCurrentAction(id + 1);
 
         setActions(updatedActions);
@@ -98,7 +98,6 @@ const AxisTuning = ({ onClose }) => {
         }
     };
 
-
     const reset = () => {
         setIntroComplete(false);
         setCurrentStep(0);
@@ -119,7 +118,7 @@ const AxisTuning = ({ onClose }) => {
         setIntroComplete(true);
     };
 
-    const actionData = actions.find(action => action.id === currentAction);
+    const actionData = actions.find((action) => action.id === currentAction);
 
     const prevDisabled = !!steps[currentStep - 1];
     const nextDisabled = stepFinished;
@@ -131,46 +130,72 @@ const AxisTuning = ({ onClose }) => {
 
     return (
         <div className={styles.alignmentContainer}>
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                {
-                    !introComplete &&
-                    <ToolIntroduction readyHandler={startTool} onSelectAxis={(axis) => setCurrentAxis(axis)} currentAxis={currentAxis} />
-                }
-                {
-                    introComplete && (
-                        <Step
-                            actions={actions}
-                            onChange={onChange}
-                            currentAction={currentAction}
-                            options={options}
-                            setRequestedDistance={setRequestedDistance}
-                            setActualDistance={setActualDistance}
-                        />
-                    )
-                }
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                }}
+            >
+                {!introComplete && (
+                    <ToolIntroduction
+                        readyHandler={startTool}
+                        onSelectAxis={(axis) => setCurrentAxis(axis)}
+                        currentAxis={currentAxis}
+                    />
+                )}
+                {introComplete && (
+                    <Step
+                        actions={actions}
+                        onChange={onChange}
+                        currentAction={currentAction}
+                        options={options}
+                        setRequestedDistance={setRequestedDistance}
+                        setActualDistance={setActualDistance}
+                    />
+                )}
 
-                {
-                    introComplete && (
-                        <NavigationButtons
-                            onNext={next}
-                            onPrevious={prev}
-                            prevDisabled={prevDisabled}
-                            nextDisabled={nextDisabled}
-                        />
-                    )
-                }
+                {introComplete && (
+                    <NavigationButtons
+                        onNext={next}
+                        onPrevious={prev}
+                        prevDisabled={prevDisabled}
+                        nextDisabled={nextDisabled}
+                    />
+                )}
             </div>
 
-            <div style={{ justifyContent: 'space-between', padding: '3rem', display: 'flex', gap: '1rem', flexDirection: 'column', width: '100%', backgroundColor: 'white' }}>
+            <div
+                style={{
+                    justifyContent: 'space-between',
+                    padding: '3rem',
+                    display: 'flex',
+                    gap: '1rem',
+                    flexDirection: 'column',
+                    width: '100%',
+                    backgroundColor: 'white',
+                }}
+            >
                 {
-                    <ImageDiagram actions={actions} currentAction={currentAction} />
+                    <ImageDiagram
+                        actions={actions}
+                        currentAction={currentAction}
+                    />
                 }
-                {
-                    !introComplete && <p style={{ width: '100%', fontWeight: 'bold' }}>Whichever axis you’ll be tuning, please place it in an initial location so that it’ll have space to move to the right (for X), backwards (for Y), and downwards (for Z).</p>
-                }
-                {
-                    introComplete && <p style={{ width: '100%', fontWeight: 'bold' }}>{stepFinished ? 'Proceed to the Next Step' : actionData?.description}</p>
-                }
+                {!introComplete && (
+                    <p style={{ width: '100%', fontWeight: 'bold' }}>
+                        Whichever axis you’ll be tuning, please place it in an
+                        initial location so that it’ll have space to move to the
+                        right (for X), backwards (for Y), and downwards (for Z).
+                    </p>
+                )}
+                {introComplete && (
+                    <p style={{ width: '100%', fontWeight: 'bold' }}>
+                        {stepFinished
+                            ? 'Proceed to the Next Step'
+                            : actionData?.description}
+                    </p>
+                )}
             </div>
         </div>
     );

@@ -19,7 +19,7 @@ export class MPGHelper extends EventEmitter {
         this.factor = factor;
 
         this._updateValue(value);
-    }
+    };
 
     _updateValue = (newValue) => {
         if (this.value === null) {
@@ -29,20 +29,32 @@ export class MPGHelper extends EventEmitter {
 
         const { axis, step, feedrate, factor } = this;
 
-        if (inRange(this.value - newValue, TOTAL_ANGLE - ANGLE_THRESHOLD, TOTAL_ANGLE + ANGLE_THRESHOLD)) {
+        if (
+            inRange(
+                this.value - newValue,
+                TOTAL_ANGLE - ANGLE_THRESHOLD,
+                TOTAL_ANGLE + ANGLE_THRESHOLD,
+            )
+        ) {
             this.jog({ [axis]: step * factor, F: feedrate });
             this.value = newValue;
             return;
         }
 
-        if (inRange(this.value - newValue, -TOTAL_ANGLE - ANGLE_THRESHOLD, -TOTAL_ANGLE + ANGLE_THRESHOLD)) {
+        if (
+            inRange(
+                this.value - newValue,
+                -TOTAL_ANGLE - ANGLE_THRESHOLD,
+                -TOTAL_ANGLE + ANGLE_THRESHOLD,
+            )
+        ) {
             this.jog({ [axis]: -step * factor, F: feedrate });
             this.value = newValue;
             return;
         }
-    }
+    };
 
     clearValue = () => {
         this.value = null;
-    }
+    };
 }

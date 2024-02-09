@@ -44,12 +44,12 @@ class DropdownButton extends PureComponent {
         pullRight: PropTypes.bool,
 
         // Whether to prevent a caret from being rendered next to the title.
-        noCaret: PropTypes.bool
+        noCaret: PropTypes.bool,
     };
 
     static defaultProps = {
         pullRight: true,
-        noCaret: true
+        noCaret: true,
     };
 
     render() {
@@ -58,7 +58,7 @@ class DropdownButton extends PureComponent {
         // Split component props
         const dropdownProps = {};
         const toggleProps = {};
-        Object.keys(props).forEach(propName => {
+        Object.keys(props).forEach((propName) => {
             const propValue = props[propName];
             // eslint-disable-next-line react/forbid-foreign-prop-types
             if (Dropdown.ControlledComponent.propTypes[propName]) {
@@ -73,7 +73,7 @@ class DropdownButton extends PureComponent {
                 {...dropdownProps}
                 style={{
                     ...style,
-                    float: 'left'
+                    float: 'left',
                 }}
                 btnSize={btnSize}
             >
@@ -84,9 +84,7 @@ class DropdownButton extends PureComponent {
                 >
                     {toggle}
                 </Dropdown.Toggle>
-                <Dropdown.Menu>
-                    {children}
-                </Dropdown.Menu>
+                <Dropdown.Menu>{children}</Dropdown.Menu>
             </Dropdown>
         );
     }

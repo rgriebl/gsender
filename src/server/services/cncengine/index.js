@@ -45,5 +45,5 @@ export default {
     start,
     stop,
     load,
-    unload
+    unload,
 };

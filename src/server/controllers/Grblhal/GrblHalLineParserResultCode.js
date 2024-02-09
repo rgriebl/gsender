@@ -31,12 +31,12 @@ class GrblHalLineParserResultCode {
         }
 
         const payload = {
-            code: r[2]
+            code: r[2],
         };
 
         return {
             type: GrblHalLineParserResultCode,
-            payload: payload
+            payload: payload,
         };
     }
 }

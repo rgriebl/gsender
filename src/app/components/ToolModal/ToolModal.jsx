@@ -29,33 +29,41 @@ import Modal from 'app/components/Modal';
 import styles from './index.styl';
 import { LARGE, MEDIUM, SMALL, XSMALL } from './sizings';
 
-
-const ToolModal = ({ onClose, title, style, className, size, children, disableOverlayClick = false, ...rest }) => {
+const ToolModal = ({
+    onClose,
+    title,
+    style,
+    className,
+    size,
+    children,
+    disableOverlayClick = false,
+    ...rest
+}) => {
     let sizingStyles;
 
     switch (size?.toLowerCase()) {
-    case 'xs':
-        sizingStyles = XSMALL;
-        break;
-    case 'small':
-    case 'sm':
-        sizingStyles = SMALL;
-        break;
+        case 'xs':
+            sizingStyles = XSMALL;
+            break;
+        case 'small':
+        case 'sm':
+            sizingStyles = SMALL;
+            break;
 
-    case 'medium':
-    case 'md':
-        sizingStyles = MEDIUM;
-        break;
+        case 'medium':
+        case 'md':
+            sizingStyles = MEDIUM;
+            break;
 
-    case 'large':
-    case 'lg':
-        sizingStyles = LARGE;
-        break;
+        case 'large':
+        case 'lg':
+            sizingStyles = LARGE;
+            break;
 
-    default: {
-        sizingStyles = LARGE;
-        break;
-    }
+        default: {
+            sizingStyles = LARGE;
+            break;
+        }
     }
 
     return (
@@ -71,9 +79,7 @@ const ToolModal = ({ onClose, title, style, className, size, children, disableOv
                 <div className={styles.header}>
                     <h5 className={styles.headerText}>{title}</h5>
                 </div>
-                <div className={styles.container}>
-                    {children}
-                </div>
+                <div className={styles.container}>{children}</div>
             </div>
         </Modal>
     );

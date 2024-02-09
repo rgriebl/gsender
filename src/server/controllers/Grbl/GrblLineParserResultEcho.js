@@ -31,12 +31,12 @@ class GrblLineParserResultEcho {
         }
 
         const payload = {
-            message: r[1]
+            message: r[1],
         };
 
         return {
             type: GrblLineParserResultEcho,
-            payload: payload
+            payload: payload,
         };
     }
 }

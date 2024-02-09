@@ -28,9 +28,7 @@ import _get from 'lodash/get';
 import _includes from 'lodash/includes';
 import _set from 'lodash/set';
 import _trim from 'lodash/trim';
-import {
-    GRBL_HAL_MODAL_GROUPS
-} from './constants';
+import { GRBL_HAL_MODAL_GROUPS } from './constants';
 
 class GrbHalLineParserResultParserState {
     // * Grbl v1.1
@@ -40,15 +38,16 @@ class GrbHalLineParserResultParserState {
     //   new: G49, G50, G98
     //   don't care about G50
     static parse(line) {
-        const r = line.match(/^\[(?:GC:)?((?:[a-zA-Z][0-9]+(?:\.[0-9]*)?\s*)+)\]$/);
+        const r = line.match(
+            /^\[(?:GC:)?((?:[a-zA-Z][0-9]+(?:\.[0-9]*)?\s*)+)\]$/,
+        );
         if (!r) {
             return null;
         }
         const payload = {};
-        const words = _compact(r[1].split(' '))
-            .map((word) => {
-                return _trim(word);
-            });
+        const words = _compact(r[1].split(' ')).map((word) => {
+            return _trim(word);
+        });
 
         for (let i = 0; i < words.length; ++i) {
             const word = words[i];
@@ -65,7 +64,11 @@ class GrbHalLineParserResultParserState {
 
                 const prevWord = _get(payload, 'modal.' + r.group, '');
                 if (prevWord) {
-                    _set(payload, 'modal.' + r.group, ensureArray(prevWord).concat(word));
+                    _set(
+                        payload,
+                        'modal.' + r.group,
+                        ensureArray(prevWord).concat(word),
+                    );
                 } else {
                     _set(payload, 'modal.' + r.group, word);
                 }
@@ -94,7 +97,7 @@ class GrbHalLineParserResultParserState {
 
         return {
             type: GrbHalLineParserResultParserState,
-            payload: payload
+            payload: payload,
         };
     }
 }

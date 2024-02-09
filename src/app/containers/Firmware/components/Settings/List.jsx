@@ -12,13 +12,19 @@ import { FirmwareContext, restoreSingleDefaultSetting } from '../../utils';
 
 import styles from '../../index.styl';
 
-
 const SettingsList = ({ firmwareType }) => {
-    const { hasSettings, machineProfile, settings, setFilterText, setSettings, setSettingsToApply } = useContext(FirmwareContext);
+    const {
+        hasSettings,
+        machineProfile,
+        settings,
+        setFilterText,
+        setSettings,
+        setSettingsToApply,
+    } = useContext(FirmwareContext);
 
     const handleSettingsChange = (index) => (value) => {
         setSettingsToApply(true);
-        setSettings(prev => {
+        setSettings((prev) => {
             const updated = [...prev];
             updated[index].value = value;
             return updated;
@@ -32,14 +38,19 @@ const SettingsList = ({ firmwareType }) => {
             confirmLabel: 'Yes',
             onConfirm: () => {
                 restoreSingleDefaultSetting(setting, machineProfile);
-            }
+            },
         });
     };
 
     return (
         <div className={styles.settingsContainer}>
             <div className={styles.tableHeader}>
-                <div className={[styles['non-default-value'], styles.tableColumnEEPROM].join(' ')}>
+                <div
+                    className={[
+                        styles['non-default-value'],
+                        styles.tableColumnEEPROM,
+                    ].join(' ')}
+                >
                     <span>$ Setting</span>
                 </div>
                 <div className={styles.tableColumn}>
@@ -51,84 +62,146 @@ const SettingsList = ({ firmwareType }) => {
 
                 <div className={styles.tableColumn} />
             </div>
-            {
-                hasSettings && (
-                    <>
-                        {
-                            settings.length > 0 ? settings.map((grbl, index) => {
-                                const [, defaultValue] = Object.entries(machineProfile?.eepromSettings ?? {})
-                                    .find(([key]) => key === grbl.setting) ?? [];
-                                const isSameAsDefault = defaultValue === grbl.value;
-                                const labelMap = { '0': 'Disabled', '1': 'Enabled' };
-                                const defaultValueLabel = grbl.inputType === 'switch' ? labelMap[defaultValue] : defaultValue;
-                                const isSienciMachine = machineProfile?.company?.includes('Sienci Labs');
-                                const highlighted = (!isSameAsDefault && isSienciMachine) ? { backgroundColor: '#f2f2c2' } : {};
-                                const {
-                                    message = 'Custom EEPROM field',
-                                    description = `Change the value of ${grbl.setting}`,
-                                } = grbl;
+            {hasSettings && (
+                <>
+                    {settings.length > 0 ? (
+                        settings.map((grbl, index) => {
+                            const [, defaultValue] =
+                                Object.entries(
+                                    machineProfile?.eepromSettings ?? {},
+                                ).find(([key]) => key === grbl.setting) ?? [];
+                            const isSameAsDefault = defaultValue === grbl.value;
+                            const labelMap = { 0: 'Disabled', 1: 'Enabled' };
+                            const defaultValueLabel =
+                                grbl.inputType === 'switch'
+                                    ? labelMap[defaultValue]
+                                    : defaultValue;
+                            const isSienciMachine =
+                                machineProfile?.company?.includes(
+                                    'Sienci Labs',
+                                );
+                            const highlighted =
+                                !isSameAsDefault && isSienciMachine
+                                    ? { backgroundColor: '#f2f2c2' }
+                                    : {};
+                            const {
+                                message = 'Custom EEPROM field',
+                                description = `Change the value of ${grbl.setting}`,
+                            } = grbl;
 
-                                return (
-                                    <div key={grbl.setting} className={styles.containerFluid} style={highlighted}>
-                                        <div className={styles.tableRow}>
-                                            <div className={styles.keyRow}>
-                                                {grbl.setting.replace('$', '')}
-                                                <CategoryTag category={grbl.category} />
-                                            </div>
-
-                                            <div className={styles.settingsInformation}>
-                                                <div className={styles.settingsDescription}>
-                                                    <div className={styles.itemText}>{message}</div>
-                                                    <div className={styles.descriptionRow}>{description}</div>
-                                                </div>
-                                            </div>
-                                            <div className={styles.settingsControl}>
-                                                <InputController
-                                                    title={grbl.setting}
-                                                    type={grbl.inputType}
-                                                    min={grbl.min}
-                                                    max={grbl.max}
-                                                    step={grbl.step}
-                                                    units={grbl.units}
-                                                    onChange={handleSettingsChange(index)}
-                                                    value={grbl.value}
-                                                    values={grbl.values}
-                                                    maxChars={grbl.maxChars}
-                                                    bits={grbl.bits}
-                                                    numBits={grbl.numBits}
-                                                    requiredBit={grbl.requiredBit}
-                                                />
-                                            </div>
-
-                                            <div className={classname(styles['non-default-value'], (isSameAsDefault || !isSienciMachine) ? styles.hide : null)}>
-                                                <Tooltip content={`Default Value: ${defaultValueLabel}`}>
-                                                    <i className="fas fa-info-circle" style={{ marginRight: '1rem' }} />
-                                                </Tooltip>
-
-                                                <Tooltip content={`Reset this setting to the default value (${defaultValueLabel})`}>
-                                                    <button
-                                                        type="button"
-                                                        style={{ all: 'unset' }}
-                                                        onClick={handleResetToDefaultValue(grbl.setting)}
-                                                    >
-                                                        <i className="fas fa-undo" style={{ cursor: 'pointer' }} />
-                                                    </button>
-                                                </Tooltip>
-                                            </div>
+                            return (
+                                <div
+                                    key={grbl.setting}
+                                    className={styles.containerFluid}
+                                    style={highlighted}
+                                >
+                                    <div className={styles.tableRow}>
+                                        <div className={styles.keyRow}>
+                                            {grbl.setting.replace('$', '')}
+                                            <CategoryTag
+                                                category={grbl.category}
+                                            />
                                         </div>
 
+                                        <div
+                                            className={
+                                                styles.settingsInformation
+                                            }
+                                        >
+                                            <div
+                                                className={
+                                                    styles.settingsDescription
+                                                }
+                                            >
+                                                <div
+                                                    className={styles.itemText}
+                                                >
+                                                    {message}
+                                                </div>
+                                                <div
+                                                    className={
+                                                        styles.descriptionRow
+                                                    }
+                                                >
+                                                    {description}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className={styles.settingsControl}>
+                                            <InputController
+                                                title={grbl.setting}
+                                                type={grbl.inputType}
+                                                min={grbl.min}
+                                                max={grbl.max}
+                                                step={grbl.step}
+                                                units={grbl.units}
+                                                onChange={handleSettingsChange(
+                                                    index,
+                                                )}
+                                                value={grbl.value}
+                                                values={grbl.values}
+                                                maxChars={grbl.maxChars}
+                                                bits={grbl.bits}
+                                                numBits={grbl.numBits}
+                                                requiredBit={grbl.requiredBit}
+                                            />
+                                        </div>
+
+                                        <div
+                                            className={classname(
+                                                styles['non-default-value'],
+                                                isSameAsDefault ||
+                                                    !isSienciMachine
+                                                    ? styles.hide
+                                                    : null,
+                                            )}
+                                        >
+                                            <Tooltip
+                                                content={`Default Value: ${defaultValueLabel}`}
+                                            >
+                                                <i
+                                                    className="fas fa-info-circle"
+                                                    style={{
+                                                        marginRight: '1rem',
+                                                    }}
+                                                />
+                                            </Tooltip>
+
+                                            <Tooltip
+                                                content={`Reset this setting to the default value (${defaultValueLabel})`}
+                                            >
+                                                <button
+                                                    type="button"
+                                                    style={{ all: 'unset' }}
+                                                    onClick={handleResetToDefaultValue(
+                                                        grbl.setting,
+                                                    )}
+                                                >
+                                                    <i
+                                                        className="fas fa-undo"
+                                                        style={{
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    />
+                                                </button>
+                                            </Tooltip>
+                                        </div>
                                     </div>
-                                );
-                            }) : (
-                                <div className={styles.noSettingsWrapper}>
-                                    <h5>No Settings Found, Please Refine Your Search</h5>
-                                    <Button onClick={() => setFilterText('')}>Clear Search Text</Button>
                                 </div>
-                            )
-                        }
-                    </>
-                )
-            }
+                            );
+                        })
+                    ) : (
+                        <div className={styles.noSettingsWrapper}>
+                            <h5>
+                                No Settings Found, Please Refine Your Search
+                            </h5>
+                            <Button onClick={() => setFilterText('')}>
+                                Clear Search Text
+                            </Button>
+                        </div>
+                    )}
+                </>
+            )}
         </div>
     );
 };
@@ -137,6 +210,6 @@ export default connect((store) => {
     const firmwareType = get(store, 'controller.type');
 
     return {
-        firmwareType
+        firmwareType,
     };
 })(SettingsList);

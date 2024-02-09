@@ -7,12 +7,12 @@ class GrblHalLineParserResultAlarmDetails {
 
         const payload = {
             id: Number(r[1]),
-            description: r[2]
+            description: r[2],
         };
 
         return {
             type: GrblHalLineParserResultAlarmDetails,
-            payload
+            payload,
         };
     }
 }

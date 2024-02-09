@@ -32,7 +32,7 @@ import { getPagingRange } from './paging';
 import {
     ERR_BAD_REQUEST,
     ERR_NOT_FOUND,
-    ERR_INTERNAL_SERVER_ERROR
+    ERR_INTERNAL_SERVER_ERROR,
 } from '../constants';
 
 const log = logger('api:mdi');
@@ -79,19 +79,19 @@ export const fetch = (req, res) => {
             pagination: {
                 page: Number(page),
                 pageLength: Number(pageLength),
-                totalRecords: Number(totalRecords)
+                totalRecords: Number(totalRecords),
             },
-            records: pagedRecords.map(record => {
+            records: pagedRecords.map((record) => {
                 const { id, name, command, grid = {} } = { ...record };
                 return { id, name, command, grid };
-            })
+            }),
         });
     } else {
         res.send({
-            records: records.map(record => {
+            records: records.map((record) => {
                 const { id, name, command, grid = {} } = { ...record };
                 return { id, name, command, grid };
-            })
+            }),
         });
     }
 };
@@ -101,14 +101,14 @@ export const create = (req, res) => {
 
     if (!name) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "name" parameter must not be empty'
+            msg: 'The "name" parameter must not be empty',
         });
         return;
     }
 
     if (!command) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "command" parameter must not be empty'
+            msg: 'The "command" parameter must not be empty',
         });
         return;
     }
@@ -119,7 +119,7 @@ export const create = (req, res) => {
             id: uuid.v4(),
             name: name,
             command: command,
-            grid: grid
+            grid: grid,
         };
 
         records.push(record);
@@ -128,7 +128,7 @@ export const create = (req, res) => {
         res.send({ err: null });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.cncrc)
+            msg: 'Failed to save ' + JSON.stringify(settings.cncrc),
         });
     }
 };
@@ -140,7 +140,7 @@ export const read = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -156,7 +156,7 @@ export const update = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -164,7 +164,7 @@ export const update = (req, res) => {
     const {
         name = record.name,
         command = record.command,
-        grid = record.grid
+        grid = record.grid,
     } = { ...req.body };
 
     /*
@@ -193,7 +193,7 @@ export const update = (req, res) => {
         res.send({ err: null });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.cncrc)
+            msg: 'Failed to save ' + JSON.stringify(settings.cncrc),
         });
     }
 };
@@ -203,13 +203,14 @@ export const bulkUpdate = (req, res) => {
 
     if (!records) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "records" parameter must not be empty'
+            msg: 'The "records" parameter must not be empty',
         });
         return;
     }
 
-    const filteredRecords = ensureArray(records)
-        .filter(record => isPlainObject(record));
+    const filteredRecords = ensureArray(records).filter((record) =>
+        isPlainObject(record),
+    );
 
     for (let i = 0; i < filteredRecords.length; ++i) {
         const record = filteredRecords[i];
@@ -228,7 +229,7 @@ export const bulkUpdate = (req, res) => {
         res.send({ err: null });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.cncrc)
+            msg: 'Failed to save ' + JSON.stringify(settings.cncrc),
         });
     }
 };
@@ -240,13 +241,13 @@ export const __delete = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
 
     try {
-        const filteredRecords = records.filter(record => {
+        const filteredRecords = records.filter((record) => {
             return record.id !== id;
         });
         config.set(CONFIG_KEY, filteredRecords);
@@ -254,7 +255,7 @@ export const __delete = (req, res) => {
         res.send({ err: null });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.cncrc)
+            msg: 'Failed to save ' + JSON.stringify(settings.cncrc),
         });
     }
 };

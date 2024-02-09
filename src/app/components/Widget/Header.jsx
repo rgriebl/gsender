@@ -33,16 +33,16 @@ const Header = ({ fixed, className, embedded = false, ...props }) => (
             className,
             styles.widgetHeader,
             { [styles.widgetHeaderFixed]: fixed },
-            { [styles.hidden]: embedded }
+            { [styles.hidden]: embedded },
         )}
     />
 );
 
 Header.propTypes = {
-    fixed: PropTypes.bool
+    fixed: PropTypes.bool,
 };
 Header.defaultProps = {
-    fixed: false
+    fixed: false,
 };
 
 export default Header;

@@ -28,21 +28,18 @@ import combokeys from 'app/lib/combokeys';
 import gamepad, { runAction } from 'app/lib/gamepad';
 import useKeybinding from '../../lib/useKeybinding';
 
-import {
-    MODAL_PREVIEW
-} from './constants';
+import { MODAL_PREVIEW } from './constants';
 import { METRIC_UNITS, PROBING_CATEGORY } from '../../constants';
 import ProbeImage from './ProbeImage';
 import ProbeDiameter from './ProbeDiameter';
 import styles from './index.styl';
 import ProbeDirectionSelection from 'app/widgets/Probe/ProbeDirectionSelection';
 
-
 class Probe extends PureComponent {
     static propTypes = {
         state: PropTypes.object,
         actions: PropTypes.object,
-        probeActive: PropTypes.bool
+        probeActive: PropTypes.bool,
     };
 
     shuttleControlEvents = {
@@ -103,14 +100,21 @@ class Probe extends PureComponent {
             callback: () => {
                 const { state, actions } = this.props;
                 const { toolDiameter, availableTools, units } = state;
-                const toolUnits = units === METRIC_UNITS ? 'metricDiameter' : 'imperialDiameter';
-                const currIndex = availableTools.findIndex(element => element[toolUnits] === toolDiameter);
+                const toolUnits =
+                    units === METRIC_UNITS
+                        ? 'metricDiameter'
+                        : 'imperialDiameter';
+                const currIndex = availableTools.findIndex(
+                    (element) => element[toolUnits] === toolDiameter,
+                );
 
                 let newIndex = currIndex - 1;
                 if (newIndex < 0) {
                     newIndex = availableTools.length - 1;
                 }
-                actions.setToolDiameter({ value: availableTools[newIndex][`${toolUnits}`] });
+                actions.setToolDiameter({
+                    value: availableTools[newIndex][`${toolUnits}`],
+                });
             },
         },
         PROBE_DIAMETER_SCROLL_DOWN: {
@@ -123,29 +127,36 @@ class Probe extends PureComponent {
             callback: () => {
                 const { state, actions } = this.props;
                 const { toolDiameter, availableTools, units } = state;
-                const toolUnits = units === METRIC_UNITS ? 'metricDiameter' : 'imperialDiameter';
-                const currIndex = availableTools.findIndex(element => element[toolUnits] === toolDiameter);
+                const toolUnits =
+                    units === METRIC_UNITS
+                        ? 'metricDiameter'
+                        : 'imperialDiameter';
+                const currIndex = availableTools.findIndex(
+                    (element) => element[toolUnits] === toolDiameter,
+                );
 
                 let newIndex = currIndex + 1;
                 if (newIndex >= availableTools.length) {
                     newIndex = 0;
                 }
-                actions.setToolDiameter({ value: availableTools[newIndex][`${toolUnits}`] });
+                actions.setToolDiameter({
+                    value: availableTools[newIndex][`${toolUnits}`],
+                });
             },
-        }
-    }
+        },
+    };
 
     addShuttleControlEvents() {
         combokeys.reload();
 
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
     }
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
@@ -154,7 +165,12 @@ class Probe extends PureComponent {
     componentDidMount() {
         this.addShuttleControlEvents();
         useKeybinding(this.shuttleControlEvents);
-        gamepad.on('gamepad:button', (event) => runAction({ event, shuttleControlEvents: this.shuttleControlEvents }));
+        gamepad.on('gamepad:button', (event) =>
+            runAction({
+                event,
+                shuttleControlEvents: this.shuttleControlEvents,
+            }),
+        );
     }
 
     componentWillUnmount() {
@@ -168,40 +184,68 @@ class Probe extends PureComponent {
             availableProbeCommands,
             selectedProbeCommand,
             touchplate,
-            direction
+            direction,
         } = state;
 
         const { touchplateType } = touchplate;
-        const probeCommand = availableProbeCommands[selectedProbeCommand] || false;
+        const probeCommand =
+            availableProbeCommands[selectedProbeCommand] || false;
 
         return (
             <div className={styles.generalWrapper}>
                 <div className={styles.mainWrapper}>
                     <div className={styles.mainGrid}>
-                        <ProbeDirectionSelection direction={direction} onClick={actions.nextProbeDirection} />
+                        <ProbeDirectionSelection
+                            direction={direction}
+                            onClick={actions.nextProbeDirection}
+                        />
                         <div className={styles.secondaryFlexbox}>
                             <div className={styles.mainGridItem}>
                                 <label style={{ margin: 0 }}>Axis</label>
 
                                 <div className={styles.axisButtonsWrapper}>
-                                    {
-                                        availableProbeCommands.map((command, index) => (
+                                    {availableProbeCommands.map(
+                                        (command, index) => (
                                             <FunctionButton
                                                 key={command.id}
-                                                onClick={() => actions.handleProbeCommandChange(index)}
-                                                className={index === selectedProbeCommand ? styles.axisButtonActive : styles.axisButton}
+                                                onClick={() =>
+                                                    actions.handleProbeCommandChange(
+                                                        index,
+                                                    )
+                                                }
+                                                className={
+                                                    index ===
+                                                    selectedProbeCommand
+                                                        ? styles.axisButtonActive
+                                                        : styles.axisButton
+                                                }
                                             >
-                                                { index === selectedProbeCommand && (<div className={styles.axisButtonActiveIndicator} />) }
+                                                {index ===
+                                                    selectedProbeCommand && (
+                                                    <div
+                                                        className={
+                                                            styles.axisButtonActiveIndicator
+                                                        }
+                                                    />
+                                                )}
                                                 {command.id.split(' ')[0]}
                                             </FunctionButton>
-                                        ))
-                                    }
+                                        ),
+                                    )}
                                 </div>
                             </div>
-                            <div className={cx(styles.mainGridItem, { [styles.hidden]: !probeCommand.tool })}>
+                            <div
+                                className={cx(styles.mainGridItem, {
+                                    [styles.hidden]: !probeCommand.tool,
+                                })}
+                            >
                                 <label>Tool</label>
                                 <div className={styles.toolsWrapper}>
-                                    <ProbeDiameter actions={actions} state={state} probeCommand={probeCommand} />
+                                    <ProbeDiameter
+                                        actions={actions}
+                                        state={state}
+                                        probeCommand={probeCommand}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -218,7 +262,10 @@ class Probe extends PureComponent {
                         </div>
                     </div>
                 </div>
-                <ProbeImage touchplateType={touchplateType} probeCommand={probeCommand} />
+                <ProbeImage
+                    touchplateType={touchplateType}
+                    probeCommand={probeCommand}
+                />
             </div>
         );
     }

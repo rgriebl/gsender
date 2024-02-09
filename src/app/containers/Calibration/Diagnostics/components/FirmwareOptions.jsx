@@ -26,7 +26,6 @@ import cx from 'classnames';
 import generateSupportFile from 'app/lib/diagnostics';
 import styles from '../index.styl';
 
-
 const DiagnosticFile = () => {
     return (
         <div className={cx(styles.card)}>
@@ -34,10 +33,12 @@ const DiagnosticFile = () => {
             {
                 //<button onClick={() => generateSupportFile()}>Generate Diagnostic File</button>
             }
-            { generateSupportFile() }
+            {generateSupportFile()}
             <div className={styles.small}>
-                Get easier help from our customer support or community with a generated PDF of your CNC information like machine type,
-                operating system, CNC firmware, g-code file, recent errors, and more.
+                Get easier help from our customer support or community with a
+                generated PDF of your CNC information like machine type,
+                operating system, CNC firmware, g-code file, recent errors, and
+                more.
             </div>
         </div>
     );

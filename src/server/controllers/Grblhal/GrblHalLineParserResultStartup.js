@@ -23,7 +23,9 @@
 
 import _trim from 'lodash/trim';
 
-const pattern = new RegExp(/^([a-zA-Z0-9]+)\s+((?:\d+\.){1,2}\d+[a-zA-Z0-9\-\.]*)([^\[]*\[[^\]]+\].*)?/);
+const pattern = new RegExp(
+    /^([a-zA-Z0-9]+)\s+((?:\d+\.){1,2}\d+[a-zA-Z0-9\-\.]*)([^\[]*\[[^\]]+\].*)?/,
+);
 
 class GrblHalLineParserResultStartup {
     static parse(line) {
@@ -44,7 +46,7 @@ class GrblHalLineParserResultStartup {
 
         return {
             type: GrblHalLineParserResultStartup,
-            payload: payload
+            payload: payload,
         };
     }
 }

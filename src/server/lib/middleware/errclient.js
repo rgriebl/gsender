@@ -45,7 +45,7 @@ const errclient = (options) => {
     return (err, req, res, next) => {
         if (req.xhr) {
             res.send(500, {
-                error: error
+                error: error,
             });
             return;
         }

@@ -36,32 +36,32 @@ import insertAtCaret from './insertAtCaret';
 import variables from './variables';
 import styles from './index.styl';
 
-import { modalContainerStyle, modalBodyStyle, modalFooterStyle } from './modalStyle';
+import {
+    modalContainerStyle,
+    modalBodyStyle,
+    modalFooterStyle,
+} from './modalStyle';
 
 const MAX_CHARACTERS = '128';
 
 class AddMacro extends PureComponent {
     static propTypes = {
         state: PropTypes.object,
-        actions: PropTypes.object
+        actions: PropTypes.object,
     };
 
     fields = {
         name: null,
-        content: null
+        content: null,
     };
 
     get value() {
-        const {
-            name,
-            content,
-            description
-        } = this.form.getValues();
+        const { name, content, description } = this.form.getValues();
 
         return {
             name: name,
             content: content,
-            description
+            description,
         };
     }
 
@@ -79,7 +79,7 @@ class AddMacro extends PureComponent {
                 <div style={modalContainerStyle}>
                     <div style={modalBodyStyle}>
                         <Form
-                            ref={c => {
+                            ref={(c) => {
                                 this.form = c;
                             }}
                             onSubmit={(event) => {
@@ -89,7 +89,7 @@ class AddMacro extends PureComponent {
                             <div className="form-group">
                                 <label>{i18n._('Macro Name')}</label>
                                 <Input
-                                    ref={c => {
+                                    ref={(c) => {
                                         this.fields.name = c;
                                     }}
                                     maxLength={MAX_CHARACTERS}
@@ -107,13 +107,19 @@ class AddMacro extends PureComponent {
                                         id="add-macro-dropdown"
                                         className="pull-right"
                                         onSelect={(eventKey) => {
-                                            const textarea = ReactDOM.findDOMNode(this.fields.content).querySelector('textarea');
+                                            const textarea =
+                                                ReactDOM.findDOMNode(
+                                                    this.fields.content,
+                                                ).querySelector('textarea');
                                             if (textarea) {
-                                                insertAtCaret(textarea, eventKey);
+                                                insertAtCaret(
+                                                    textarea,
+                                                    eventKey,
+                                                );
                                             }
 
                                             actions.updateModalParams({
-                                                content: textarea.value
+                                                content: textarea.value,
                                             });
                                         }}
                                     >
@@ -127,10 +133,15 @@ class AddMacro extends PureComponent {
                                             <Space width="4" />
                                             <i className="fa fa-caret-down" />
                                         </Dropdown.Toggle>
-                                        <Dropdown.Menu className={styles.macroVariablesDropdown}>
-                                            {variables.map(v => {
+                                        <Dropdown.Menu
+                                            className={
+                                                styles.macroVariablesDropdown
+                                            }
+                                        >
+                                            {variables.map((v) => {
                                                 if (typeof v === 'object') {
-                                                    return v.type === 'header' ? (
+                                                    return v.type ===
+                                                        'header' ? (
                                                         <Dropdown.Header
                                                             key={uniqueId()}
                                                         >
@@ -140,7 +151,11 @@ class AddMacro extends PureComponent {
                                                         <Dropdown.Item
                                                             key={uniqueId()}
                                                             eventKey={v}
-                                                            className={styles['dropdown-item']}
+                                                            className={
+                                                                styles[
+                                                                    'dropdown-item'
+                                                                ]
+                                                            }
                                                         >
                                                             {v.text}
                                                         </Dropdown.Item>
@@ -151,7 +166,11 @@ class AddMacro extends PureComponent {
                                                     <Dropdown.Item
                                                         eventKey={v}
                                                         key={uniqueId()}
-                                                        className={styles['dropdown-item']}
+                                                        className={
+                                                            styles[
+                                                                'dropdown-item'
+                                                            ]
+                                                        }
                                                     >
                                                         {v}
                                                     </Dropdown.Item>
@@ -161,7 +180,7 @@ class AddMacro extends PureComponent {
                                     </Dropdown>
                                 </div>
                                 <Textarea
-                                    ref={c => {
+                                    ref={(c) => {
                                         this.fields.content = c;
                                     }}
                                     rows="10"
@@ -184,22 +203,29 @@ class AddMacro extends PureComponent {
                         </Form>
                     </div>
                     <div style={modalFooterStyle}>
-                        <Button
-                            onClick={actions.closeModal}
-                        >
+                        <Button onClick={actions.closeModal}>
                             {i18n._('Cancel')}
                         </Button>
                         <Button
-                            style={{ backgroundColor: '#3e85c7', color: 'white', backgroundImage: 'none' }}
+                            style={{
+                                backgroundColor: '#3e85c7',
+                                color: 'white',
+                                backgroundImage: 'none',
+                            }}
                             onClick={() => {
-                                this.form.validate(err => {
+                                this.form.validate((err) => {
                                     if (err) {
                                         return;
                                     }
 
-                                    const { name, content, description } = this.value;
+                                    const { name, content, description } =
+                                        this.value;
 
-                                    actions.addMacro({ name, content, description });
+                                    actions.addMacro({
+                                        name,
+                                        content,
+                                        description,
+                                    });
                                     actions.closeModal();
                                 });
                             }}

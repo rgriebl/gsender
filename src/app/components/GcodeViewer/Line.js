@@ -14,7 +14,7 @@ const Line = ({ number, text }) => {
 
 Line.propTypes = {
     number: PropTypes.number.isRequired,
-    text: PropTypes.string.isRequired
+    text: PropTypes.string.isRequired,
 };
 
 export default Line;

@@ -34,26 +34,43 @@ import WidgetManager from './WidgetManager';
 
 export const getInactiveWidgets = () => {
     const allWidgets = Object.keys(defaultState.widgets);
-    const defaultWidgets = store.get('workspace.container.default.widgets', [])
-        .map(widgetId => widgetId.split(':')[0]);
-    const primaryWidgets = store.get('workspace.container.primary.widgets', [])
-        .map(widgetId => widgetId.split(':')[0]);
-    const inactiveWidgets = difference(allWidgets, defaultWidgets, primaryWidgets)
-        .filter(widget => {
-            if (widget === 'grbl' && !includes(controller.loadedControllers, GRBL)) {
-                return false;
-            }
-            if (widget === 'marlin' && !includes(controller.loadedControllers, MARLIN)) {
-                return false;
-            }
-            if (widget === 'smoothie' && !includes(controller.loadedControllers, SMOOTHIE)) {
-                return false;
-            }
-            if (widget === 'tinyg' && !includes(controller.loadedControllers, TINYG)) {
-                return false;
-            }
-            return true;
-        });
+    const defaultWidgets = store
+        .get('workspace.container.default.widgets', [])
+        .map((widgetId) => widgetId.split(':')[0]);
+    const primaryWidgets = store
+        .get('workspace.container.primary.widgets', [])
+        .map((widgetId) => widgetId.split(':')[0]);
+    const inactiveWidgets = difference(
+        allWidgets,
+        defaultWidgets,
+        primaryWidgets,
+    ).filter((widget) => {
+        if (
+            widget === 'grbl' &&
+            !includes(controller.loadedControllers, GRBL)
+        ) {
+            return false;
+        }
+        if (
+            widget === 'marlin' &&
+            !includes(controller.loadedControllers, MARLIN)
+        ) {
+            return false;
+        }
+        if (
+            widget === 'smoothie' &&
+            !includes(controller.loadedControllers, SMOOTHIE)
+        ) {
+            return false;
+        }
+        if (
+            widget === 'tinyg' &&
+            !includes(controller.loadedControllers, TINYG)
+        ) {
+            return false;
+        }
+        return true;
+    });
 
     return inactiveWidgets;
 };
@@ -68,5 +85,8 @@ export const show = (callback) => {
         }, 0);
     };
 
-    ReactDOM.render(<WidgetManager onSave={callback} onClose={handleClose} />, el);
+    ReactDOM.render(
+        <WidgetManager onSave={callback} onClose={handleClose} />,
+        el,
+    );
 };

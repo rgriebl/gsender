@@ -22,7 +22,11 @@
  */
 import controller from 'app/lib/controller';
 import React from 'react';
-import { getProbeSettings, getUnitModal, getToolString } from 'app/lib/toolChangeUtils';
+import {
+    getProbeSettings,
+    getUnitModal,
+    getToolString,
+} from 'app/lib/toolChangeUtils';
 import reduxStore from 'app/store/redux';
 import { get } from 'lodash';
 
@@ -32,7 +36,9 @@ const moveAmount = $13 ? '0.4in' : '10mm';
 // $132 is max z travel, if soft limits ($20) enabled we need to make sure probe distance will not exceed max limits
 const calculateMaxZProbeDistance = (zProbeDistance = 30) => {
     const state = reduxStore.getState();
-    const softLimits = Number(get(state, 'controller.settings.settings.$20', 0));
+    const softLimits = Number(
+        get(state, 'controller.settings.settings.$20', 0),
+    );
 
     // Can safely use configured Z probe distance if soft limits not enabled
     if (softLimits === 0) {
@@ -49,16 +55,18 @@ const calculateMaxZProbeDistance = (zProbeDistance = 30) => {
     return zProbeDistance;
 };
 
-
 const wizard = {
     intro: {
         icon: 'fas fa-caution',
-        description: 'Tool Change detected, stay clear of the machine! Wait until initial movements are complete!'
+        description:
+            'Tool Change detected, stay clear of the machine! Wait until initial movements are complete!',
     },
     onStart: () => {
         const settings = getProbeSettings();
 
-        const zProbeDistance = calculateMaxZProbeDistance(settings.zProbeDistance);
+        const zProbeDistance = calculateMaxZProbeDistance(
+            settings.zProbeDistance,
+        );
 
         return [
             '%wait',
@@ -85,10 +93,16 @@ const wizard = {
             substeps: [
                 {
                     title: 'Safety First',
-                    description: () => <div>Ensure that your router/spindle is turned off and has fully stopped spinning then jog your machine to your probe location using the jog controls.</div>,
+                    description: () => (
+                        <div>
+                            Ensure that your router/spindle is turned off and
+                            has fully stopped spinning then jog your machine to
+                            your probe location using the jog controls.
+                        </div>
+                    ),
                     overlay: false,
                 },
-            ]
+            ],
         },
         {
             title: 'Setup Probe',
@@ -110,21 +124,28 @@ const wizard = {
                                     '%global.toolchange.TOOL_OFFSET=posz',
                                     '(TLO set: [global.toolchange.TOOL_OFFSET])',
                                     'G91 G21 G0 Z10',
-                                    'G90'
+                                    'G90',
                                 ]);
-                            }
+                            },
                         },
-                    ]
+                    ],
                 },
-
-            ]
+            ],
         },
         {
             title: 'Probe New Tool',
             substeps: [
                 {
                     title: 'Change Tool',
-                    description: () => <div>Jog your machine to a palce you can reach using the jog controls then change over to the next tool ({getToolString()}).  Once ready, jog to {moveAmount} above the probe location, attach the magnet, and prepare to probe</div>,
+                    description: () => (
+                        <div>
+                            Jog your machine to a palce you can reach using the
+                            jog controls then change over to the next tool (
+                            {getToolString()}). Once ready, jog to {moveAmount}{' '}
+                            above the probe location, attach the magnet, and
+                            prepare to probe
+                        </div>
+                    ),
                     overlay: false,
                     actions: [
                         {
@@ -141,18 +162,19 @@ const wizard = {
                                     'G4 P0.3',
                                     `${modal} G10 L20 P0 Z[global.toolchange.TOOL_OFFSET + global.toolchange.RETRACT]`,
                                 ]);
-                            }
-                        }
-                    ]
-                }
-            ]
+                            },
+                        },
+                    ],
+                },
+            ],
         },
         {
             title: 'Resume Job',
             substeps: [
                 {
                     title: 'Resume Job',
-                    description: 'If everything looks good, prepare for your machine to move back to the cutting area and continue as expected. Remove the touch plate magnet and turn on your router if you have them.',
+                    description:
+                        'If everything looks good, prepare for your machine to move back to the cutting area and continue as expected. Remove the touch plate magnet and turn on your router if you have them.',
                     overlay: false,
                     actions: [
                         {
@@ -166,15 +188,15 @@ const wizard = {
                                     `G90 ${unit} G0 Z[global.toolchange.ZPOS]`,
                                     '(Restore initial modals)',
                                     'M3 [global.toolchange.UNITS] [global.toolchange.DISTANCE] [global.toolchange.FEEDRATE]',
-                                    '%toolchange_complete'
+                                    '%toolchange_complete',
                                 ]);
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
 };
 
 export default wizard;

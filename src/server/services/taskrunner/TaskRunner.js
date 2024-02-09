@@ -41,7 +41,7 @@ class TaskRunner extends events.EventEmitter {
         const taskId = shortid.generate(); // task id
         const child = defaultShell.spawn(command, {
             detached: true,
-            ...options
+            ...options,
         });
         child.unref();
 
@@ -56,7 +56,9 @@ class TaskRunner extends events.EventEmitter {
         });
         child.on('error', (err) => {
             // Listen for error event can prevent from throwing an unhandled exception
-            log.error(`Failed to start a child process: err=${JSON.stringify(err)}`);
+            log.error(
+                `Failed to start a child process: err=${JSON.stringify(err)}`,
+            );
 
             this.tasks = without(this.tasks, taskId);
             this.emit('error', taskId, err);

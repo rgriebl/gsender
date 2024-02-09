@@ -27,5 +27,5 @@ export {
     Form,
     Input,
     Select,
-    Textarea
+    Textarea,
 } from '@trendmicro/react-validation';

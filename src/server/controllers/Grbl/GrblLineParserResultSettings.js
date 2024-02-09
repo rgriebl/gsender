@@ -33,12 +33,12 @@ class GrblLineParserResultSettings {
         const payload = {
             name: r[1],
             value: r[2].trim(), // need this trim as it may have a space at the end
-            message: _.trim(r[3], '()')
+            message: _.trim(r[3], '()'),
         };
 
         return {
             type: GrblLineParserResultSettings,
-            payload: payload
+            payload: payload,
         };
     }
 }

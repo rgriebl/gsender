@@ -10,13 +10,19 @@ const Movement = ({ state, actions }) => {
 
     return (
         <Fieldset legend="Movement">
-            <Tooltip content="Amount Z-Axis will move before making any X/Y-Axis movements" location="default">
+            <Tooltip
+                content="Amount Z-Axis will move before making any X/Y-Axis movements"
+                location="default"
+            >
                 <Input
                     label="Safe Height"
                     units={units}
                     value={safeRetractHeight}
                     onChange={(e) => actions.general.setSafeRetractHeight(e)}
-                    additionalProps={{ name: 'safeRetractHeight', type: 'number' }}
+                    additionalProps={{
+                        name: 'safeRetractHeight',
+                        type: 'number',
+                    }}
                 />
             </Tooltip>
         </Fieldset>

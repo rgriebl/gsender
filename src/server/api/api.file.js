@@ -32,7 +32,7 @@ export const uploadFile = (req, res) => {
 
     if (!file) {
         return res.status(ERR_BAD_REQUEST).send({
-            msg: 'No file attached'
+            msg: 'No file attached',
         });
     }
 

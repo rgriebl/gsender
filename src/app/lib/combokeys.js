@@ -30,7 +30,6 @@ import log from './log';
 import { preventDefault } from './dom-events';
 import { modifierKeys } from './constants';
 
-
 import store from '../store';
 import shuttleEvents from './shuttleEvents';
 
@@ -65,7 +64,7 @@ const buggedKeysHandler = (e) => {
 
 class Combokeys extends events.EventEmitter {
     state = {
-        didBindEvents: false
+        didBindEvents: false,
     };
 
     list = [];
@@ -78,7 +77,12 @@ class Combokeys extends events.EventEmitter {
 
         Object.entries(commandKeys).forEach(([key, o]) => {
             const { keys, isActive } = o;
-            const { cmd, payload = null, category, preventDefault: preventDefaultBool } = shuttleEvents.allShuttleControlEvents[key] ?? o; // if macro, won't have shuttleEvents to pull defaults from
+            const {
+                cmd,
+                payload = null,
+                category,
+                preventDefault: preventDefaultBool,
+            } = shuttleEvents.allShuttleControlEvents[key] ?? o; // if macro, won't have shuttleEvents to pull defaults from
 
             //Do not add any keybindings if the shortcut is disabled or there is no shortcut at all
             if (!isActive || !keys) {
@@ -86,7 +90,9 @@ class Combokeys extends events.EventEmitter {
             }
 
             const callback = (event) => {
-                log.debug(`combokeys: keys=${keys} cmd=${cmd} payload=${JSON.stringify(payload)}`);
+                log.debug(
+                    `combokeys: keys=${keys} cmd=${cmd} payload=${JSON.stringify(payload)}`,
+                );
                 if (!!preventDefaultBool) {
                     preventDefault(event);
                 }
@@ -107,12 +113,14 @@ class Combokeys extends events.EventEmitter {
                 'JOG_X_P_Y_M',
                 'JOG_X_M_Y_P',
                 'JOG_X_Y_P',
-                'JOG_X_Y_M'
+                'JOG_X_Y_M',
             ];
             //Add keyup listeners for jogging events
             if (jogCmds.includes(cmd)) {
                 const callback = (event) => {
-                    log.debug(`combokeys: keys=${keys} cmd=${STOP_CMD} payload=${JSON.stringify(payload)}`);
+                    log.debug(
+                        `combokeys: keys=${keys} cmd=${STOP_CMD} payload=${JSON.stringify(payload)}`,
+                    );
                     if (!!preventDefaultBool) {
                         preventDefault(event);
                     }
@@ -159,7 +167,9 @@ class Combokeys extends events.EventEmitter {
 
     async getCommandKeys() {
         const setCommandKeys = store.get('commandKeys', {});
-        const setMacrosBinds = Object.entries(setCommandKeys).filter(([key, command]) => command.category === MACRO_CATEGORY);
+        const setMacrosBinds = Object.entries(setCommandKeys).filter(
+            ([key, command]) => command.category === MACRO_CATEGORY,
+        );
 
         const res = await api.macros.fetch();
         const macros = res.body.records;
@@ -170,8 +180,10 @@ class Combokeys extends events.EventEmitter {
         const allShuttleControlEvents = shuttleEvents.allShuttleControlEvents;
         const macroCallback = allShuttleControlEvents[MACRO];
 
-        macros.forEach(macro => {
-            const existingBind = setMacrosBinds.find(([key, bind]) => key === macro.id);
+        macros.forEach((macro) => {
+            const existingBind = setMacrosBinds.find(
+                ([key, bind]) => key === macro.id,
+            );
             if (!existingBind) {
                 newCommandKeysList[macro.id] = {
                     keys: '',
@@ -181,7 +193,7 @@ class Combokeys extends events.EventEmitter {
                     preventDefault: false,
                     isActive: false,
                     category: MACRO_CATEGORY,
-                    callback: macroCallback
+                    callback: macroCallback,
                 };
             }
         });

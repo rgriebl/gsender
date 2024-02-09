@@ -39,7 +39,7 @@ const FlashingFirmware = (flashPort, imageType = 'MK1', socket) => {
             port: flashPort,
         });
 
-        let imageHex = (imageType === 'MK2') ? mk2Image : mk1Image;
+        let imageHex = imageType === 'MK2' ? mk2Image : mk1Image;
         avrgirl.flash(imageHex, (error) => {
             if (error) {
                 socket.emit('task:error', error);
@@ -55,6 +55,5 @@ const FlashingFirmware = (flashPort, imageType = 'MK1', socket) => {
         socket.emit('task:error', message);
     }
 };
-
 
 export default FlashingFirmware;

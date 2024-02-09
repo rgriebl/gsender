@@ -33,11 +33,11 @@ class WidgetListItem extends PureComponent {
         details: PropTypes.string,
         checked: PropTypes.bool,
         disabled: PropTypes.bool,
-        onChange: PropTypes.func
+        onChange: PropTypes.func,
     };
 
     state = {
-        checked: this.props.checked
+        checked: this.props.checked,
     };
 
     handleChange = (event) => {
@@ -53,31 +53,39 @@ class WidgetListItem extends PureComponent {
                 fontSize: 100,
                 backgroundColor: '#f5f6f7',
                 color: checked ? 'rgba(64, 64, 64, 0.8)' : '#ccc',
-                textShadow: '2px 2px 2px #a0a0a0'
+                textShadow: '2px 2px 2px #a0a0a0',
             },
             caption: {
                 color: '#333',
                 fontWeight: 'bold',
-                opacity: checked ? 1 : 0.6
+                opacity: checked ? 1 : 0.6,
             },
             details: {
                 color: '#333',
                 height: 60,
                 marginTop: 15,
                 maxHeight: 60,
-                opacity: checked ? 1 : 0.6
-            }
+                opacity: checked ? 1 : 0.6,
+            },
         };
 
         return (
             <div className="panel panel-default">
-                <div className="panel-head text-center" style={styles.thumbnail}>
-                    <i className="fa fa-list-alt" style={{ fontSize: 'inherit' }} />
+                <div
+                    className="panel-head text-center"
+                    style={styles.thumbnail}
+                >
+                    <i
+                        className="fa fa-list-alt"
+                        style={{ fontSize: 'inherit' }}
+                    />
                 </div>
                 <div className="panel-body">
                     <div className="row no-gutters">
                         <div className="col-sm-8 text-left">
-                            <span style={styles.caption}>{this.props.caption}</span>
+                            <span style={styles.caption}>
+                                {this.props.caption}
+                            </span>
                         </div>
                         <div className="col-sm-4 text-right">
                             <span

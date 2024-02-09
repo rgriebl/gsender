@@ -32,7 +32,11 @@ import mK212x30 from '../../../../app/containers/Firmware/eepromFiles/MK2_12x30.
 
 import store from '../../../store';
 
-const ApplyFirmwareProfile = (nameOfMachine, typeOfMachine, recievedPortNumber) => {
+const ApplyFirmwareProfile = (
+    nameOfMachine,
+    typeOfMachine,
+    recievedPortNumber,
+) => {
     const controller = store.get(`controllers[${recievedPortNumber}]`);
     let settings = defaultGrbl;
 
@@ -65,7 +69,9 @@ const ApplyFirmwareProfile = (nameOfMachine, typeOfMachine, recievedPortNumber) 
         }
     }
 
-    const values = Object.entries(settings).map(([key, value]) => (`${key}=${value}`));
+    const values = Object.entries(settings).map(
+        ([key, value]) => `${key}=${value}`,
+    );
     values.push('$$');
 
     controller.command('gcode', values);

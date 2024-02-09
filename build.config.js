@@ -3,6 +3,6 @@ module.exports = {
         'en', // English (default)
     ],
     analytics: {
-        trackingId: 'UA-107017110-1'
-    }
+        trackingId: 'UA-107017110-1',
+    },
 };

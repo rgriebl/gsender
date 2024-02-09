@@ -23,23 +23,20 @@
 
 import get from 'lodash/get';
 import store from '../store';
-import {
-    ERR_BAD_REQUEST,
-    ERR_INTERNAL_SERVER_ERROR
-} from '../constants';
+import { ERR_BAD_REQUEST, ERR_INTERNAL_SERVER_ERROR } from '../constants';
 
 export const upload = (req, res) => {
     const { port, name, gcode, context = {} } = req.body;
 
     if (!port) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'No port specified'
+            msg: 'No port specified',
         });
         return;
     }
     if (!gcode) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'Empty G-code'
+            msg: 'Empty G-code',
         });
         return;
     }
@@ -47,7 +44,7 @@ export const upload = (req, res) => {
     const controller = store.get('controllers["' + port + '"]');
     if (!controller) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'Controller not found'
+            msg: 'Controller not found',
         });
         return;
     }
@@ -56,7 +53,7 @@ export const upload = (req, res) => {
     controller.command('gcode:load', name, gcode, context, (err, state) => {
         if (err) {
             res.status(ERR_INTERNAL_SERVER_ERROR).send({
-                msg: 'Failed to load G-code: ' + err
+                msg: 'Failed to load G-code: ' + err,
             });
             return;
         }
@@ -69,7 +66,7 @@ export const fetch = (req, res) => {
 
     if (!port) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'No port specified'
+            msg: 'No port specified',
         });
         return;
     }
@@ -77,7 +74,7 @@ export const fetch = (req, res) => {
     const controller = store.get('controllers["' + port + '"]');
     if (!controller) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'Controller not found'
+            msg: 'Controller not found',
         });
         return;
     }
@@ -86,7 +83,7 @@ export const fetch = (req, res) => {
 
     res.send({
         ...sender.toJSON(),
-        data: sender.state.gcode
+        data: sender.state.gcode,
     });
 };
 
@@ -95,7 +92,7 @@ export const download = (req, res) => {
 
     if (!port) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'No port specified'
+            msg: 'No port specified',
         });
         return;
     }
@@ -103,7 +100,7 @@ export const download = (req, res) => {
     const controller = store.get('controllers["' + port + '"]');
     if (!controller) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'Controller not found'
+            msg: 'Controller not found',
         });
         return;
     }
@@ -113,7 +110,10 @@ export const download = (req, res) => {
     const filename = sender.state.name || 'noname.txt';
     const content = sender.state.gcode || '';
 
-    res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(filename));
+    res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' + encodeURIComponent(filename),
+    );
     res.setHeader('Connection', 'close');
 
     res.write(content);

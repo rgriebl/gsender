@@ -29,14 +29,14 @@ export const RECENT_FILE_LIMIT = 5;
 
 export const recentFileExists = (filePath, recentFiles) => {
     const file = recentFiles.find((file) => file.filePath === filePath);
-    return !!(file);
+    return !!file;
 };
 
 export const createRecentFile = ({ name, dir }) => {
     return {
         fileName: name,
         filePath: `${dir}\\${name}`,
-        timeUploaded: Date.now()
+        timeUploaded: Date.now(),
     };
 };
 
@@ -44,7 +44,7 @@ export const createRecentFileFromRawPath = (filePath, fileName) => {
     return {
         fileName: fileName,
         filePath: filePath,
-        timeUploaded: Date.now()
+        timeUploaded: Date.now(),
     };
 };
 
@@ -61,7 +61,7 @@ export const addRecentFile = (fileMetaData) => {
     if (fileMetaData === null) {
         Toaster.pop({
             type: TOASTER_DANGER,
-            msg: 'Unable to load file - file may have been moved or deleted.'
+            msg: 'Unable to load file - file may have been moved or deleted.',
         });
         return;
     }
@@ -88,7 +88,10 @@ export const updateStoredRecentFiles = (recentFiles) => {
     store.replace('workspace.recentFiles', recentFiles);
 };
 
-export const trimRecentFilesToLimit = (recentFiles, limit = RECENT_FILE_LIMIT) => {
+export const trimRecentFilesToLimit = (
+    recentFiles,
+    limit = RECENT_FILE_LIMIT,
+) => {
     if (recentFiles.length > limit) {
         return recentFiles.slice(0, limit);
     }

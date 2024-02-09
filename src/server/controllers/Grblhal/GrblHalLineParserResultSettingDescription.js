@@ -38,12 +38,12 @@ class GrblHalLineParserResultSettingDescription {
             description: data[1],
             unit: data[2],
             dataType: Number(data[3]),
-            format: formatDataFormat(data[4])
+            format: formatDataFormat(data[4]),
         };
 
         return {
             type: GrblHalLineParserResultSettingDescription,
-            payload
+            payload,
         };
     }
 }

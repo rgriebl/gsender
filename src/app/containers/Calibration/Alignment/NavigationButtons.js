@@ -2,14 +2,26 @@ import React from 'react';
 
 import FunctionButton from 'app/components/FunctionButton/FunctionButton';
 
-const NavigationButtons = ({ onNext, onPrevious, nextDisabled, prevDisabled, onShowJogControls }) => {
+const NavigationButtons = ({
+    onNext,
+    onPrevious,
+    nextDisabled,
+    prevDisabled,
+    onShowJogControls,
+}) => {
     return (
         <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
             <div style={{ display: 'flex', gap: '1rem' }}>
-                <FunctionButton onClick={onPrevious} disabled={!prevDisabled}>Previous</FunctionButton>
-                <FunctionButton onClick={onNext} disabled={!nextDisabled}>Next</FunctionButton>
+                <FunctionButton onClick={onPrevious} disabled={!prevDisabled}>
+                    Previous
+                </FunctionButton>
+                <FunctionButton onClick={onNext} disabled={!nextDisabled}>
+                    Next
+                </FunctionButton>
             </div>
-            <FunctionButton onClick={onShowJogControls}>Show Jog Controls</FunctionButton>
+            <FunctionButton onClick={onShowJogControls}>
+                Show Jog Controls
+            </FunctionButton>
         </div>
     );
 };

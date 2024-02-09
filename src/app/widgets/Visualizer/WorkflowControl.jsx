@@ -51,7 +51,7 @@ import {
     TOASTER_WARNING,
     TOASTER_UNTIL_CLOSE,
     TOASTER_LONG,
-    TOASTER_INFO
+    TOASTER_INFO,
 } from '../../lib/toaster/ToasterLib';
 import {
     GRBL_ACTIVE_STATE_IDLE,
@@ -61,15 +61,19 @@ import {
     WORKFLOW_STATE_IDLE,
     WORKFLOW_STATE_PAUSED,
     WORKFLOW_STATE_RUNNING,
-    VISUALIZER_PRIMARY, LASER_MODE,
+    VISUALIZER_PRIMARY,
+    LASER_MODE,
     METRIC_UNITS,
     GRBL_ACTIVE_STATE_HOME,
     IMPERIAL_UNITS,
-    JOB_STATUS
+    JOB_STATUS,
 } from '../../constants';
 import styles from './workflow-control.styl';
 import RecentFileButton from './RecentFileButton';
-import { addRecentFile, createRecentFileFromRawPath } from './ClientRecentFiles';
+import {
+    addRecentFile,
+    createRecentFileFromRawPath,
+} from './ClientRecentFiles';
 import { UPDATE_FILE_INFO } from '../../actions/fileInfoActions';
 import { outlineResponse } from '../../workers/Outline.response';
 import { shouldVisualizeSVG } from '../../workers/Visualize.response';
@@ -83,7 +87,7 @@ class WorkflowControl extends PureComponent {
         state: PropTypes.object,
         actions: PropTypes.object,
         invalidGcode: PropTypes.string,
-        liteMode: PropTypes.bool
+        liteMode: PropTypes.bool,
     };
 
     fileInputEl = null;
@@ -109,14 +113,20 @@ class WorkflowControl extends PureComponent {
                 needsRecovery: false,
                 value: 0,
                 waitForHoming: false,
-                safeHeight: store.get('workspace.units', METRIC_UNITS) === METRIC_UNITS ? 10 : 0.4,
-                defaultSafeHeight: store.get('workspace.units', METRIC_UNITS) === METRIC_UNITS ? 10 : 0.4
+                safeHeight:
+                    store.get('workspace.units', METRIC_UNITS) === METRIC_UNITS
+                        ? 10
+                        : 0.4,
+                defaultSafeHeight:
+                    store.get('workspace.units', METRIC_UNITS) === METRIC_UNITS
+                        ? 10
+                        : 0.4,
             },
             job: {
                 showStats: false,
                 time: 0,
                 status: JOB_STATUS.COMPLETE,
-                errors: []
+                errors: [],
             },
         };
     }
@@ -132,23 +142,26 @@ class WorkflowControl extends PureComponent {
 
     handleCloseFile = () => {
         this.setState({ closeFile: true });
-    }
+    };
 
     handleReaderResponse = ({ data }) => {
         const { actions } = this.props;
         const { meta, result } = data;
         actions.uploadFile(result, meta);
-    }
+    };
 
     handleChangeFile = async (event) => {
         const files = event.target.files;
         const file = files[0];
 
         const hooks = store.get('workspace.toolChangeHooks', {});
-        const toolChangeOption = store.get('workspace.toolChangeOption', 'Ignore');
+        const toolChangeOption = store.get(
+            'workspace.toolChangeOption',
+            'Ignore',
+        );
         const toolChangeContext = {
             ...hooks,
-            toolChangeOption
+            toolChangeOption,
         };
 
         controller.command('toolchange:context', toolChangeContext);
@@ -156,14 +169,23 @@ class WorkflowControl extends PureComponent {
     };
 
     handleElectronFileUpload = async (file) => {
-        const serializedFile = new File([file.data], file.name, { path: file.path });
+        const serializedFile = new File([file.data], file.name, {
+            path: file.path,
+        });
 
         if (isElectron()) {
-            const recentFile = createRecentFileFromRawPath(file.path, file.name);
+            const recentFile = createRecentFileFromRawPath(
+                file.path,
+                file.name,
+            );
             addRecentFile(recentFile);
         }
 
-        await api.file.upload(serializedFile, controller.port, VISUALIZER_PRIMARY);
+        await api.file.upload(
+            serializedFile,
+            controller.port,
+            VISUALIZER_PRIMARY,
+        );
         reduxStore.dispatch({
             type: UPDATE_FILE_INFO,
             payload: { path: file.path },
@@ -174,22 +196,26 @@ class WorkflowControl extends PureComponent {
         if (fileMetadata === null) {
             Toaster.pop({
                 type: TOASTER_DANGER,
-                msg: 'Unable to load file - file may have been moved or renamed.'
+                msg: 'Unable to load file - file may have been moved or renamed.',
             });
             return;
         }
         const { result, name } = fileMetadata;
         const serializedFile = new File([result], name);
-        await api.file.upload(serializedFile, controller.port, VISUALIZER_PRIMARY);
+        await api.file.upload(
+            serializedFile,
+            controller.port,
+            VISUALIZER_PRIMARY,
+        );
         reduxStore.dispatch({
             type: UPDATE_FILE_INFO,
             payload: { path: fileMetadata.fullPath },
         });
-    }
+    };
 
     canRun() {
-        const { isConnected, fileLoaded, workflowState, activeState } = this.props;
-
+        const { isConnected, fileLoaded, workflowState, activeState } =
+            this.props;
 
         if (!isConnected) {
             return false;
@@ -198,20 +224,35 @@ class WorkflowControl extends PureComponent {
             return false;
         }
 
-        if ([GRBL_ACTIVE_STATE_HOLD, GRBL_ACTIVE_STATE_JOG].includes(activeState)) {
+        if (
+            [GRBL_ACTIVE_STATE_HOLD, GRBL_ACTIVE_STATE_JOG].includes(
+                activeState,
+            )
+        ) {
             return true;
         }
 
-        if (!includes([WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED], workflowState)) {
+        if (
+            !includes(
+                [WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED],
+                workflowState,
+            )
+        ) {
             return false;
         }
         const states = [
             GRBL_ACTIVE_STATE_IDLE,
             GRBL_ACTIVE_STATE_HOLD,
-            GRBL_ACTIVE_STATE_CHECK
+            GRBL_ACTIVE_STATE_CHECK,
         ];
 
-        if (includes([GRBL_ACTIVE_STATE_CHECK], activeState) && !includes([WORKFLOW_STATE_PAUSED, WORKFLOW_STATE_IDLE], workflowState)) {
+        if (
+            includes([GRBL_ACTIVE_STATE_CHECK], activeState) &&
+            !includes(
+                [WORKFLOW_STATE_PAUSED, WORKFLOW_STATE_IDLE],
+                workflowState,
+            )
+        ) {
             return false;
         }
 
@@ -219,18 +260,27 @@ class WorkflowControl extends PureComponent {
     }
 
     handleOnStop = () => {
-        const { actions: { handleStop }, controllerState, senderStatus } = this.props;
+        const {
+            actions: { handleStop },
+            controllerState,
+            senderStatus,
+        } = this.props;
         const { status } = controllerState;
 
         const { received } = senderStatus;
         handleStop();
-        reduxStore.dispatch({ type: UPDATE_JOB_OVERRIDES, payload: { isChecked: false, toggleStatus: 'jobStatus' } });
-        this.setState(prev => ({ runHasStarted: false, startFromLine: { ...prev.startFromLine, value: received } }));
+        reduxStore.dispatch({
+            type: UPDATE_JOB_OVERRIDES,
+            payload: { isChecked: false, toggleStatus: 'jobStatus' },
+        });
+        this.setState((prev) => ({
+            runHasStarted: false,
+            startFromLine: { ...prev.startFromLine, value: received },
+        }));
         if (status.activeState === 'Check') {
             controller.command('gcode', '$C');
         }
-    }
-
+    };
 
     handleTestFile = () => {
         this.setState({ runHasStarted: true });
@@ -247,12 +297,13 @@ class WorkflowControl extends PureComponent {
         const machineProfile = store.get('workspace.machineProfile');
         const spindleMode = store.get('widgets.spindle.mode');
         // outline toggled on and currently in laser mode
-        const isLaser = machineProfile.laserOnOutline && spindleMode === LASER_MODE;
+        const isLaser =
+            machineProfile.laserOnOutline && spindleMode === LASER_MODE;
 
         Toaster.pop({
             TYPE: TOASTER_INFO,
             duration: TOASTER_LONG,
-            msg: 'Generating outline for current file'
+            msg: 'Generating outline for current file',
         });
         this.workerOutline.onmessage = ({ data }) => {
             outlineResponse({ data }, machineProfile.laserOnOutline);
@@ -278,10 +329,13 @@ class WorkflowControl extends PureComponent {
         }
         this.setState({ fileLoaded: true });
         this.setState({ runHasStarted: true });
-        reduxStore.dispatch({ type: UPDATE_JOB_OVERRIDES, payload: { isChecked: true, toggleStatus: 'overrides' } });
+        reduxStore.dispatch({
+            type: UPDATE_JOB_OVERRIDES,
+            payload: { isChecked: true, toggleStatus: 'overrides' },
+        });
         const { actions } = this.props;
         actions.onRunClick();
-    }
+    };
 
     componentDidMount() {
         if (isElectron()) {
@@ -290,7 +344,7 @@ class WorkflowControl extends PureComponent {
                     Toaster.pop({
                         msg: 'Error loading recent file, it may have been deleted or moved to a different folder.',
                         type: TOASTER_DANGER,
-                        duration: 5000
+                        duration: 5000,
                     });
 
                     return;
@@ -309,15 +363,31 @@ class WorkflowControl extends PureComponent {
 
     componentDidUpdate(prevProps) {
         const { activeState: prevActiveState, state: prevState } = prevProps;
-        const { activeState: currentActiveState, state: currentState, fileCompletion } = this.props;
-        const { gcode: { content: prevGcode } } = prevState;
-        const { gcode: { content: currentGcode } } = currentState;
+        const {
+            activeState: currentActiveState,
+            state: currentState,
+            fileCompletion,
+        } = this.props;
+        const {
+            gcode: { content: prevGcode },
+        } = prevState;
+        const {
+            gcode: { content: currentGcode },
+        } = currentState;
         const { waitForHoming } = this.state.startFromLine;
 
-        if ((prevActiveState === GRBL_ACTIVE_STATE_CHECK && currentActiveState !== GRBL_ACTIVE_STATE_CHECK) || prevGcode !== currentGcode) {
+        if (
+            (prevActiveState === GRBL_ACTIVE_STATE_CHECK &&
+                currentActiveState !== GRBL_ACTIVE_STATE_CHECK) ||
+            prevGcode !== currentGcode
+        ) {
             this.updateRunHasStarted();
         }
-        if (prevActiveState === GRBL_ACTIVE_STATE_HOME && currentActiveState !== GRBL_ACTIVE_STATE_HOME && waitForHoming) {
+        if (
+            prevActiveState === GRBL_ACTIVE_STATE_HOME &&
+            currentActiveState !== GRBL_ACTIVE_STATE_HOME &&
+            waitForHoming
+        ) {
             this.moveToWCSZero();
         }
         if (prevProps.fileCompletion === 0 && fileCompletion !== 0) {
@@ -330,12 +400,12 @@ class WorkflowControl extends PureComponent {
     }
 
     updateStartFromLine() {
-        this.setState(prev => ({
+        this.setState((prev) => ({
             startFromLine: {
                 ...prev.startFromLine,
                 showModal: false,
                 value: 1,
-            }
+            },
         }));
     }
 
@@ -347,64 +417,82 @@ class WorkflowControl extends PureComponent {
         Toaster.pop({
             msg: `Finished Checking ${this.state.CurrentGCodeFile}!`,
             type: TOASTER_UNTIL_CLOSE,
-            duration: 10000
+            duration: 10000,
         });
-    }
+    };
 
     startFromLinePrompt = () => {
         const { received } = this.props.senderStatus;
-        this.setState(prev => ({
+        this.setState((prev) => ({
             startFromLine: {
                 ...prev.startFromLine,
                 showModal: true,
-                value: received !== 0 ? received : prev.startFromLine.value
-            }
+                value: received !== 0 ? received : prev.startFromLine.value,
+            },
         }));
-    }
+    };
 
     handleStartFromLine = () => {
         const { zMax } = this.props;
         const { units } = this.state;
         const { value, safeHeight } = this.state.startFromLine;
 
-        this.setState(prev => ({ startFromLine: { ...prev.startFromLine, showModal: false, needsRecovery: false } }));
-        const newSafeHeight = units === IMPERIAL_UNITS ? safeHeight * 25.4 : safeHeight;
+        this.setState((prev) => ({
+            startFromLine: {
+                ...prev.startFromLine,
+                showModal: false,
+                needsRecovery: false,
+            },
+        }));
+        const newSafeHeight =
+            units === IMPERIAL_UNITS ? safeHeight * 25.4 : safeHeight;
         controller.command('gcode:start', value, zMax, newSafeHeight);
-        reduxStore.dispatch({ type: UPDATE_JOB_OVERRIDES, payload: { isChecked: true, toggleStatus: 'overrides' } });
+        reduxStore.dispatch({
+            type: UPDATE_JOB_OVERRIDES,
+            payload: { isChecked: true, toggleStatus: 'overrides' },
+        });
         Toaster.pop({
             msg: 'Running Start From Specific Line Command',
             type: TOASTER_SUCCESS,
             duration: 2000,
         });
-    }
+    };
 
     moveToWCSZero = () => {
         const { homingEnabled } = this.props;
         const { units } = this.state;
         const safeRetractHeight = store.get('workspace.safeRetractHeight');
-        const modal = (units === METRIC_UNITS) ? 'G21' : 'G20';
+        const modal = units === METRIC_UNITS ? 'G21' : 'G20';
 
         if (safeRetractHeight !== 0) {
             if (homingEnabled) {
-                controller.command('gcode:safe', `G53 G0 Z${(Math.abs(safeRetractHeight) * -1)}`, modal);
+                controller.command(
+                    'gcode:safe',
+                    `G53 G0 Z${Math.abs(safeRetractHeight) * -1}`,
+                    modal,
+                );
             } else {
                 controller.command('gcode', 'G91');
-                controller.command('gcode:safe', `G0 Z${safeRetractHeight}`, modal); // Retract Z when moving across workspace
+                controller.command(
+                    'gcode:safe',
+                    `G0 Z${safeRetractHeight}`,
+                    modal,
+                ); // Retract Z when moving across workspace
             }
         }
         controller.command('gcode', 'G90');
         controller.command('gcode', 'G0 X0 Y0'); //Move to Work Position Zero
         controller.command('gcode', 'G0 Z0');
 
-        this.setState(prev => ({
+        this.setState((prev) => ({
             startFromLine: {
                 ...prev.startFromLine,
                 showModal: true,
                 needsRecovery: true,
-                waitForHoming: false
-            }
+                waitForHoming: false,
+            },
         }));
-    }
+    };
 
     subscribe() {
         const tokens = [
@@ -412,32 +500,35 @@ class WorkflowControl extends PureComponent {
                 const { comment } = context;
                 Toaster.pop({
                     msg: `Program execution paused due to M6 command with the following comment: ${comment}`,
-                    type: TOASTER_WARNING
+                    type: TOASTER_WARNING,
                 });
             }),
             pubsub.subscribe('outline:done', () => {
                 this.workerOutline.terminate();
             }),
-            pubsub.subscribe('disconnect:recovery', (msg, received, homingEnabled) => {
-                if (homingEnabled) {
-                    controller.command('homing');
-                    this.setState(prev => ({
-                        startFromLine: {
-                            ...prev.startFromLine,
-                            value: received,
-                            waitForHoming: true
-                        }
-                    }));
-                } else {
-                    this.setState(prev => ({
-                        startFromLine: {
-                            ...prev.startFromLine,
-                            value: received,
-                            needsRecovery: true
-                        }
-                    }));
-                }
-            }),
+            pubsub.subscribe(
+                'disconnect:recovery',
+                (msg, received, homingEnabled) => {
+                    if (homingEnabled) {
+                        controller.command('homing');
+                        this.setState((prev) => ({
+                            startFromLine: {
+                                ...prev.startFromLine,
+                                value: received,
+                                waitForHoming: true,
+                            },
+                        }));
+                    } else {
+                        this.setState((prev) => ({
+                            startFromLine: {
+                                ...prev.startFromLine,
+                                value: received,
+                                needsRecovery: true,
+                            },
+                        }));
+                    }
+                },
+            ),
             pubsub.subscribe('units:change', (msg, units) => {
                 this.changeUnits(units);
             }),
@@ -455,12 +546,16 @@ class WorkflowControl extends PureComponent {
                 this.setState({
                     job: {
                         showStats: true,
-                        time: convertMillisecondsToTimeStamp(status.elapsedTime),
-                        status: status.finishTime ? JOB_STATUS.COMPLETE : JOB_STATUS.STOPPED,
-                        errors: errors
-                    }
+                        time: convertMillisecondsToTimeStamp(
+                            status.elapsedTime,
+                        ),
+                        status: status.finishTime
+                            ? JOB_STATUS.COMPLETE
+                            : JOB_STATUS.STOPPED,
+                        errors: errors,
+                    },
                 });
-            })
+            }),
         ];
         this.pubsubTokens = this.pubsubTokens.concat(tokens);
     }
@@ -474,38 +569,69 @@ class WorkflowControl extends PureComponent {
 
     changeUnits(newUnits) {
         const { safeHeight } = this.state.startFromLine;
-        const newSafeHeight = newUnits === METRIC_UNITS ? (safeHeight * 25.4).toFixed(1) : (safeHeight / 25.4).toFixed(1);
+        const newSafeHeight =
+            newUnits === METRIC_UNITS
+                ? (safeHeight * 25.4).toFixed(1)
+                : (safeHeight / 25.4).toFixed(1);
         const newDefaultSafeHeight = newUnits === METRIC_UNITS ? 10 : 0.4;
 
-        this.setState({
-            units: newUnits,
-        }, () => {
-            this.setState(prev => ({
-                startFromLine: {
-                    ...prev.startFromLine,
-                    safeHeight: newSafeHeight,
-                    defaultSafeHeight: newDefaultSafeHeight
-                }
-            }));
-        });
+        this.setState(
+            {
+                units: newUnits,
+            },
+            () => {
+                this.setState((prev) => ({
+                    startFromLine: {
+                        ...prev.startFromLine,
+                        safeHeight: newSafeHeight,
+                        defaultSafeHeight: newDefaultSafeHeight,
+                    },
+                }));
+            },
+        );
     }
-
 
     render() {
         const { cameraPosition } = this.props.state;
         const { camera } = this.props.actions;
         const { handleOnStop } = this;
         const { runHasStarted, units } = this.state;
-        const { fileLoaded, actions, workflowState, isConnected, senderInHold, activeState, lineTotal } = this.props;
+        const {
+            fileLoaded,
+            actions,
+            workflowState,
+            isConnected,
+            senderInHold,
+            activeState,
+            lineTotal,
+        } = this.props;
         const canClick = !!isConnected;
         const isReady = canClick && fileLoaded;
         const canRun = this.canRun();
-        const canPause = isReady && activeState !== GRBL_ACTIVE_STATE_HOLD && activeState !== GRBL_ACTIVE_STATE_CHECK &&
+        const canPause =
+            isReady &&
+            activeState !== GRBL_ACTIVE_STATE_HOLD &&
+            activeState !== GRBL_ACTIVE_STATE_CHECK &&
             includes([WORKFLOW_STATE_RUNNING], workflowState);
-        const canStop = isReady && includes([WORKFLOW_STATE_RUNNING, WORKFLOW_STATE_PAUSED], workflowState);
+        const canStop =
+            isReady &&
+            includes(
+                [WORKFLOW_STATE_RUNNING, WORKFLOW_STATE_PAUSED],
+                workflowState,
+            );
         const activeHold = activeState === GRBL_ACTIVE_STATE_HOLD;
-        const workflowPaused = runHasStarted && (workflowState === WORKFLOW_STATE_PAUSED || senderInHold || activeHold);
-        const { showModal, needsRecovery, value, safeHeight, defaultSafeHeight } = this.state.startFromLine;
+        const workflowPaused =
+            runHasStarted &&
+            (workflowState === WORKFLOW_STATE_PAUSED ||
+                senderInHold ||
+                activeHold);
+        const {
+            showModal,
+            needsRecovery,
+            value,
+            safeHeight,
+            defaultSafeHeight,
+        } = this.state.startFromLine;
         const { showStats, status, time, errors } = this.state.job;
         const statusColour = status === JOB_STATUS.COMPLETE ? 'green' : 'red';
         const renderSVG = shouldVisualizeSVG();
@@ -526,350 +652,476 @@ class WorkflowControl extends PureComponent {
                     id="fileInput"
                 />
 
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', width: 'calc(100% - 9rem)' }}>
-                    {
-                        workflowState === WORKFLOW_STATE_IDLE && (
-                            <div className={styles.relativeWrapper}>
-                                <button
-                                    type="button"
-                                    className={styles['workflow-button-upload']}
-                                    title={i18n._('Load File')}
-                                    onClick={this.handleClickUpload}
-                                >
-                                    {i18n._('Load File')} <i className="fa fa-folder-open" style={{ writingMode: 'horizontal-tb' }} />
-                                </button>
-                                <RecentFileButton />
+                <div
+                    style={{
+                        display: 'flex',
+                        gap: '1rem',
+                        flexWrap: 'wrap',
+                        width: 'calc(100% - 9rem)',
+                    }}
+                >
+                    {workflowState === WORKFLOW_STATE_IDLE && (
+                        <div className={styles.relativeWrapper}>
+                            <button
+                                type="button"
+                                className={styles['workflow-button-upload']}
+                                title={i18n._('Load File')}
+                                onClick={this.handleClickUpload}
+                            >
+                                {i18n._('Load File')}{' '}
+                                <i
+                                    className="fa fa-folder-open"
+                                    style={{ writingMode: 'horizontal-tb' }}
+                                />
+                            </button>
+                            <RecentFileButton />
+                            <div
+                                role="button"
+                                className={
+                                    fileLoaded
+                                        ? `${styles.closeFileButton}`
+                                        : `${styles['workflow-button-disabled']}`
+                                }
+                                onClick={this.handleCloseFile}
+                            >
+                                <i className="fas fa-times" />
+                            </div>
+                        </div>
+                    )}
+
+                    {!workflowPaused && (
+                        <div
+                            className={styles.splitContainer}
+                            style={{ display: !canRun ? 'none' : '' }}
+                        >
+                            <button
+                                type="button"
+                                className={
+                                    !canRun
+                                        ? `${styles['workflow-button-disabled']}`
+                                        : `${styles['workflow-button-test']}`
+                                }
+                                title={i18n._('Outline')}
+                                onClick={this.runOutline}
+                                disabled={!canRun}
+                                style={{ marginRight: '1rem' }}
+                            >
+                                {i18n._('Outline')}{' '}
+                                <i
+                                    className="fas fa-vector-square"
+                                    style={{ writingMode: 'horizontal-tb' }}
+                                />
+                            </button>
+                            <button
+                                type="button"
+                                className={
+                                    !canRun
+                                        ? `${styles['workflow-button-disabled']}`
+                                        : `${styles['workflow-button-test']}`
+                                }
+                                title={i18n._('Verify Job')}
+                                onClick={this.handleTestFile}
+                                disabled={!canRun}
+                            >
+                                {i18n._('Verify Job')}{' '}
+                                <i
+                                    className="fa fa-tachometer-alt"
+                                    style={{ writingMode: 'horizontal-tb' }}
+                                />
+                            </button>
+                        </div>
+                    )}
+                    {canRun && (
+                        <div className={styles.relativeWrapper}>
+                            <button
+                                type="button"
+                                className={styles['workflow-button-play']}
+                                title={
+                                    workflowPaused
+                                        ? i18n._('Resume')
+                                        : i18n._('Run')
+                                }
+                                onClick={this.startRun}
+                                disabled={!isConnected}
+                            >
+                                {i18n._(
+                                    `${workflowPaused ? 'Resume' : 'Start'} Job`,
+                                )}{' '}
+                                <i
+                                    className="fa fa-play"
+                                    style={{
+                                        writingMode: 'horizontal-tb',
+                                        marginLeft: '5px',
+                                    }}
+                                />
+                            </button>
+                            {!workflowPaused && (
                                 <div
                                     role="button"
-                                    className={fileLoaded ? `${styles.closeFileButton}` : `${styles['workflow-button-disabled']}`}
-                                    onClick={this.handleCloseFile}
+                                    className={cx(
+                                        styles['start-from-line-button'],
+                                        { [styles.pulse]: needsRecovery },
+                                    )}
+                                    onClick={this.startFromLinePrompt}
                                 >
-                                    <i className="fas fa-times" />
+                                    <i className="fas fa-list-ol" />
                                 </div>
-                            </div>
-                        )
-                    }
+                            )}
+                        </div>
+                    )}
 
-                    {
-                        !workflowPaused && (
-                            <div className={styles.splitContainer} style={{ display: !canRun ? 'none' : '' }}>
-                                <button
-                                    type="button"
-                                    className={!canRun ? `${styles['workflow-button-disabled']}` : `${styles['workflow-button-test']}`}
-                                    title={i18n._('Outline')}
-                                    onClick={this.runOutline}
-                                    disabled={!canRun}
-                                    style={{ marginRight: '1rem' }}
-                                >
-                                    {i18n._('Outline')} <i className="fas fa-vector-square" style={{ writingMode: 'horizontal-tb' }} />
-                                </button>
-                                <button
-                                    type="button"
-                                    className={!canRun ? `${styles['workflow-button-disabled']}` : `${styles['workflow-button-test']}`}
-                                    title={i18n._('Verify Job')}
-                                    onClick={this.handleTestFile}
-                                    disabled={!canRun}
-                                >
-                                    {i18n._('Verify Job')} <i className="fa fa-tachometer-alt" style={{ writingMode: 'horizontal-tb' }} />
-                                </button>
-                            </div>
-                        )
+                    {canPause && (
+                        <button
+                            type="button"
+                            className={styles['workflow-button-pause']}
+                            title={i18n._('Pause')}
+                            onClick={actions.handlePause}
+                            disabled={!canPause}
+                        >
+                            {i18n._('Pause Job')}{' '}
+                            <i
+                                className="fa fa-pause"
+                                style={{ writingMode: 'vertical-lr' }}
+                            />
+                        </button>
+                    )}
 
-                    }
-                    {
-                        canRun && (
-                            <div className={styles.relativeWrapper}>
-                                <button
-                                    type="button"
-                                    className={styles['workflow-button-play']}
-                                    title={workflowPaused ? i18n._('Resume') : i18n._('Run')}
-                                    onClick={this.startRun}
-                                    disabled={!isConnected}
-                                >
-                                    {i18n._(`${workflowPaused ? 'Resume' : 'Start'} Job`)} <i className="fa fa-play" style={{ writingMode: 'horizontal-tb', marginLeft: '5px' }} />
-                                </button>
-                                {
-                                    !workflowPaused && (
-                                        <div
-                                            role="button"
-                                            className={cx(
-                                                styles['start-from-line-button'],
-                                                { [styles.pulse]: needsRecovery }
-                                            )}
-                                            onClick={this.startFromLinePrompt}
-                                        >
-                                            <i className="fas fa-list-ol" />
-                                        </div>
-                                    )
-                                }
-                            </div>
-                        )
-                    }
-
-                    {
-                        canPause && (
-                            <button
-                                type="button"
-                                className={styles['workflow-button-pause']}
-                                title={i18n._('Pause')}
-                                onClick={actions.handlePause}
-                                disabled={!canPause}
-                            >
-                                {i18n._('Pause Job')} <i className="fa fa-pause" style={{ writingMode: 'vertical-lr' }} />
-                            </button>
-                        )
-                    }
-
-                    {
-                        canStop && (
-                            <button
-                                type="button"
-                                className={styles['workflow-button-stop']}
-                                title={i18n._('Stop')}
-                                onClick={handleOnStop}
-                                disabled={!canStop}
-                            >
-                                {i18n._('Stop Job')} <i className="fa fa-stop" style={{ writingMode: 'vertical-lr' }} />
-                            </button>
-                        )
-                    }
-
+                    {canStop && (
+                        <button
+                            type="button"
+                            className={styles['workflow-button-stop']}
+                            title={i18n._('Stop')}
+                            onClick={handleOnStop}
+                            disabled={!canStop}
+                        >
+                            {i18n._('Stop Job')}{' '}
+                            <i
+                                className="fa fa-stop"
+                                style={{ writingMode: 'vertical-lr' }}
+                            />
+                        </button>
+                    )}
                 </div>
 
-                {
-                    this.state.closeFile && (
-                        <Modal showCloseButton={false}>
-                            <Modal.Header className={styles.modalHeader}>
-                                <Modal.Title>Are You Sure?</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <div className={styles.runProbeBody}>
-                                    <div className={styles.left}>
-                                        <div className={styles.greyText}>
-                                            <p>Close this g-code File?</p>
-                                        </div>
-                                        <div className={styles.buttonsContainer}>
-                                            <FunctionButton
-                                                primary
-                                                onClick={() => {
-                                                    this.setState({ closeFile: false });
-                                                    actions.closeModal();
-                                                    actions.unloadGCode();
-                                                    actions.reset();
-                                                }}
-                                            >
-                                                Yes
-                                            </FunctionButton>
-                                            <FunctionButton
-                                                className={styles.activeButton}
-                                                onClick={() => {
-                                                    this.setState({ closeFile: false });
-                                                    actions.closeModal();
-                                                }}
-                                            >
-                                                No
-                                            </FunctionButton>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </Modal.Body>
-                        </Modal>
-                    )
-                }
-                {
-                    showModal && (
-                        <Modal onClose={() => {
-                            this.setState(prev => ({ startFromLine: { ...prev.startFromLine, showModal: false, needsRecovery: false } }));
-                            actions.closeModal();
-                        }}
-                        >
-                            <Modal.Header className={styles.modalHeader}>
-                                <Modal.Title>{needsRecovery ? 'Recovery: Start From Line' : 'Start From Line'}</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body style={{ backgroundColor: '#e5e7eb' }}>
-                                <div className={styles.startFromLineContainer}>
-                                    <div className={styles.startDetails}>
-                                        <p className={styles.firstDetail}>
-                                            Recover a carve disrupted by power loss, disconnection,
-                                            mechanical malfunction, or other failures
-                                        </p>
-                                        <p style={{ marginBottom: '0px', color: '#000000' }}>Your job was last stopped around line: <b>{value}</b></p>
-                                        <p>on a g-code file with a total of <b>{lineTotal}</b> lines</p>
-                                        {
-                                            value > 0 &&
-                                                <p>Recommended starting lines: <strong>{value - 10 >= 0 ? value - 10 : 0}</strong> - <strong>{value}</strong></p>
-                                        }
-                                    </div>
-                                    <div>
-                                        <Input
-                                            label="Resume job at line:"
-                                            value={value}
-                                            onChange={(e) => (e.target.value <= lineTotal && e.target.value >= 0) &&
-                                                this.setState(prev => ({
-                                                    startFromLine: {
-                                                        ...prev.startFromLine,
-                                                        value: Math.ceil(Number(e.target.value))
-                                                    }
-                                                }))
-                                            }
-                                            additionalProps={{ type: 'number', max: lineTotal, min: 0 }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <Tooltip content={`Default Value: ${defaultSafeHeight}`}>
-                                            <Input
-                                                label="With Safe Height:"
-                                                value={safeHeight}
-                                                onChange={(e) => {
-                                                    this.setState(prev => ({
-                                                        startFromLine: {
-                                                            ...prev.startFromLine,
-                                                            safeHeight: Number(e.target.value)
-                                                        }
-                                                    }));
-                                                }}
-                                                units={units}
-                                                additionalProps={{ type: 'number' }}
-                                            />
-                                        </Tooltip>
-                                        <div className={cx(styles.startDetails, styles.small)} style={{ float: 'right', marginRight: '1rem' }}>
-                                            <p>
-                                                (Safe Height is the value above Z max)
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className={styles.startHeader}>
-                                        <p style={{ color: '#E2943B' }}>
-                                            Accounts for all past CNC movements, units, spindle speeds,
-                                            laser power, Start/Stop g-code, and any other file modals or setup.
-                                        </p>
+                {this.state.closeFile && (
+                    <Modal showCloseButton={false}>
+                        <Modal.Header className={styles.modalHeader}>
+                            <Modal.Title>Are You Sure?</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <div className={styles.runProbeBody}>
+                                <div className={styles.left}>
+                                    <div className={styles.greyText}>
+                                        <p>Close this g-code File?</p>
                                     </div>
                                     <div className={styles.buttonsContainer}>
-                                        <button
-                                            type="button"
-                                            className={styles['workflow-button-play']}
-                                            title="Start from Line"
-                                            onClick={this.handleStartFromLine}
-                                            disabled={!isConnected}
+                                        <FunctionButton
+                                            primary
+                                            onClick={() => {
+                                                this.setState({
+                                                    closeFile: false,
+                                                });
+                                                actions.closeModal();
+                                                actions.unloadGCode();
+                                                actions.reset();
+                                            }}
                                         >
-                                            Start from Line
-                                            <i className="fa fa-play" style={{ writingMode: 'horizontal-tb', marginLeft: '5px' }} />
-                                        </button>
+                                            Yes
+                                        </FunctionButton>
+                                        <FunctionButton
+                                            className={styles.activeButton}
+                                            onClick={() => {
+                                                this.setState({
+                                                    closeFile: false,
+                                                });
+                                                actions.closeModal();
+                                            }}
+                                        >
+                                            No
+                                        </FunctionButton>
                                     </div>
                                 </div>
-                            </Modal.Body>
-                        </Modal>
-                    )
-                }
-                {
-                    showStats && (
-                        <Modal onClose={() => {
+                            </div>
+                        </Modal.Body>
+                    </Modal>
+                )}
+                {showModal && (
+                    <Modal
+                        onClose={() => {
+                            this.setState((prev) => ({
+                                startFromLine: {
+                                    ...prev.startFromLine,
+                                    showModal: false,
+                                    needsRecovery: false,
+                                },
+                            }));
+                            actions.closeModal();
+                        }}
+                    >
+                        <Modal.Header className={styles.modalHeader}>
+                            <Modal.Title>
+                                {needsRecovery
+                                    ? 'Recovery: Start From Line'
+                                    : 'Start From Line'}
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ backgroundColor: '#e5e7eb' }}>
+                            <div className={styles.startFromLineContainer}>
+                                <div className={styles.startDetails}>
+                                    <p className={styles.firstDetail}>
+                                        Recover a carve disrupted by power loss,
+                                        disconnection, mechanical malfunction,
+                                        or other failures
+                                    </p>
+                                    <p
+                                        style={{
+                                            marginBottom: '0px',
+                                            color: '#000000',
+                                        }}
+                                    >
+                                        Your job was last stopped around line:{' '}
+                                        <b>{value}</b>
+                                    </p>
+                                    <p>
+                                        on a g-code file with a total of{' '}
+                                        <b>{lineTotal}</b> lines
+                                    </p>
+                                    {value > 0 && (
+                                        <p>
+                                            Recommended starting lines:{' '}
+                                            <strong>
+                                                {value - 10 >= 0
+                                                    ? value - 10
+                                                    : 0}
+                                            </strong>{' '}
+                                            - <strong>{value}</strong>
+                                        </p>
+                                    )}
+                                </div>
+                                <div>
+                                    <Input
+                                        label="Resume job at line:"
+                                        value={value}
+                                        onChange={(e) =>
+                                            e.target.value <= lineTotal &&
+                                            e.target.value >= 0 &&
+                                            this.setState((prev) => ({
+                                                startFromLine: {
+                                                    ...prev.startFromLine,
+                                                    value: Math.ceil(
+                                                        Number(e.target.value),
+                                                    ),
+                                                },
+                                            }))
+                                        }
+                                        additionalProps={{
+                                            type: 'number',
+                                            max: lineTotal,
+                                            min: 0,
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <Tooltip
+                                        content={`Default Value: ${defaultSafeHeight}`}
+                                    >
+                                        <Input
+                                            label="With Safe Height:"
+                                            value={safeHeight}
+                                            onChange={(e) => {
+                                                this.setState((prev) => ({
+                                                    startFromLine: {
+                                                        ...prev.startFromLine,
+                                                        safeHeight: Number(
+                                                            e.target.value,
+                                                        ),
+                                                    },
+                                                }));
+                                            }}
+                                            units={units}
+                                            additionalProps={{ type: 'number' }}
+                                        />
+                                    </Tooltip>
+                                    <div
+                                        className={cx(
+                                            styles.startDetails,
+                                            styles.small,
+                                        )}
+                                        style={{
+                                            float: 'right',
+                                            marginRight: '1rem',
+                                        }}
+                                    >
+                                        <p>
+                                            (Safe Height is the value above Z
+                                            max)
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className={styles.startHeader}>
+                                    <p style={{ color: '#E2943B' }}>
+                                        Accounts for all past CNC movements,
+                                        units, spindle speeds, laser power,
+                                        Start/Stop g-code, and any other file
+                                        modals or setup.
+                                    </p>
+                                </div>
+                                <div className={styles.buttonsContainer}>
+                                    <button
+                                        type="button"
+                                        className={
+                                            styles['workflow-button-play']
+                                        }
+                                        title="Start from Line"
+                                        onClick={this.handleStartFromLine}
+                                        disabled={!isConnected}
+                                    >
+                                        Start from Line
+                                        <i
+                                            className="fa fa-play"
+                                            style={{
+                                                writingMode: 'horizontal-tb',
+                                                marginLeft: '5px',
+                                            }}
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+                        </Modal.Body>
+                    </Modal>
+                )}
+                {showStats && (
+                    <Modal
+                        onClose={() => {
                             this.setState({
                                 job: {
                                     showStats: false,
                                     time: 0,
                                     status: JOB_STATUS.COMPLETE,
-                                    errors: []
-                                }
+                                    errors: [],
+                                },
                             });
                             actions.closeModal();
                         }}
-                        >
-                            <Modal.Header className={styles.modalHeader}>
-                                <Modal.Title>Job End</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body style={{ backgroundColor: '#e5e7eb' }}>
-                                <div className={styles.jobEndContainer}>
-                                    <div className={[styles.statsWrapper, styles.left].join(' ')}>
-                                        <div>
-                                            <strong>Status:</strong>
-                                            <span style={{ color: statusColour }}>{` ${status}\n`}</span>
-                                        </div>
-                                        <div>
-                                            <strong>Time:</strong>
-                                            <span>{` ${time}\n`}</span>
-                                        </div>
-                                        <strong>{'Errors:\n'}</strong>
-
-                                        {
-                                            errors.length === 0
-                                                ? <span className={styles.statsWrapper} style={{ marginLeft: '10px' }}>None</span>
-                                                : (
-                                                    <span className={styles.statsWrapper} style={{ marginLeft: '10px', color: 'red' }}>
-                                                        {
-                                                            errors.map(error => {
-                                                                return <span key={uniqueId()}>{`- ${error}\n`}</span>;
-                                                            })
-                                                        }
-                                                    </span>
-                                                )
-                                        }
+                    >
+                        <Modal.Header className={styles.modalHeader}>
+                            <Modal.Title>Job End</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ backgroundColor: '#e5e7eb' }}>
+                            <div className={styles.jobEndContainer}>
+                                <div
+                                    className={[
+                                        styles.statsWrapper,
+                                        styles.left,
+                                    ].join(' ')}
+                                >
+                                    <div>
+                                        <strong>Status:</strong>
+                                        <span
+                                            style={{ color: statusColour }}
+                                        >{` ${status}\n`}</span>
                                     </div>
-                                    <div className={styles.buttonsContainer}>
-                                        <FunctionButton
-                                            className={styles.activeButton}
-                                            onClick={() => {
-                                                this.setState({
-                                                    job: {
-                                                        showStats: false,
-                                                        time: 0,
-                                                        status: JOB_STATUS.COMPLETE,
-                                                        errors: []
-                                                    }
-                                                });
-                                                actions.closeModal();
+                                    <div>
+                                        <strong>Time:</strong>
+                                        <span>{` ${time}\n`}</span>
+                                    </div>
+                                    <strong>{'Errors:\n'}</strong>
+
+                                    {errors.length === 0 ? (
+                                        <span
+                                            className={styles.statsWrapper}
+                                            style={{ marginLeft: '10px' }}
+                                        >
+                                            None
+                                        </span>
+                                    ) : (
+                                        <span
+                                            className={styles.statsWrapper}
+                                            style={{
+                                                marginLeft: '10px',
+                                                color: 'red',
                                             }}
                                         >
-                                            Close
-                                        </FunctionButton>
-                                    </div>
+                                            {errors.map((error) => {
+                                                return (
+                                                    <span
+                                                        key={uniqueId()}
+                                                    >{`- ${error}\n`}</span>
+                                                );
+                                            })}
+                                        </span>
+                                    )}
                                 </div>
-                            </Modal.Body>
-                        </Modal>
-                    )}
-                {
-                    !renderSVG
-                        ? (
-                            <CameraDisplay
-                                camera={camera}
-                                cameraPosition={cameraPosition}
-                            />
-                        ) : null
-                }
+                                <div className={styles.buttonsContainer}>
+                                    <FunctionButton
+                                        className={styles.activeButton}
+                                        onClick={() => {
+                                            this.setState({
+                                                job: {
+                                                    showStats: false,
+                                                    time: 0,
+                                                    status: JOB_STATUS.COMPLETE,
+                                                    errors: [],
+                                                },
+                                            });
+                                            actions.closeModal();
+                                        }}
+                                    >
+                                        Close
+                                    </FunctionButton>
+                                </div>
+                            </div>
+                        </Modal.Body>
+                    </Modal>
+                )}
+                {!renderSVG ? (
+                    <CameraDisplay
+                        camera={camera}
+                        cameraPosition={cameraPosition}
+                    />
+                ) : null}
             </div>
         );
     }
 }
 
-export default connect((store) => {
-    const fileLoaded = get(store, 'file.fileLoaded', false);
-    const isConnected = get(store, 'connection.isConnected', false);
-    const senderInHold = get(store, 'controller.sender.status.hold', false);
-    const senderStatus = get(store, 'controller.sender.status');
-    const workflowState = get(store, 'controller.workflow.state');
-    const activeState = get(store, 'controller.state.status.activeState');
-    const controllerState = get(store, 'controller.state');
-    const lineTotal = get(store, 'file.total');
-    const port = get(store, 'connection.port');
-    const gcode = get(store, 'file.content');
-    const fileCompletion = get(store, 'controller.sender.status.finishTime', 0);
-    const zMax = get(store, 'file.bbox.max.z', 0) || 0;
-    const homingSetting = get(store, 'controller.settings.settings.$22', 0);
-    const homingEnabled = homingSetting !== '0';
-    return {
-        fileLoaded,
-        isConnected,
-        senderInHold,
-        workflowState,
-        activeState,
-        senderStatus,
-        controllerState,
-        port,
-        lineTotal,
-        gcode,
-        fileCompletion,
-        zMax,
-        homingEnabled
-    };
-}, null, null, { forwardRef: true })(WorkflowControl);
+export default connect(
+    (store) => {
+        const fileLoaded = get(store, 'file.fileLoaded', false);
+        const isConnected = get(store, 'connection.isConnected', false);
+        const senderInHold = get(store, 'controller.sender.status.hold', false);
+        const senderStatus = get(store, 'controller.sender.status');
+        const workflowState = get(store, 'controller.workflow.state');
+        const activeState = get(store, 'controller.state.status.activeState');
+        const controllerState = get(store, 'controller.state');
+        const lineTotal = get(store, 'file.total');
+        const port = get(store, 'connection.port');
+        const gcode = get(store, 'file.content');
+        const fileCompletion = get(
+            store,
+            'controller.sender.status.finishTime',
+            0,
+        );
+        const zMax = get(store, 'file.bbox.max.z', 0) || 0;
+        const homingSetting = get(store, 'controller.settings.settings.$22', 0);
+        const homingEnabled = homingSetting !== '0';
+        return {
+            fileLoaded,
+            isConnected,
+            senderInHold,
+            workflowState,
+            activeState,
+            senderStatus,
+            controllerState,
+            port,
+            lineTotal,
+            gcode,
+            fileCompletion,
+            zMax,
+            homingEnabled,
+        };
+    },
+    null,
+    null,
+    { forwardRef: true },
+)(WorkflowControl);

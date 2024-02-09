@@ -22,12 +22,17 @@
  */
 import controller from 'app/lib/controller';
 import React from 'react';
-import { getProbeSettings, getUnitModal, getToolString } from 'app/lib/toolChangeUtils';
+import {
+    getProbeSettings,
+    getUnitModal,
+    getToolString,
+} from 'app/lib/toolChangeUtils';
 
 const wizard = {
     intro: {
         icon: 'fas fa-caution',
-        description: 'Tool Change detected, stay clear of the machine! Wait until initial movements are complete!'
+        description:
+            'Tool Change detected, stay clear of the machine! Wait until initial movements are complete!',
     },
     onStart: () => {
         const settings = getProbeSettings();
@@ -57,22 +62,30 @@ const wizard = {
             substeps: [
                 {
                     title: 'Safety First',
-                    description: () => <div>Jog your machine to a place you can reach using the jog controls and ensure that your router/spindle is turned off and has fully stopped spinning.</div>,
+                    description: () => (
+                        <div>
+                            Jog your machine to a place you can reach using the
+                            jog controls and ensure that your router/spindle is
+                            turned off and has fully stopped spinning.
+                        </div>
+                    ),
                     overlay: false,
                 },
                 {
                     title: 'Change Bit',
-                    description: () => `Change over to the next tool (${getToolString()})`,
-                    overlay: false
-                }
-            ]
+                    description: () =>
+                        `Change over to the next tool (${getToolString()})`,
+                    overlay: false,
+                },
+            ],
         },
         {
             title: 'Probe New Tool',
             substeps: [
                 {
                     title: 'Reset the Z',
-                    description: 'Use jogging or X and Y gotos to bring your CNC back over to where you initially set the project zero. If you used a touch plate be sure to place the tool over the plate and attach the magnet.',
+                    description:
+                        'Use jogging or X and Y gotos to bring your CNC back over to where you initially set the project zero. If you used a touch plate be sure to place the tool over the plate and attach the magnet.',
                     overlay: false,
                     actions: [
                         {
@@ -86,9 +99,9 @@ const wizard = {
                                     'G38.2 Z-10 F[global.toolchange.PROBE_SLOW_FEEDRATE]',
                                     '%wait',
                                     'G10 L20 P0 Z[global.toolchange.PROBE_THICKNESS]',
-                                    'G0 G21 Z10'
+                                    'G0 G21 Z10',
                                 ]);
-                            }
+                            },
                         },
                         {
                             label: 'Set Z0 (paper method)',
@@ -96,20 +109,21 @@ const wizard = {
                                 controller.command('gcode', [
                                     '(Setting Z 0)',
                                     'G10 L20 P0 Z0',
-                                    'G21'
+                                    'G21',
                                 ]);
-                            }
+                            },
                         },
-                    ]
-                }
-            ]
+                    ],
+                },
+            ],
         },
         {
             title: 'Resume Job',
             substeps: [
                 {
                     title: 'Resume Job',
-                    description: 'If everything looks good, prepare for your machine to move back to the cutting area and continue as expected. Remove the touch plate magnet and turn on your router if you have them.',
+                    description:
+                        'If everything looks good, prepare for your machine to move back to the cutting area and continue as expected. Remove the touch plate magnet and turn on your router if you have them.',
                     overlay: false,
                     actions: [
                         {
@@ -123,15 +137,15 @@ const wizard = {
                                     `G90 ${prefUnit} G0 Z[global.toolchange.ZPOS]`,
                                     '(Restore initial modals)',
                                     'M3 [global.toolchange.UNITS] [global.toolchange.DISTANCE] [global.toolchange.FEEDRATE]',
-                                    '%toolchange_complete'
+                                    '%toolchange_complete',
                                 ]);
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
 };
 
 export default wizard;

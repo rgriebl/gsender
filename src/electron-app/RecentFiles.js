@@ -62,7 +62,7 @@ export const parseAndReturnGCode = async ({ filePath }) => {
             size: size,
             name: fileName,
             dir: fileDir,
-            fullPath: filePath
+            fullPath: filePath,
         };
     } catch (error) {
         log.error(error);

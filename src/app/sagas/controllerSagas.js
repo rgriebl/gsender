@@ -40,9 +40,17 @@ import * as fileActions from 'app/actions/fileInfoActions';
 import * as preferenceActions from 'app/actions/preferencesActions';
 import * as visualizerActions from 'app/actions/visualizerActions';
 import { Confirm } from 'app/components/ConfirmationDialog/ConfirmationDialogLib';
-import { Toaster, TOASTER_INFO, TOASTER_SUCCESS, TOASTER_UNTIL_CLOSE } from 'app/lib/toaster/ToasterLib';
+import {
+    Toaster,
+    TOASTER_INFO,
+    TOASTER_SUCCESS,
+    TOASTER_UNTIL_CLOSE,
+} from 'app/lib/toaster/ToasterLib';
 import VisualizeWorker from 'app/workers/Visualize.worker';
-import { shouldVisualize, visualizeResponse } from 'app/workers/Visualize.response';
+import {
+    shouldVisualize,
+    visualizeResponse,
+} from 'app/workers/Visualize.response';
 import { isLaserMode } from 'app/lib/laserMode';
 import {
     RENDER_LOADING,
@@ -74,11 +82,14 @@ export function* initialize() {
     let finishLoad = false;
 
     /* Health check - every 3 minutes */
-    setInterval(() => {
-        controller.healthCheck();
-    }, 1000 * 60 * 3);
+    setInterval(
+        () => {
+            controller.healthCheck();
+        },
+        1000 * 60 * 3,
+    );
 
-    const updateJobStats = async(status) => {
+    const updateJobStats = async (status) => {
         const controllerType = _get(reduxStore.getState(), 'controller.type');
         const port = _get(reduxStore.getState(), 'connection.port');
         const path = _get(reduxStore.getState(), 'file.path');
@@ -95,7 +106,10 @@ export function* initialize() {
             }
             newJobStats.totalRuntime += status.timeRunning;
             const job = {
-                id: jobStats.jobs.length > 0 ? (jobStats.jobs.length).toString() : '0',
+                id:
+                    jobStats.jobs.length > 0
+                        ? jobStats.jobs.length.toString()
+                        : '0',
                 type: JOB_TYPES.JOB,
                 file: status.name,
                 path: path,
@@ -103,9 +117,14 @@ export function* initialize() {
                 port: port,
                 controller: controllerType,
                 startTime: new Date(status.startTime),
-                endTime: status.finishTime === 0 ? null : new Date(status.finishTime),
+                endTime:
+                    status.finishTime === 0
+                        ? null
+                        : new Date(status.finishTime),
                 duration: status.elapsedTime,
-                jobStatus: status.finishTime ? JOB_STATUS.COMPLETE : JOB_STATUS.STOPPED,
+                jobStatus: status.finishTime
+                    ? JOB_STATUS.COMPLETE
+                    : JOB_STATUS.STOPPED,
             };
             newJobStats.jobs.push(job);
             api.jobStats.update(newJobStats);
@@ -114,13 +133,13 @@ export function* initialize() {
         }
     };
 
-    const updateMaintenanceTasks = async(status) => {
+    const updateMaintenanceTasks = async (status) => {
         try {
             let res = await api.maintenance.fetch();
             const tasks = res.body;
             let newTasks = tasks.map((task) => {
                 let newTask = task;
-                newTask.currentTime += (status.timeRunning / 1000 / 3600);
+                newTask.currentTime += status.timeRunning / 1000 / 3600;
                 return newTask;
             });
             api.maintenance.update(newTasks);
@@ -137,20 +156,51 @@ export function* initialize() {
         const isLaser = isLaserMode();
         const shouldIncludeSVG = shouldVisualizeSVG();
         const accelerations = {
-            xAccel: _get(reduxStore.getState(), 'controller.settings.settings.$120'),
-            yAccel: _get(reduxStore.getState(), 'controller.settings.settings.$121'),
-            zAccel: _get(reduxStore.getState(), 'controller.settings.settings.$122'),
+            xAccel: _get(
+                reduxStore.getState(),
+                'controller.settings.settings.$120',
+            ),
+            yAccel: _get(
+                reduxStore.getState(),
+                'controller.settings.settings.$121',
+            ),
+            zAccel: _get(
+                reduxStore.getState(),
+                'controller.settings.settings.$122',
+            ),
         };
         const maxFeedrates = {
-            xMaxFeed: Number(_get(reduxStore.getState(), 'controller.settings.settings.$110', 4000.0)),
-            yMaxFeed: Number(_get(reduxStore.getState(), 'controller.settings.settings.$111', 4000.0)),
-            zMaxFeed: Number(_get(reduxStore.getState(), 'controller.settings.settings.$112', 3000.0)),
+            xMaxFeed: Number(
+                _get(
+                    reduxStore.getState(),
+                    'controller.settings.settings.$110',
+                    4000.0,
+                ),
+            ),
+            yMaxFeed: Number(
+                _get(
+                    reduxStore.getState(),
+                    'controller.settings.settings.$111',
+                    4000.0,
+                ),
+            ),
+            zMaxFeed: Number(
+                _get(
+                    reduxStore.getState(),
+                    'controller.settings.settings.$112',
+                    3000.0,
+                ),
+            ),
         };
 
         // compare previous file data to see if it's a new file and we need to reparse
         let isNewFile = true;
         const fileData = _get(reduxStore.getState(), 'file');
-        const { content: prevContent, size: prevSize, name: prevName } = fileData;
+        const {
+            content: prevContent,
+            size: prevSize,
+            name: prevName,
+        } = fileData;
         if (content === prevContent && size === prevSize && name === prevName) {
             isNewFile = false;
         }
@@ -159,17 +209,20 @@ export function* initialize() {
             reduxStore.dispatch({
                 type: fileActions.UPDATE_FILE_RENDER_STATE,
                 payload: {
-                    state: RENDER_NO_FILE
-                }
+                    state: RENDER_NO_FILE,
+                },
             });
             setTimeout(() => {
-                const renderState = _get(reduxStore.getState(), 'file.renderState');
+                const renderState = _get(
+                    reduxStore.getState(),
+                    'file.renderState',
+                );
                 if (renderState === RENDER_NO_FILE) {
                     reduxStore.dispatch({
                         type: fileActions.UPDATE_FILE_RENDER_STATE,
                         payload: {
-                            state: RENDER_LOADING
-                        }
+                            state: RENDER_LOADING,
+                        },
                     });
                 }
             }, 1000);
@@ -187,15 +240,15 @@ export function* initialize() {
                         parsedData,
                         isNewFile,
                         accelerations,
-                        maxFeedrates
+                        maxFeedrates,
                     });
                 });
             } else {
                 reduxStore.dispatch({
                     type: fileActions.UPDATE_FILE_RENDER_STATE,
                     payload: {
-                        state: RENDER_RENDERED
-                    }
+                        state: RENDER_RENDERED,
+                    },
                 });
             }
 
@@ -209,7 +262,7 @@ export function* initialize() {
                 content,
                 size,
                 name,
-            }
+            },
         });
         // sending gcode data to the visualizer
         // so it can save it and give it to the normal or svg visualizer
@@ -218,14 +271,14 @@ export function* initialize() {
         reduxStore.dispatch({
             type: fileActions.UPDATE_FILE_PROCESSING,
             payload: {
-                value: true
-            }
+                value: true,
+            },
         });
         reduxStore.dispatch({
             type: fileActions.UPDATE_FILE_RENDER_STATE,
             payload: {
-                state: RENDER_NO_FILE
-            }
+                state: RENDER_NO_FILE,
+            },
         });
         setTimeout(() => {
             const renderState = _get(reduxStore.getState(), 'file.renderState');
@@ -233,8 +286,8 @@ export function* initialize() {
                 reduxStore.dispatch({
                     type: fileActions.UPDATE_FILE_RENDER_STATE,
                     payload: {
-                        state: RENDER_LOADING
-                    }
+                        state: RENDER_LOADING,
+                    },
                 });
             }
         }, 1000);
@@ -254,7 +307,7 @@ export function* initialize() {
                 parsedData,
                 isNewFile,
                 accelerations,
-                maxFeedrates
+                maxFeedrates,
             });
         });
     };
@@ -265,7 +318,10 @@ export function* initialize() {
             const alarmList = res.body;
 
             const alarmError = {
-                id: alarmList.list.length > 0 ? (alarmList.list.length).toString() : '0',
+                id:
+                    alarmList.list.length > 0
+                        ? alarmList.list.length.toString()
+                        : '0',
                 type: error.type.includes('ALARM') ? ALARM : ERROR,
                 source: error.origin,
                 time: new Date(),
@@ -285,7 +341,7 @@ export function* initialize() {
     controller.addListener('controller:settings', (type, settings) => {
         reduxStore.dispatch({
             type: controllerActions.UPDATE_CONTROLLER_SETTINGS,
-            payload: { type, settings }
+            payload: { type, settings },
         });
     });
 
@@ -300,7 +356,7 @@ export function* initialize() {
         }
         reduxStore.dispatch({
             type: controllerActions.UPDATE_CONTROLLER_STATE,
-            payload: { type, state }
+            payload: { type, state },
         });
     });
 
@@ -314,11 +370,22 @@ export function* initialize() {
     controller.addListener('sender:status', (status) => {
         // finished job or cancelled job
         // because elapsed time and time running only update on sender.next(), they may not be entirely accurate for stopped jobs
-        if ((status.finishTime > 0 && status.sent === 0 && prevState === GRBL_ACTIVE_STATE_RUN) ||
-            (status.elapsedTime > 0 && status.sent === 0 && (currentState === GRBL_ACTIVE_STATE_RUN || currentState === GRBL_ACTIVE_STATE_HOLD || (errors.length > 0 && prevState === GRBL_ACTIVE_STATE_RUN)))) {
+        if (
+            (status.finishTime > 0 &&
+                status.sent === 0 &&
+                prevState === GRBL_ACTIVE_STATE_RUN) ||
+            (status.elapsedTime > 0 &&
+                status.sent === 0 &&
+                (currentState === GRBL_ACTIVE_STATE_RUN ||
+                    currentState === GRBL_ACTIVE_STATE_HOLD ||
+                    (errors.length > 0 && prevState === GRBL_ACTIVE_STATE_RUN)))
+        ) {
             updateJobStats(status);
             updateMaintenanceTasks(status);
-            reduxStore.dispatch({ type: visualizerActions.UPDATE_JOB_OVERRIDES, payload: { isChecked: false, toggleStatus: 'jobStatus' } });
+            reduxStore.dispatch({
+                type: visualizerActions.UPDATE_JOB_OVERRIDES,
+                payload: { isChecked: false, toggleStatus: 'jobStatus' },
+            });
             pubsub.publish('job:end', { status, errors });
             errors = [];
         }
@@ -342,7 +409,9 @@ export function* initialize() {
         }
 
         const machineProfile = store.get('workspace.machineProfile');
-        const showLineWarnings = store.get('widgets.visualizer.showLineWarnings');
+        const showLineWarnings = store.get(
+            'widgets.visualizer.showLineWarnings',
+        );
         // Reset homing run flag to prevent rapid position without running homing
         reduxStore.dispatch({
             type: controllerActions.RESET_HOMING,
@@ -356,16 +425,19 @@ export function* initialize() {
             controller.command('settings:updated', { showLineWarnings });
         }
         const hooks = store.get('workspace.toolChangeHooks', {});
-        const toolChangeOption = store.get('workspace.toolChangeOption', 'Ignore');
+        const toolChangeOption = store.get(
+            'workspace.toolChangeOption',
+            'Ignore',
+        );
         const toolChangeContext = {
             ...hooks,
-            toolChangeOption
+            toolChangeOption,
         };
         controller.command('toolchange:context', toolChangeContext);
 
         reduxStore.dispatch({
             type: connectionActions.OPEN_CONNECTION,
-            payload: { options }
+            payload: { options },
         });
 
         pubsub.publish('machine:connected');
@@ -378,7 +450,7 @@ export function* initialize() {
         });
         reduxStore.dispatch({
             type: connectionActions.CLOSE_CONNECTION,
-            payload: { options }
+            payload: { options },
         });
 
         pubsub.publish('machine:disconnected');
@@ -388,20 +460,22 @@ export function* initialize() {
         // create a pop up so the user can connect to the last active port
         // and resume from the last line
         if (received) {
-            const homingEnabled = _get(reduxStore.getState(), 'controller.settings.settings.$22');
-            const msg = homingEnabled === '1'
-                ? 'The machine connection has been disrupted. To attempt to reconnect to the last active port, ' +
-                'home, and choose which line to continue from, press Resume.'
-                : 'The machine connection has been disrupted. To attempt to reconnect to the last active port, ' +
-                'press Resume. After that, you can set your Workspace 0 and use the Start From Line function to continue the job. ' +
-                'Suggested line to start from: ' +
-                received;
+            const homingEnabled = _get(
+                reduxStore.getState(),
+                'controller.settings.settings.$22',
+            );
+            const msg =
+                homingEnabled === '1'
+                    ? 'The machine connection has been disrupted. To attempt to reconnect to the last active port, ' +
+                      'home, and choose which line to continue from, press Resume.'
+                    : 'The machine connection has been disrupted. To attempt to reconnect to the last active port, ' +
+                      'press Resume. After that, you can set your Workspace 0 and use the Start From Line function to continue the job. ' +
+                      'Suggested line to start from: ' +
+                      received;
 
             const content = (
                 <div>
-                    <p>
-                        {msg}
-                    </p>
+                    <p>{msg}</p>
                 </div>
             );
 
@@ -413,24 +487,31 @@ export function* initialize() {
                 onConfirm: () => {
                     connectToLastDevice(() => {
                         // prompt recovery, either with homing or a prompt to start from line
-                        pubsub.publish('disconnect:recovery', received, homingEnabled);
+                        pubsub.publish(
+                            'disconnect:recovery',
+                            received,
+                            homingEnabled,
+                        );
                     });
-                }
+                },
             });
         }
     });
 
-    controller.addListener('serialport:list', (recognizedPorts, unrecognizedPorts, networkPorts) => {
-        reduxStore.dispatch({
-            type: connectionActions.LIST_PORTS,
-            payload: { recognizedPorts, unrecognizedPorts, networkPorts }
-        });
-    });
+    controller.addListener(
+        'serialport:list',
+        (recognizedPorts, unrecognizedPorts, networkPorts) => {
+            reduxStore.dispatch({
+                type: connectionActions.LIST_PORTS,
+                payload: { recognizedPorts, unrecognizedPorts, networkPorts },
+            });
+        },
+    );
 
-    controller.addListener('gcode:toolChange', (context, comment = '',) => {
+    controller.addListener('gcode:toolChange', (context, comment = '') => {
         const payload = {
             context,
-            comment
+            comment,
         };
 
         const { option, count } = context;
@@ -439,7 +520,7 @@ export function* initialize() {
             Toaster.pop({
                 msg: msg,
                 type: TOASTER_INFO,
-                duration: TOASTER_UNTIL_CLOSE
+                duration: TOASTER_UNTIL_CLOSE,
             });
         } else {
             let title, instructions;
@@ -449,10 +530,16 @@ export function* initialize() {
                 instructions = manualToolChange;
             } else if (option === 'Flexible Re-zero') {
                 title = 'Flexible Re-zero Tool Change';
-                instructions = (count > 1) ? semiautoToolchangeSecondRun : semiautoToolChange;
+                instructions =
+                    count > 1
+                        ? semiautoToolchangeSecondRun
+                        : semiautoToolChange;
             } else if (option === 'Fixed Tool Sensor') {
                 title = 'Fixed Tool Sensor Tool Change';
-                instructions = (count > 1) ? automaticToolchangeSecondRun : automaticToolChange;
+                instructions =
+                    count > 1
+                        ? automaticToolchangeSecondRun
+                        : automaticToolChange;
             } else {
                 console.error('Invalid toolchange option passed');
                 return;
@@ -467,7 +554,7 @@ export function* initialize() {
             pubsub.publish('wizard:load', {
                 ...payload,
                 title,
-                instructions
+                instructions,
             });
         }
     });
@@ -477,15 +564,27 @@ export function* initialize() {
             controller.command('toolchange:post');
         };
 
-        const content = (comment.length > 0)
-            ? <div><p>A toolchange command (M6) was found - click confirm to verify the tool has been changed and run your post-toolchange code.</p><p>Comment: <b>{comment}</b></p></div>
-            : 'A toolchange command (M6) was found - click confirm to verify the tool has been changed and run your post-toolchange code.';
+        const content =
+            comment.length > 0 ? (
+                <div>
+                    <p>
+                        A toolchange command (M6) was found - click confirm to
+                        verify the tool has been changed and run your
+                        post-toolchange code.
+                    </p>
+                    <p>
+                        Comment: <b>{comment}</b>
+                    </p>
+                </div>
+            ) : (
+                'A toolchange command (M6) was found - click confirm to verify the tool has been changed and run your post-toolchange code.'
+            );
 
         Confirm({
             title: 'Confirm Toolchange',
             content,
             confirmLabel: 'Confirm toolchange',
-            onConfirm: onConfirmhandler
+            onConfirm: onConfirmhandler,
         });
     });
 
@@ -497,8 +596,8 @@ export function* initialize() {
             payload: {
                 name,
                 content,
-                size
-            }
+                size,
+            },
         });
     });
 
@@ -509,7 +608,7 @@ export function* initialize() {
     controller.addListener('gcode:unload', () => {
         reduxStore.dispatch({
             type: fileActions.UNLOAD_FILE_INFO,
-            payload: {}
+            payload: {},
         });
     });
 
@@ -537,7 +636,7 @@ export function* initialize() {
     pubsub.subscribe('gcode:unload', () => {
         reduxStore.dispatch({
             type: fileActions.UNLOAD_FILE_INFO,
-            payload: {}
+            payload: {},
         });
     });
 
@@ -553,9 +652,12 @@ export function* initialize() {
     });
 
     // for when you don't want to send file to backend
-    pubsub.subscribe('visualizer:load', (_, { content, size, name, visualizer }) => {
-        parseGCode(content, size, name, visualizer);
-    });
+    pubsub.subscribe(
+        'visualizer:load',
+        (_, { content, size, name, visualizer }) => {
+            parseGCode(content, size, name, visualizer);
+        },
+    );
 
     pubsub.subscribe('estimate:done', (msg, data) => {
         estimateWorker.terminate();
@@ -565,23 +667,31 @@ export function* initialize() {
         parseGCode(content, size, name, visualizer);
     });
 
-
     controller.addListener('workflow:pause', (opts) => {
         const { data } = opts;
         Toaster.pop({
             msg: `'${data}' pause command found in file - press "Resume Job" to continue running.`,
             type: TOASTER_INFO,
-            duration: TOASTER_UNTIL_CLOSE
+            duration: TOASTER_UNTIL_CLOSE,
         });
     });
 
     controller.addListener('sender:M0M1', (opts) => {
         const { comment = '' } = opts;
-        const msg = 'Hit \‘Close Window\‘ if you want to do a tool change, jog, set a new zero, or perform any other operation then hit the standard \‘Resume Job\’ button to keep cutting when you\’re ready.';
+        const msg =
+            'Hit ‘Close Window‘ if you want to do a tool change, jog, set a new zero, or perform any other operation then hit the standard ‘Resume Job’ button to keep cutting when you’re ready.';
 
-        const content = (comment.length > 0)
-            ? <div><p>{msg}</p><p>Comment: <b>{comment}</b></p></div>
-            : msg;
+        const content =
+            comment.length > 0 ? (
+                <div>
+                    <p>{msg}</p>
+                    <p>
+                        Comment: <b>{comment}</b>
+                    </p>
+                </div>
+            ) : (
+                msg
+            );
 
         Confirm({
             title: 'M0/M1 Pause',
@@ -590,7 +700,7 @@ export function* initialize() {
             cancelLabel: 'Close Window',
             onConfirm: () => {
                 controller.command('gcode:resume');
-            }
+            },
         });
     });
 
@@ -598,7 +708,7 @@ export function* initialize() {
         Toaster.clear();
         Toaster.pop({
             type: TOASTER_SUCCESS,
-            msg: 'Running file outline'
+            msg: 'Running file outline',
         });
     });
 
@@ -606,8 +716,8 @@ export function* initialize() {
         reduxStore.dispatch({
             type: controllerActions.UPDATE_HOMING_FLAG,
             payload: {
-                homingFlag: flag
-            }
+                homingFlag: flag,
+            },
         });
         pubsub.publish('softlimits:check');
     });
@@ -637,12 +747,13 @@ export function* initialize() {
             if (workspaceMode !== WORKSPACE_MODE.ROTARY) {
                 Confirm({
                     title: 'Rotary File Loaded',
-                    content: 'G-Code contains A-axis command, please enable Rotary mode if your machine is equipped with a rotary axis unit.',
+                    content:
+                        'G-Code contains A-axis command, please enable Rotary mode if your machine is equipped with a rotary axis unit.',
                     confirmLabel: 'Enable Rotary Mode',
                     cancelLabel: 'Close',
                     onConfirm: () => {
                         updateWorkspaceMode(WORKSPACE_MODE.ROTARY);
-                    }
+                    },
                 });
             }
         }
@@ -650,13 +761,13 @@ export function* initialize() {
         if (type === FILE_TYPE.FOUR_AXIS && controller.type === 'Grbl') {
             Confirm({
                 title: '4 Axis File Loaded',
-                content: 'G-Code contains 4 simultaneous axis commands which are not supported at this time and cannot be run.',
+                content:
+                    'G-Code contains 4 simultaneous axis commands which are not supported at this time and cannot be run.',
                 confirmLabel: null,
                 cancelLabel: 'Close',
             });
         }
     });
-
 
     controller.addListener('connection:new', (content) => {
         pubsub.publish('store:update', content);
@@ -670,8 +781,8 @@ export function* initialize() {
         reduxStore.dispatch({
             type: controllerActions.UPDATE_SETTINGS_DESCRIPTIONS,
             payload: {
-                descriptions: data
-            }
+                descriptions: data,
+            },
         });
     });
 
@@ -679,8 +790,8 @@ export function* initialize() {
         reduxStore.dispatch({
             type: controllerActions.UPDATE_ALARM_DESCRIPTIONS,
             payload: {
-                alarms: data
-            }
+                alarms: data,
+            },
         });
     });
 
@@ -688,8 +799,8 @@ export function* initialize() {
         reduxStore.dispatch({
             type: connectionActions.SCAN_NETWORK,
             payload: {
-                isScanning: isScanning
-            }
+                isScanning: isScanning,
+            },
         });
         if (!isScanning) {
             pubsub.publish('networkScan:finished');

@@ -63,20 +63,13 @@ const ModalTemplate = ({ type, children, templateStyle }) => (
                 {type === 'info' && <Info />}
                 {type === 'success' && <Success />}
             </Col>
-            <Col style={templateStyle}>
-                {children}
-            </Col>
+            <Col style={templateStyle}>{children}</Col>
         </Row>
     </FlexContainer>
 );
 
 ModalTemplate.propTypes = {
-    type: PropTypes.oneOf([
-        'error',
-        'warning',
-        'info',
-        'success'
-    ]),
+    type: PropTypes.oneOf(['error', 'warning', 'info', 'success']),
     templateStyle: PropTypes.object,
 };
 

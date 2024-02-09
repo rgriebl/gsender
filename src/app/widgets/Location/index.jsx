@@ -62,7 +62,7 @@ import {
     AXIS_Y,
     AXIS_Z,
     AXIS_A,
-    WORKSPACE_MODE
+    WORKSPACE_MODE,
 } from '../../constants';
 import {
     MODAL_NONE,
@@ -73,19 +73,22 @@ import {
     Z_MAX,
     Z_MIN,
     FEEDRATE_MAX,
-    FEEDRATE_MIN
+    FEEDRATE_MIN,
 } from './constants';
 import styles from './index.styl';
 import useKeybinding from '../../lib/useKeybinding';
 import { Confirm } from 'Components/ConfirmationDialog/ConfirmationDialogLib';
-import { convertToImperial, convertToMetric } from '../../containers/Preferences/calculate';
+import {
+    convertToImperial,
+    convertToMetric,
+} from '../../containers/Preferences/calculate';
 
 class LocationWidget extends PureComponent {
     static propTypes = {
         widgetId: PropTypes.string.isRequired,
         onFork: PropTypes.func.isRequired,
         onRemove: PropTypes.func.isRequired,
-        sortable: PropTypes.object
+        sortable: PropTypes.object,
     };
 
     pubsubTokens = [];
@@ -95,12 +98,14 @@ class LocationWidget extends PureComponent {
     subscribe() {
         const tokens = [
             pubsub.subscribe('jogSpeeds', (msg, speeds) => {
-                this.setState({ jog: {
-                    ...this.state.jog,
-                    speeds: {
-                        ...speeds
+                this.setState({
+                    jog: {
+                        ...this.state.jog,
+                        speeds: {
+                            ...speeds,
+                        },
                     },
-                } });
+                });
             }),
             pubsub.subscribe('keybindingsUpdated', () => {
                 this.updateShuttleControlEvents();
@@ -116,7 +121,7 @@ class LocationWidget extends PureComponent {
             }),
             pubsub.subscribe('safeHeight:update', (event, value) => {
                 this.setState({
-                    safeRetractHeight: value
+                    safeRetractHeight: value,
                 });
             }),
             pubsub.subscribe('gcode:shouldWarnZero', (_, shouldShow) => {
@@ -154,14 +159,14 @@ class LocationWidget extends PureComponent {
         const defaultWCS = 'G54';
 
         return get(controllerState, 'parserstate.modal.wcs') || defaultWCS;
-    }
+    };
 
     actions = {
         toggleFullscreen: () => {
             const { minimized, isFullscreen } = this.state;
             this.setState({
                 minimized: isFullscreen ? minimized : false,
-                isFullscreen: !isFullscreen
+                isFullscreen: !isFullscreen,
             });
         },
         toggleMinimized: () => {
@@ -171,48 +176,53 @@ class LocationWidget extends PureComponent {
         handleManualMovement: (value, axis) => {
             const { units } = this.state;
             const wcs = this.actions.getWorkCoordinateSystem();
-            const p = {
-                'G54': 1,
-                'G55': 2,
-                'G56': 3,
-                'G57': 4,
-                'G58': 5,
-                'G59': 6
-            }[wcs] || 0;
+            const p =
+                {
+                    G54: 1,
+                    G55: 2,
+                    G56: 3,
+                    G57: 4,
+                    G58: 5,
+                    G59: 6,
+                }[wcs] || 0;
             //const command = `G90 G0 ${axis.toUpperCase()}${value}`;
-            const modal = (units === METRIC_UNITS) ? 'G21' : 'G20';
+            const modal = units === METRIC_UNITS ? 'G21' : 'G20';
             const command = `G10 P${p} L20 ${axis.toUpperCase()}${value}`;
             controller.command('gcode:safe', command, modal);
         },
         getJogDistance: () => {
             const { units } = this.state;
 
-            const step = units === IMPERIAL_UNITS ? this.config.get('jog.step') : convertToImperial(this.config.get('jog.step'));
-            let jogDistances = ensureArray(this.config.get('jog.distances', []));
+            const step =
+                units === IMPERIAL_UNITS
+                    ? this.config.get('jog.step')
+                    : convertToImperial(this.config.get('jog.step'));
+            let jogDistances = ensureArray(
+                this.config.get('jog.distances', []),
+            );
             if (units === IMPERIAL_UNITS) {
                 jogDistances.forEach((el, index) => {
                     jogDistances[index] = convertToImperial(el);
                 });
             }
-            const unitSteps = units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
-            const jogSteps = [
-                ...jogDistances,
-                ...unitSteps
-            ];
+            const unitSteps =
+                units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
+            const jogSteps = [...jogDistances, ...unitSteps];
             const distance = Number(jogSteps[step]) || 0;
             return distance;
         },
         getWorkCoordinateSystem: this.getWorkCoordinateSystem,
         setWorkOffsets: (axis, value) => {
             const wcs = this.actions.getWorkCoordinateSystem();
-            const p = {
-                'G54': 1,
-                'G55': 2,
-                'G56': 3,
-                'G57': 4,
-                'G58': 5,
-                'G59': 6
-            }[wcs] || 0;
+            const p =
+                {
+                    G54: 1,
+                    G55: 2,
+                    G56: 3,
+                    G57: 4,
+                    G58: 5,
+                    G59: 6,
+                }[wcs] || 0;
             axis = (axis || '').toUpperCase();
             value = Number(value) || 0;
 
@@ -221,73 +231,76 @@ class LocationWidget extends PureComponent {
             controller.command('gcode', gcode);
         },
         selectAxis: (axis = '') => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 jog: {
                     ...state.jog,
-                    axis: axis
-                }
+                    axis: axis,
+                },
             }));
         },
         selectStep: (value = '') => {
             const step = Number(value);
-            this.setState(state => ({
+            this.setState((state) => ({
                 jog: {
                     ...state.jog,
-                    step: (state.units === METRIC_UNITS) ? step : state.jog.step
-                }
+                    step: state.units === METRIC_UNITS ? step : state.jog.step,
+                },
             }));
         },
         stepForward: () => {
-            this.setState(state => {
-                const unitSteps = state.units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
-                const jogSteps = [
-                    ...state.jog.distances,
-                    ...unitSteps
-                ];
+            this.setState((state) => {
+                const unitSteps =
+                    state.units === METRIC_UNITS
+                        ? METRIC_STEPS
+                        : IMPERIAL_STEPS;
+                const jogSteps = [...state.jog.distances, ...unitSteps];
 
                 return {
                     jog: {
                         ...state.jog,
-                        step: limit(state.jog.step + 1, 0, jogSteps.length - 1)
-                    }
+                        step: limit(state.jog.step + 1, 0, jogSteps.length - 1),
+                    },
                 };
             });
         },
         stepBackward: () => {
-            this.setState(state => {
-                const unitSteps = state.units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
-                const jogSteps = [
-                    ...state.jog.distances,
-                    ...unitSteps
-                ];
+            this.setState((state) => {
+                const unitSteps =
+                    state.units === METRIC_UNITS
+                        ? METRIC_STEPS
+                        : IMPERIAL_STEPS;
+                const jogSteps = [...state.jog.distances, ...unitSteps];
 
                 return {
                     jog: {
                         ...state.jog,
-                        step: limit(state.jog.step - 1, 0, jogSteps.length - 1)
-                    }
+                        step: limit(state.jog.step - 1, 0, jogSteps.length - 1),
+                    },
                 };
             });
         },
         stepNext: () => {
-            this.setState(state => {
-                const unitSteps = state.units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
-                const jogSteps = [
-                    ...state.jog.distances,
-                    ...unitSteps
-                ];
+            this.setState((state) => {
+                const unitSteps =
+                    state.units === METRIC_UNITS
+                        ? METRIC_STEPS
+                        : IMPERIAL_STEPS;
+                const jogSteps = [...state.jog.distances, ...unitSteps];
 
                 return {
                     jog: {
                         ...state.jog,
-                        step: (state.jog.step + 1) % jogSteps.length
-                    }
+                        step: (state.jog.step + 1) % jogSteps.length,
+                    },
                 };
             });
         },
         setZeroOnAxis: (shouldShow, axis) => {
             const { shouldWarnZero } = this.state;
-            const string = (axis === 'all') ? 'Are you sure you want to zero all axes?' : `Are you sure you want to zero the ${axis} axis?`;
+            const string =
+                axis === 'all'
+                    ? 'Are you sure you want to zero all axes?'
+                    : `Are you sure you want to zero the ${axis} axis?`;
             if (shouldWarnZero) {
                 Confirm({
                     title: 'Confirm Axis Zero',
@@ -296,13 +309,13 @@ class LocationWidget extends PureComponent {
                     cancelLabel: 'No',
                     onConfirm: () => {
                         this.zeroAxis(axis);
-                    }
+                    },
                 });
                 this.setState({
                     showWarnZero: {
                         //shouldShow: shouldShow,
-                        axis: axis
-                    }
+                        axis: axis,
+                    },
                 });
             } else {
                 this.zeroAxis(axis);
@@ -366,13 +379,27 @@ class LocationWidget extends PureComponent {
             }
 
             if (speed === 'increase') {
-                newSpeeds.xyStep = xyStep + xyFactor < XY_MAX ? toFixed(xyStep + xyFactor) : XY_MAX;
-                newSpeeds.zStep = zStep + zFactor < Z_MAX ? toFixed(zStep + zFactor) : Z_MAX;
-                newSpeeds.feedrate = feedrate + feedrateFactor < FEEDRATE_MAX ? toFixed(feedrate + feedrateFactor) : FEEDRATE_MAX;
+                newSpeeds.xyStep =
+                    xyStep + xyFactor < XY_MAX
+                        ? toFixed(xyStep + xyFactor)
+                        : XY_MAX;
+                newSpeeds.zStep =
+                    zStep + zFactor < Z_MAX ? toFixed(zStep + zFactor) : Z_MAX;
+                newSpeeds.feedrate =
+                    feedrate + feedrateFactor < FEEDRATE_MAX
+                        ? toFixed(feedrate + feedrateFactor)
+                        : FEEDRATE_MAX;
             } else {
-                newSpeeds.xyStep = xyStep - xyFactor > XY_MIN ? toFixed(xyStep - xyFactor) : XY_MIN;
-                newSpeeds.zStep = zStep - zFactor > Z_MIN ? toFixed(zStep - zFactor) : Z_MIN;
-                newSpeeds.feedrate = feedrate - feedrateFactor > FEEDRATE_MIN ? toFixed(feedrate - feedrateFactor) : FEEDRATE_MIN;
+                newSpeeds.xyStep =
+                    xyStep - xyFactor > XY_MIN
+                        ? toFixed(xyStep - xyFactor)
+                        : XY_MIN;
+                newSpeeds.zStep =
+                    zStep - zFactor > Z_MIN ? toFixed(zStep - zFactor) : Z_MIN;
+                newSpeeds.feedrate =
+                    feedrate - feedrateFactor > FEEDRATE_MIN
+                        ? toFixed(feedrate - feedrateFactor)
+                        : FEEDRATE_MIN;
             }
 
             pubsub.publish('jogSpeeds', newSpeeds);
@@ -391,7 +418,8 @@ class LocationWidget extends PureComponent {
         },
         GO_TO_AXIS_ZERO: (_, { axisList }) => {
             const { state } = this.props;
-            const { machinePosition, safeRetractHeight, homingEnabled } = this.state;
+            const { machinePosition, safeRetractHeight, homingEnabled } =
+                this.state;
             const activeState = get(state, 'status.activeState');
 
             const { ROTARY } = WORKSPACE_MODE;
@@ -402,19 +430,27 @@ class LocationWidget extends PureComponent {
                 return;
             }
 
-            if (!axisList || axisList.length === 0 || activeState !== GRBL_ACTIVE_STATE_IDLE) {
+            if (
+                !axisList ||
+                axisList.length === 0 ||
+                activeState !== GRBL_ACTIVE_STATE_IDLE
+            ) {
                 return;
             }
 
             let safeHeightCommand = '';
             let moveCommand = '';
 
-            if (safeRetractHeight !== 0 && !axisList.includes('Z') && !axisList.includes('z')) {
+            if (
+                safeRetractHeight !== 0 &&
+                !axisList.includes('Z') &&
+                !axisList.includes('z')
+            ) {
                 if (homingEnabled) {
                     // get current Z
                     // eslint-disable-next-line dot-notation
                     const currentZ = Number(machinePosition['z']);
-                    const retractHeight = (Math.abs(safeRetractHeight) * -1);
+                    const retractHeight = Math.abs(safeRetractHeight) * -1;
                     // only move Z if it is less than Z0-SafeHeight
                     if (currentZ < retractHeight) {
                         safeHeightCommand += `G53 G0 Z${retractHeight}\n`;
@@ -441,7 +477,7 @@ class LocationWidget extends PureComponent {
                 this.actions.stepNext();
             }
         },
-    }
+    };
 
     shuttleControlEvents = {
         ZERO_X_AXIS: {
@@ -452,7 +488,7 @@ class LocationWidget extends PureComponent {
             payload: { axis: AXIS_X },
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.ZERO_AXIS
+            callback: this.shuttleControlFunctions.ZERO_AXIS,
         },
         ZERO_Y_AXIS: {
             title: 'Zero Y Axis',
@@ -462,7 +498,7 @@ class LocationWidget extends PureComponent {
             payload: { axis: AXIS_Y },
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.ZERO_AXIS
+            callback: this.shuttleControlFunctions.ZERO_AXIS,
         },
         ZERO_Z_AXIS: {
             title: 'Zero Z Axis',
@@ -472,7 +508,7 @@ class LocationWidget extends PureComponent {
             payload: { axis: AXIS_Z },
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.ZERO_AXIS
+            callback: this.shuttleControlFunctions.ZERO_AXIS,
         },
         ZERO_A_AXIS: {
             id: 72,
@@ -483,7 +519,7 @@ class LocationWidget extends PureComponent {
             payload: { axis: AXIS_A },
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.ZERO_AXIS
+            callback: this.shuttleControlFunctions.ZERO_AXIS,
         },
         ZERO_ALL_AXIS: {
             title: 'Zero All',
@@ -493,7 +529,7 @@ class LocationWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.ZERO_AXIS
+            callback: this.shuttleControlFunctions.ZERO_AXIS,
         },
         GO_TO_A_AXIS_ZERO: {
             id: 73,
@@ -504,7 +540,7 @@ class LocationWidget extends PureComponent {
             payload: { axisList: [AXIS_A] },
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO
+            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO,
         },
         GO_TO_X_AXIS_ZERO: {
             title: 'Go to X Zero',
@@ -514,7 +550,7 @@ class LocationWidget extends PureComponent {
             payload: { axisList: [AXIS_X] },
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO
+            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO,
         },
         GO_TO_Y_AXIS_ZERO: {
             title: 'Go to Y Zero',
@@ -524,7 +560,7 @@ class LocationWidget extends PureComponent {
             payload: { axisList: [AXIS_Y] },
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO
+            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO,
         },
         GO_TO_Z_AXIS_ZERO: {
             title: 'Go to Z Zero',
@@ -534,7 +570,7 @@ class LocationWidget extends PureComponent {
             payload: { axisList: [AXIS_Z] },
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO
+            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO,
         },
         GO_TO_XY_AXIS_ZERO: {
             title: 'Go to XY Zero',
@@ -544,20 +580,23 @@ class LocationWidget extends PureComponent {
             preventDefault: true,
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO
+            callback: this.shuttleControlFunctions.GO_TO_AXIS_ZERO,
         },
     };
 
-
     shuttleControl = null;
-
 
     componentDidMount() {
         this.subscribe();
         this.addShuttleControlEvents();
         useKeybinding(this.shuttleControlEvents);
 
-        gamepad.on('gamepad:button', (event) => runAction({ event, shuttleControlEvents: this.shuttleControlEvents }));
+        gamepad.on('gamepad:button', (event) =>
+            runAction({
+                event,
+                shuttleControlEvents: this.shuttleControlEvents,
+            }),
+        );
     }
 
     componentWillUnmount() {
@@ -566,12 +605,7 @@ class LocationWidget extends PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const {
-            units,
-            minimized,
-            axes,
-            jog
-        } = this.state;
+        const { units, minimized, axes, jog } = this.state;
 
         this.config.set('minimized', minimized);
         this.config.set('axes', axes);
@@ -593,29 +627,31 @@ class LocationWidget extends PureComponent {
             safeRetractHeight: store.get('workspace.safeRetractHeight'),
             modal: {
                 name: MODAL_NONE,
-                params: {}
+                params: {},
             },
             shouldWarnZero: store.get('workspace.shouldWarnZero'),
             showWarnZero: {
                 shouldShow: false,
-                axis: null
+                axis: null,
             },
             axes: this.config.get('axes', DEFAULT_AXES),
-            machinePosition: { // Machine position
+            machinePosition: {
+                // Machine position
                 x: '0.000',
                 y: '0.000',
                 z: '0.000',
                 a: '0.000',
                 b: '0.000',
-                c: '0.000'
+                c: '0.000',
             },
-            workPosition: { // Work position
+            workPosition: {
+                // Work position
                 x: '0.000',
                 y: '0.000',
                 z: '0.000',
                 a: '0.000',
                 b: '0.000',
-                c: '0.000'
+                c: '0.000',
             },
             jog: {
                 axis: '', // Defaults to empty
@@ -625,7 +661,7 @@ class LocationWidget extends PureComponent {
                     xyStep: this.config.get('jog.speeds.xyStep'),
                     zStep: this.config.get('jog.speeds.zStep'),
                     feedrate: this.config.get('jog.speeds.feedrate'),
-                }
+                },
             },
         };
     }
@@ -633,30 +669,36 @@ class LocationWidget extends PureComponent {
     updateShuttleControlEvents = () => {
         this.removeShuttleControlEvents();
         this.addShuttleControlEvents();
-    }
+    };
 
     addShuttleControlEvents() {
         combokeys.reload();
 
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
 
         // Shuttle Zone
         this.shuttleControl = new ShuttleControl();
-        this.shuttleControl.on('flush', ({ axis, feedrate, relativeDistance }) => {
-            feedrate = feedrate.toFixed(3) * 1;
-            relativeDistance = relativeDistance.toFixed(4) * 1;
+        this.shuttleControl.on(
+            'flush',
+            ({ axis, feedrate, relativeDistance }) => {
+                feedrate = feedrate.toFixed(3) * 1;
+                relativeDistance = relativeDistance.toFixed(4) * 1;
 
-            controller.command('gcode', 'G91'); // relative
-            controller.command('gcode', 'G1 F' + feedrate + ' ' + axis + relativeDistance);
-            controller.command('gcode', 'G90'); // absolute
-        });
+                controller.command('gcode', 'G91'); // relative
+                controller.command(
+                    'gcode',
+                    'G1 F' + feedrate + ' ' + axis + relativeDistance,
+                );
+                controller.command('gcode', 'G90'); // absolute
+            },
+        );
     }
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
@@ -681,30 +723,28 @@ class LocationWidget extends PureComponent {
         }
 
         const activeState = get(state, 'status.activeState');
-        const states = [
-            GRBL_ACTIVE_STATE_IDLE,
-            GRBL_ACTIVE_STATE_RUN
-        ];
+        const states = [GRBL_ACTIVE_STATE_IDLE, GRBL_ACTIVE_STATE_RUN];
         return includes(states, activeState);
     }
 
     changeUnits(units) {
         this.setState({
             units: units,
-            safeRetractHeight: store.get('workspace.safeRetractHeight')
+            safeRetractHeight: store.get('workspace.safeRetractHeight'),
         });
     }
 
     zeroAxis(axis) {
         const wcs = this.getWorkCoordinateSystem();
-        const p = {
-            'G54': 1,
-            'G55': 2,
-            'G56': 3,
-            'G57': 4,
-            'G58': 5,
-            'G59': 6
-        }[wcs] || 0;
+        const p =
+            {
+                G54: 1,
+                G55: 2,
+                G56: 3,
+                G57: 4,
+                G58: 5,
+                G59: 6,
+            }[wcs] || 0;
 
         if (axis === 'all') {
             controller.command('gcode', `G10 L20 P${p} X0 Y0 Z0`);
@@ -725,7 +765,7 @@ class LocationWidget extends PureComponent {
         const state = {
             ...this.state,
             workflow: {
-                state: this.props.workflow.state
+                state: this.props.workflow.state,
             },
             // Determine if the motion button is clickable
             canClick: this.canClick(),
@@ -736,10 +776,10 @@ class LocationWidget extends PureComponent {
             // Output work position with the display units
             workPosition: mapValues(workPosition, (pos, axis) => {
                 return String(mapPositionToUnits(pos, units));
-            })
+            }),
         };
         const actions = {
-            ...this.actions
+            ...this.actions,
         };
 
         const gcodes = [
@@ -773,9 +813,12 @@ class LocationWidget extends PureComponent {
             <Widget fullscreen={isFullscreen}>
                 <Widget.Header>
                     <Widget.Title>
-                        {isForkedWidget &&
-                        <i className="fa fa-code-fork" style={{ marginRight: 5 }} />
-                        }
+                        {isForkedWidget && (
+                            <i
+                                className="fa fa-code-fork"
+                                style={{ marginRight: 5 }}
+                            />
+                        )}
                         {i18n._('Location')}
                     </Widget.Title>
                     <Widget.Controls className={styles.controlRow}>
@@ -783,14 +826,37 @@ class LocationWidget extends PureComponent {
                         <Select
                             styles={{
                                 // Fixes the overlapping problem of the component
-                                menu: provided => ({ ...provided, zIndex: 9999, marginTop: 0 }),
-                                valueContainer: provided => ({ ...provided, padding: 0, margin: 0, textAlign: 'center' }),
-                                option: provided => ({ ...provided, padding: 0 }),
-                                control: provided => ({ ...provided, minHeight: 'initial', lineHeight: 1, boxShadow: 'none' }),
-                                dropdownIndicator: provided => ({ ...provided, padding: 0 }),
-                                container: provided => ({ ...provided, padding: 0 })
+                                menu: (provided) => ({
+                                    ...provided,
+                                    zIndex: 9999,
+                                    marginTop: 0,
+                                }),
+                                valueContainer: (provided) => ({
+                                    ...provided,
+                                    padding: 0,
+                                    margin: 0,
+                                    textAlign: 'center',
+                                }),
+                                option: (provided) => ({
+                                    ...provided,
+                                    padding: 0,
+                                }),
+                                control: (provided) => ({
+                                    ...provided,
+                                    minHeight: 'initial',
+                                    lineHeight: 1,
+                                    boxShadow: 'none',
+                                }),
+                                dropdownIndicator: (provided) => ({
+                                    ...provided,
+                                    padding: 0,
+                                }),
+                                container: (provided) => ({
+                                    ...provided,
+                                    padding: 0,
+                                }),
                             }}
-                            value={gcodes.filter(obj => obj.value === wcs)}
+                            value={gcodes.filter((obj) => obj.value === wcs)}
                             isDisabled={!canSendCommand}
                             isClearable={false}
                             className={styles.workspaceInput}
@@ -805,29 +871,31 @@ class LocationWidget extends PureComponent {
                     </Widget.Controls>
                 </Widget.Header>
                 <Widget.Content
-                    className={cx(
-                        styles['widget-content'],
-                        { [styles.hidden]: minimized }
-                    )}
+                    className={cx(styles['widget-content'], {
+                        [styles.hidden]: minimized,
+                    })}
                 >
                     {state.modal.name === MODAL_SETTINGS && (
                         <Settings
                             config={config}
                             onSave={() => {
                                 const axes = config.get('axes', DEFAULT_AXES);
-                                let jogDistances = ensureArray(this.config.get('jog.distances', []));
+                                let jogDistances = ensureArray(
+                                    this.config.get('jog.distances', []),
+                                );
                                 if (units === IMPERIAL_UNITS) {
                                     jogDistances.forEach((el, index) => {
-                                        jogDistances[index] = convertToImperial(el);
+                                        jogDistances[index] =
+                                            convertToImperial(el);
                                     });
                                 }
 
-                                this.setState(state => ({
+                                this.setState((state) => ({
                                     axes: axes,
                                     jog: {
                                         ...state.jog,
-                                        distances: jogDistances
-                                    }
+                                        distances: jogDistances,
+                                    },
                                 }));
 
                                 actions.closeModal();
@@ -843,7 +911,6 @@ class LocationWidget extends PureComponent {
     }
 }
 
-
 export default connect((store) => {
     const state = get(store, 'controller.state');
     const settings = get(store, 'controller.settings');
@@ -851,7 +918,7 @@ export default connect((store) => {
     const machinePosition = get(store, 'controller.mpos');
     const workPosition = get(store, 'controller.wpos');
     const workflow = get(store, 'controller.workflow');
-    const canJog = (workflow.state === WORKFLOW_STATE_IDLE);
+    const canJog = workflow.state === WORKFLOW_STATE_IDLE;
     const isConnected = get(store, 'connection.isConnected');
     const port = get(store, 'connection.port');
     const wcs = get(store, 'controller.modal.wcs', 'G54');
@@ -865,6 +932,6 @@ export default connect((store) => {
         workflow,
         canJog,
         port,
-        wcs
+        wcs,
     };
 })(LocationWidget);

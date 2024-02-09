@@ -31,7 +31,8 @@ const SESSION_PATH = '.sienci-sessions';
 // Secret
 const secret = pkg.version;
 
-const getUserHome = () => (process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME']);
+const getUserHome = () =>
+    process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'];
 
 export default {
     rcfile: path.resolve(getUserHome(), RC_FILE),
@@ -55,69 +56,73 @@ export default {
 
         // Format: <extension>: <template>
         engines: [
-            { // Hogan template with .html extension
+            {
+                // Hogan template with .html extension
                 extension: 'html',
-                template: 'hogan'
+                template: 'hogan',
             },
-            { // Hogan template with .hbs extension
+            {
+                // Hogan template with .hbs extension
                 extension: 'hbs',
-                template: 'hogan'
+                template: 'hogan',
             },
-            { // Hogan template with .hogan extension
+            {
+                // Hogan template with .hogan extension
                 extension: 'hogan',
-                template: 'hogan'
-            }
-        ]
+                template: 'hogan',
+            },
+        ],
     },
     // Middleware (https://github.com/senchalabs/connect)
     middleware: {
         // https://github.com/expressjs/body-parser
         'body-parser': {
-            'json': {
+            json: {
                 // maximum request body size. (default: <100kb>)
-                limit: '256mb'
+                limit: '256mb',
             },
-            'urlencoded': {
+            urlencoded: {
                 extended: true,
                 // maximum request body size. (default: <100kb>)
-                limit: '256mb'
-            }
+                limit: '256mb',
+            },
         },
         // https://github.com/mscdex/connect-busboy
-        'busboy': {
+        busboy: {
             limits: {
-                fileSize: 256 * 1024 * 1024 // 256MB
+                fileSize: 256 * 1024 * 1024, // 256MB
             },
             // immediate
             //   false: no immediate parsing
             //   true: immediately start reading from the request stream and parsing
-            immediate: false
+            immediate: false,
         },
         // https://github.com/andrewrk/node-multiparty/
-        'multiparty': {
+        multiparty: {
             // Limits the amount of memory a field (not a file) can allocate in bytes. If this value is exceeded, an error event is emitted. The default size is 2MB.
             maxFieldsSize: 50 * 1024 * 1024, // 20MB
 
             // Limits the number of fields that will be parsed before emitting an error event. A file counts as a field in this case. Defaults to 1000.
-            maxFields: 1000
+            maxFields: 1000,
         },
         // https://github.com/expressjs/morgan
-        'morgan': {
+        morgan: {
             // The ':id' token is defined at app.js
-            format: ':id \x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m \x1b[34m:status\x1b[0m :response-time ms'
+            format: ':id \x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m \x1b[34m:status\x1b[0m :response-time ms',
         },
         // https://github.com/expressjs/compression
-        'compression': {
+        compression: {
             // response is only compressed if the byte size is at or above this threshold.
-            threshold: 512
+            threshold: 512,
         },
         // https://github.com/expressjs/session
-        'session': {
-            path: path.resolve(getUserHome(), SESSION_PATH)
-        }
+        session: {
+            path: path.resolve(getUserHome(), SESSION_PATH),
+        },
     },
-    siofu: { // SocketIOFileUploader
-        dir: './tmp/siofu'
+    siofu: {
+        // SocketIOFileUploader
+        dir: './tmp/siofu',
     },
     i18next: {
         lowerCaseLng: true,
@@ -131,7 +136,7 @@ export default {
         // string or array of namespaces
         ns: [
             'config',
-            'resource' // default
+            'resource', // default
         ],
 
         // default namespace used if not passed to translation function
@@ -156,7 +161,7 @@ export default {
 
         interpolation: {
             prefix: '{{',
-            suffix: '}}'
+            suffix: '}}',
         },
 
         detection: {
@@ -169,18 +174,30 @@ export default {
             lookupSession: 'lang',
 
             // cache user language
-            caches: ['cookie']
+            caches: ['cookie'],
         },
 
         backend: {
             // path where resources get loaded from
-            loadPath: path.resolve(__dirname, '..', 'i18n', '{{lng}}', '{{ns}}.json'),
+            loadPath: path.resolve(
+                __dirname,
+                '..',
+                'i18n',
+                '{{lng}}',
+                '{{ns}}.json',
+            ),
 
             // path to post missing resources
-            addPath: path.resolve(__dirname, '..', 'i18n', '{{lng}}', '{{ns}}.savedMissing.json'),
+            addPath: path.resolve(
+                __dirname,
+                '..',
+                'i18n',
+                '{{lng}}',
+                '{{ns}}.savedMissing.json',
+            ),
 
             // jsonIndent to use when storing json files
-            jsonIndent: 4
-        }
-    }
+            jsonIndent: 4,
+        },
+    },
 };

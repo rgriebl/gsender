@@ -6,7 +6,12 @@ import BitfieldInput from 'Containers/Firmware/components/HalSettings/inputs/Bit
 const AxisMaskInput = ({ info, setting, onChange, axes }) => {
     return (
         <>
-            <BitfieldInput info={info} setting={setting} onChange={onChange} externalFormat={axes} />
+            <BitfieldInput
+                info={info}
+                setting={setting}
+                onChange={onChange}
+                externalFormat={axes}
+            />
         </>
     );
 };
@@ -14,6 +19,6 @@ const AxisMaskInput = ({ info, setting, onChange, axes }) => {
 export default connect((store) => {
     const axes = get(store, 'controller.state.axes.axes', ['X', 'Y', 'Z']);
     return {
-        axes
+        axes,
     };
 })(AxisMaskInput);

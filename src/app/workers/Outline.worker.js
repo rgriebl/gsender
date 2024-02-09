@@ -22,7 +22,10 @@
  */
 
 import hull from 'concaveman';
-import GCodeVirtualizer, { shouldRotate, rotateAxis } from 'app/lib/GCodeVirtualizer';
+import GCodeVirtualizer, {
+    shouldRotate,
+    rotateAxis,
+} from 'app/lib/GCodeVirtualizer';
 import * as THREE from 'three';
 
 onmessage = ({ data }) => {
@@ -52,9 +55,7 @@ onmessage = ({ data }) => {
         };
         const addCurve = ({ motion, plane }, v1, v2, v0) => {
             const isClockwise = motion === 'G2';
-            const radius = Math.sqrt(
-                (v1.x - v0.x) ** 2 + (v1.y - v0.y) ** 2
-            );
+            const radius = Math.sqrt((v1.x - v0.x) ** 2 + (v1.y - v0.y) ** 2);
             let startAngle = Math.atan2(v1.y - v0.y, v1.x - v0.x);
             let endAngle = Math.atan2(v2.y - v0.y, v2.x - v0.x);
 
@@ -69,7 +70,7 @@ onmessage = ({ data }) => {
                 radius, // aRadius
                 startAngle, // aStartAngle
                 endAngle, // aEndAngle
-                isClockwise // isClockwise
+                isClockwise, // isClockwise
             );
             const divisions = 10;
             const points = arcCurve.getPoints(divisions);
@@ -149,7 +150,7 @@ onmessage = ({ data }) => {
         if (isLaser) {
             gCode.push('G1F3000 M3 S1');
         }
-        points.forEach(point => {
+        points.forEach((point) => {
             const [x, y] = point;
             gCode.push(`G21 G90 ${movementModal} X${x} Y${y}`);
         });

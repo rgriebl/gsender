@@ -129,8 +129,8 @@ class GrblHalLineParser {
         return {
             type: null,
             payload: {
-                raw: line
-            }
+                raw: line,
+            },
         };
     }
 }

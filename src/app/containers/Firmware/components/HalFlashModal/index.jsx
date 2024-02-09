@@ -10,7 +10,9 @@ import { startFlash } from 'Containers/Firmware/utils';
 
 const HalFlashModal = ({ onClose }) => {
     const [notifications, setNotifications] = useState([]);
-    const [portList, setPortList] = useState(_get(reduxStore.getState(), 'connection.ports'));
+    const [portList, setPortList] = useState(
+        _get(reduxStore.getState(), 'connection.ports'),
+    );
     const [port, setPort] = useState(controller.port);
     const [isFlashing, setIsFlashing] = useState(false);
     const fileInputRef = useRef();
@@ -34,10 +36,7 @@ const HalFlashModal = ({ onClose }) => {
         // Listen to flash events
         controller.addListener('flash:message', (msg) => {
             let data = `${msg.type}: ${msg.content}`;
-            setNotifications([
-                data,
-                ...notifications,
-            ]);
+            setNotifications([data, ...notifications]);
         });
 
         controller.addListener('flash:end', () => {
@@ -54,9 +53,9 @@ const HalFlashModal = ({ onClose }) => {
         };
     }, [notifications]);
 
-
     useEffect(() => {
-        let fileReader, isCancel = false;
+        let fileReader,
+            isCancel = false;
         if (file) {
             fileReader = new FileReader();
             fileReader.onload = (e) => {
@@ -78,9 +77,12 @@ const HalFlashModal = ({ onClose }) => {
     const refreshPorts = () => {
         controller.listPorts();
         setPortList(_get(reduxStore.getState(), 'connection.ports') || []);
-        if (port !== '' && portList.findIndex((p) => {
-            return p.port === port;
-        }) === -1) {
+        if (
+            port !== '' &&
+            portList.findIndex((p) => {
+                return p.port === port;
+            }) === -1
+        ) {
             setPort('');
         }
     };
@@ -121,37 +123,51 @@ const HalFlashModal = ({ onClose }) => {
                         }}
                     />
                     <label htmlFor="firmware_image">Choose a hex file</label>
-                    <input type="file" id="firmware_image" accept=".hex" ref={fileInputRef} onChange={onChangefileInput}/>
-                    <ProgressBar total={totalSize} sent={curValue}/>
-                    <textarea value={getNotificationsString()} rows="6" cols="70" className={styles.notifications} readOnly={true}/>
+                    <input
+                        type="file"
+                        id="firmware_image"
+                        accept=".hex"
+                        ref={fileInputRef}
+                        onChange={onChangefileInput}
+                    />
+                    <ProgressBar total={totalSize} sent={curValue} />
+                    <textarea
+                        value={getNotificationsString()}
+                        rows="6"
+                        cols="70"
+                        className={styles.notifications}
+                        readOnly={true}
+                    />
                 </div>
-                {
-                    !isFlashing &&
-                    (
-                        <div className="modal-footer">
-                            <h1 className="footer-text">This process will disconnect your machine and may take a couple of minute to complete.</h1>
-                            <h1 className="footer-textTwo">Continue?</h1>
-                            <div className="buttonContainer">
-                                <button onClick={onClose} className="button-no">No</button>
-                                <button
-                                    className="button" onClick={() => {
-                                        if (!fileContent || !file) {
-                                            console.error('No file');
-                                            return;
-                                        }
-                                        setIsFlashing(true);
-                                        startFlash(port, null, fileContent, true);
+                {!isFlashing && (
+                    <div className="modal-footer">
+                        <h1 className="footer-text">
+                            This process will disconnect your machine and may
+                            take a couple of minute to complete.
+                        </h1>
+                        <h1 className="footer-textTwo">Continue?</h1>
+                        <div className="buttonContainer">
+                            <button onClick={onClose} className="button-no">
+                                No
+                            </button>
+                            <button
+                                className="button"
+                                onClick={() => {
+                                    if (!fileContent || !file) {
+                                        console.error('No file');
+                                        return;
                                     }
-                                    }
-                                    onMouseEnter={refreshPorts}
-                                    onMouseLeave={refreshPorts}
-                                >Yes
-                                </button>
-                            </div>
+                                    setIsFlashing(true);
+                                    startFlash(port, null, fileContent, true);
+                                }}
+                                onMouseEnter={refreshPorts}
+                                onMouseLeave={refreshPorts}
+                            >
+                                Yes
+                            </button>
                         </div>
-                    )
-                }
-
+                    </div>
+                )}
             </div>
         </Modal>
     );

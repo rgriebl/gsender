@@ -30,23 +30,19 @@ import Modal from 'app/components/Modal';
 import i18n from 'app/lib/i18n';
 
 const RotatePrompt = (props) => (
-    <Modal
-        size="xs"
-        disableOverlayClick
-        showCloseButton={false}
-    >
+    <Modal size="xs" disableOverlayClick showCloseButton={false}>
         <Modal.Body>
             <ModalTemplate type="warning">
                 <h5>Please Rotate Your Device</h5>
-                <p>{i18n._('Please turn your device to landscape for the best experience, or click to continue.')}</p>
+                <p>
+                    {i18n._(
+                        'Please turn your device to landscape for the best experience, or click to continue.',
+                    )}
+                </p>
             </ModalTemplate>
         </Modal.Body>
         <Modal.Footer>
-            <Button
-                onClick={chainedFunction(
-                    props.onClose
-                )}
-            >
+            <Button onClick={chainedFunction(props.onClose)}>
                 {i18n._('OK')}
             </Button>
         </Modal.Footer>
@@ -54,7 +50,7 @@ const RotatePrompt = (props) => (
 );
 
 RotatePrompt.propTypes = {
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
 };
 
 export default RotatePrompt;

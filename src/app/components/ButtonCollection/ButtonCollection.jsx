@@ -29,21 +29,19 @@ const ButtonCollection = ({ icon, buttons = [], onClick, ...props }) => {
     return (
         <div className={styles.container}>
             <div className={styles.selectorWrapper}>
-                {
-                    buttons.map((button) => {
-                        return (
-                            <button
-                                key={uniqueId()}
-                                type="button"
-                                onClick={() => onClick(button)}
-                                className={styles.selectorButton}
-                                {...props}
-                            >
-                                { button }
-                            </button>
-                        );
-                    })
-                }
+                {buttons.map((button) => {
+                    return (
+                        <button
+                            key={uniqueId()}
+                            type="button"
+                            onClick={() => onClick(button)}
+                            className={styles.selectorButton}
+                            {...props}
+                        >
+                            {button}
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );

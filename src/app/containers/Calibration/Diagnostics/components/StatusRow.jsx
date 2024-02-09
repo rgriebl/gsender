@@ -28,14 +28,8 @@ import styles from '../index.styl';
 const StatusRow = ({ label, value }) => {
     return (
         <div className={cx(styles.pinRow, styles.separator)}>
-            <span className={styles.statusLabel}>
-                { label }
-            </span>
-            <span className={styles.statusValue}>
-                {
-                    value
-                }
-            </span>
+            <span className={styles.statusLabel}>{label}</span>
+            <span className={styles.statusValue}>{value}</span>
         </div>
     );
 };

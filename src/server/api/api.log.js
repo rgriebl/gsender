@@ -47,40 +47,40 @@ export const printLog = (req, res) => {
         lineMsg = '   ---on line ' + lineNumber;
     }
     switch (level) {
-    case levels[0]:
-        log.error(msg);
-        log.error(fileMsg);
-        log.error(lineMsg);
-        break;
-    case levels[1]:
-        log.warn(msg);
-        log.warn(fileMsg);
-        log.warn(lineMsg);
-        break;
-    case levels[2]:
-        log.info(msg);
-        log.info(fileMsg);
-        log.info(lineMsg);
-        break;
-    case levels[3]:
-        log.verbose(msg);
-        log.verbose(fileMsg);
-        log.verbose(lineMsg);
-        break;
-    case levels[4]:
-        log.debug(msg);
-        log.debug(fileMsg);
-        log.debug(lineMsg);
-        break;
-    case levels[5]:
-        log.silly(msg);
-        log.silly(fileMsg);
-        log.silly(lineMsg);
-        break;
-    default:
-        return res.status(ERR_BAD_REQUEST).send({
-            msg: 'invalid level: ' + level
-        });
+        case levels[0]:
+            log.error(msg);
+            log.error(fileMsg);
+            log.error(lineMsg);
+            break;
+        case levels[1]:
+            log.warn(msg);
+            log.warn(fileMsg);
+            log.warn(lineMsg);
+            break;
+        case levels[2]:
+            log.info(msg);
+            log.info(fileMsg);
+            log.info(lineMsg);
+            break;
+        case levels[3]:
+            log.verbose(msg);
+            log.verbose(fileMsg);
+            log.verbose(lineMsg);
+            break;
+        case levels[4]:
+            log.debug(msg);
+            log.debug(fileMsg);
+            log.debug(lineMsg);
+            break;
+        case levels[5]:
+            log.silly(msg);
+            log.silly(fileMsg);
+            log.silly(lineMsg);
+            break;
+        default:
+            return res.status(ERR_BAD_REQUEST).send({
+                msg: 'invalid level: ' + level,
+            });
     }
 
     return res.send({

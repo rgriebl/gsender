@@ -30,18 +30,19 @@ const ActiveIndicator = ({ canClick, active = true }) => {
 
     return (
         <div className={styles.activeIndicatorWrapper}>
-            <small>
-                {
-                    showIndicator ? 'Active' : 'Not Active'
-                }
-            </small>
-            <div className={cx(styles.activeIndicator, { [styles.activeIndicatorOn]: showIndicator })}>
-                {
-                    showIndicator && <i className={cx('fas fa-exclamation', styles.activePulse)} />
-                }
+            <small>{showIndicator ? 'Active' : 'Not Active'}</small>
+            <div
+                className={cx(styles.activeIndicator, {
+                    [styles.activeIndicatorOn]: showIndicator,
+                })}
+            >
+                {showIndicator && (
+                    <i
+                        className={cx('fas fa-exclamation', styles.activePulse)}
+                    />
+                )}
             </div>
         </div>
-
     );
 };
 

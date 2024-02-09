@@ -31,19 +31,24 @@ const SpeedControl = ({ state, actions }) => {
     const { units, jog } = state;
     const { xyStep, zStep, feedrate } = jog;
 
-    const xyMin = (units === METRIC_UNITS) ? 0.01 : 0.001;
-    const zMin = (units === METRIC_UNITS) ? 0.01 : 0.001;
-    const xyMax = (units === METRIC_UNITS) ? 9000 : 354;
-    const zMax = (units === METRIC_UNITS) ? 9000 : 354;
-    const speedMin = (units === METRIC_UNITS) ? 50 : 2;
-    const speedMax = (units === METRIC_UNITS) ? 90000 : 3543;
-    const decimals = (units === METRIC_UNITS) ? 2 : 3;
+    const xyMin = units === METRIC_UNITS ? 0.01 : 0.001;
+    const zMin = units === METRIC_UNITS ? 0.01 : 0.001;
+    const xyMax = units === METRIC_UNITS ? 9000 : 354;
+    const zMax = units === METRIC_UNITS ? 9000 : 354;
+    const speedMin = units === METRIC_UNITS ? 50 : 2;
+    const speedMax = units === METRIC_UNITS ? 90000 : 3543;
+    const decimals = units === METRIC_UNITS ? 2 : 3;
 
     return (
         <div className={styles.speedControls}>
             <div className={styles.controlGroup}>
-                <span className={styles.controlGroupLabel}>XY move ({units})</span>
-                <TooltipCustom content="Specify XY axis jog distance" location="default">
+                <span className={styles.controlGroupLabel}>
+                    XY move ({units})
+                </span>
+                <TooltipCustom
+                    content="Specify XY axis jog distance"
+                    location="default"
+                >
                     <NumberInput
                         value={xyStep}
                         min={xyMin}
@@ -55,7 +60,10 @@ const SpeedControl = ({ state, actions }) => {
             </div>
             <div className={styles.controlGroup}>
                 <span>Z move ({units})</span>
-                <TooltipCustom content="Specify Z axis jog distance" location="default">
+                <TooltipCustom
+                    content="Specify Z axis jog distance"
+                    location="default"
+                >
                     <NumberInput
                         value={zStep}
                         min={zMin}
@@ -67,7 +75,10 @@ const SpeedControl = ({ state, actions }) => {
             </div>
             <div className={styles.controlGroup}>
                 <span className={styles.speed}>Speed ({units}/min)</span>
-                <TooltipCustom content="Specify jog speed all axis" location="default">
+                <TooltipCustom
+                    content="Specify jog speed all axis"
+                    location="default"
+                >
                     <NumberInput
                         value={feedrate}
                         min={speedMin}

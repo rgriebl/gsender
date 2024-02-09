@@ -33,7 +33,7 @@ class NumberInput extends PureComponent {
             min: props.min,
             max: props.max,
             disabled: props.disabled,
-            decimals: props.decimals
+            decimals: props.decimals,
         };
     }
 
@@ -77,7 +77,7 @@ class NumberInput extends PureComponent {
         }
         newValue = Number(newValue).toFixed(decimals);
         this.setState({
-            value: newValue
+            value: newValue,
         });
         changeHandler(newValue);
     }
@@ -93,7 +93,7 @@ class NumberInput extends PureComponent {
         }
         newValue = Number(newValue).toFixed(decimals);
         this.setState({
-            value: newValue
+            value: newValue,
         });
         changeHandler(newValue);
     }
@@ -122,13 +122,16 @@ class NumberInput extends PureComponent {
             value = Number(value);
             changeHandler(value);
             if (this.state.value === value) {
-                this.setState({
-                    value: '',
-                }, () => {
-                    this.setState({
-                        value: value,
-                    });
-                });
+                this.setState(
+                    {
+                        value: '',
+                    },
+                    () => {
+                        this.setState({
+                            value: value,
+                        });
+                    },
+                );
             } else {
                 this.setState({
                     value: value,
@@ -141,7 +144,7 @@ class NumberInput extends PureComponent {
     checkForInvalidInput(value) {
         const regex = /[^0-9.]/g;
         let dotOccurance = 0;
-        [...value].forEach(char => char === '.' && dotOccurance++);
+        [...value].forEach((char) => char === '.' && dotOccurance++);
         if (regex.test(value) || dotOccurance > 1) {
             return true;
         }
@@ -158,7 +161,7 @@ class NumberInput extends PureComponent {
             min: this.props.min,
             max: this.props.max,
             disabled: this.props.disabled,
-            decimals: this.props.decimals
+            decimals: this.props.decimals,
         });
     }
 
@@ -166,8 +169,19 @@ class NumberInput extends PureComponent {
         const value = this.state.value;
         return (
             <div className={styles.inputWrapper}>
-                <button type="button" className={styles.stepButton} onClick={(e) => this.decrementValue(e)}>
-                    <i className="fa fa-minus fa-fw" style={{ verticalAlign: 'super', margin: 'auto', fontSize: 'clamp(10px, 1vw, 14px)' }} />
+                <button
+                    type="button"
+                    className={styles.stepButton}
+                    onClick={(e) => this.decrementValue(e)}
+                >
+                    <i
+                        className="fa fa-minus fa-fw"
+                        style={{
+                            verticalAlign: 'super',
+                            margin: 'auto',
+                            fontSize: 'clamp(10px, 1vw, 14px)',
+                        }}
+                    />
                 </button>
                 <ControlledNumberInput
                     value={value}
@@ -182,11 +196,21 @@ class NumberInput extends PureComponent {
                     onFocus={(e) => e.target.select()}
                     onClick={(e) => e.target.select()}
                 />
-                <button type="button" className={styles.stepButton} onClick={(e) => this.incrementValue(e)}>
-                    <i className="fa fa-plus fa-fw" style={{ verticalAlign: 'super', margin: 'auto 0.5rem', fontSize: 'clamp(10px, 1vw, 14px)' }} />
+                <button
+                    type="button"
+                    className={styles.stepButton}
+                    onClick={(e) => this.incrementValue(e)}
+                >
+                    <i
+                        className="fa fa-plus fa-fw"
+                        style={{
+                            verticalAlign: 'super',
+                            margin: 'auto 0.5rem',
+                            fontSize: 'clamp(10px, 1vw, 14px)',
+                        }}
+                    />
                 </button>
             </div>
-
         );
     }
 }

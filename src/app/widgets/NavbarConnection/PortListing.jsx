@@ -25,14 +25,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './Index.styl';
 
-const PortListing = ({ port, inuse, baudrate, controllerType, onClick, network }) => {
-    const portString = network ? `Ethernet at ${port}:23` : `use ${controllerType} at ${baudrate} baud`;
+const PortListing = ({
+    port,
+    inuse,
+    baudrate,
+    controllerType,
+    onClick,
+    network,
+}) => {
+    const portString = network
+        ? `Ethernet at ${port}:23`
+        : `use ${controllerType} at ${baudrate} baud`;
     return (
         <button type="button" className={styles.PortListing} onClick={onClick}>
             <i className={`fa fab ${inuse ? 'fa-lock' : 'fa-lock-open'}`} />
             <div className={styles.NavbarPortListingInfo}>
-                <div className={styles.NavbarPortListingPortLabel}>{ port }</div>
-                <div className={styles.NavbarPortListingPortManufacturer}>{portString}</div>
+                <div className={styles.NavbarPortListingPortLabel}>{port}</div>
+                <div className={styles.NavbarPortListingPortManufacturer}>
+                    {portString}
+                </div>
             </div>
         </button>
     );
@@ -43,7 +54,7 @@ PortListing.propTypes = {
     inuse: PropTypes.bool,
     baudrate: PropTypes.number,
     controllerType: PropTypes.string,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
 };
 
 export default PortListing;

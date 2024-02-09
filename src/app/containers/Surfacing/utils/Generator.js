@@ -12,7 +12,7 @@ import {
     START_POSITION_FRONT_RIGHT,
     START_POSITION_CENTER,
     SPINDLE_MODES,
-    SURFACING_DWELL_DURATION
+    SURFACING_DWELL_DURATION,
 } from 'app/constants';
 import controller from 'app/lib/controller';
 import defaultState from 'app/store/defaultState';
@@ -32,10 +32,20 @@ export default class Generator {
      * Main function to generate gcode
      */
     generate = () => {
-        const defaultSurfacingState = get(defaultState, 'workspace.widgets.surfacing');
+        const defaultSurfacingState = get(
+            defaultState,
+            'workspace.widgets.surfacing',
+        );
 
         const { surfacing, units, generateGcode, getSafeZValue } = this;
-        const { skimDepth, maxDepth, feedrate, spindleRPM, spindle = M3, shouldDwell } = { ...defaultSurfacingState, ...surfacing };
+        const {
+            skimDepth,
+            maxDepth,
+            feedrate,
+            spindleRPM,
+            spindle = M3,
+            shouldDwell,
+        } = { ...defaultSurfacingState, ...surfacing };
 
         const wcs = controller.state?.parserstate?.modal?.wcs || 'G54';
         const z = getSafeZValue();
@@ -54,11 +64,14 @@ export default class Generator {
             `${spindle} S${spindleRPM}`,
             ...dwell,
             '(Header End)',
-            '\n'
+            '\n',
         ];
 
         function processGcode(arr, depth, count, maxDepth) {
-            const gcodeLayer = generateGcode({ depth: depth < maxDepth ? depth : maxDepth, count });
+            const gcodeLayer = generateGcode({
+                depth: depth < maxDepth ? depth : maxDepth,
+                count,
+            });
             arr.push(...gcodeLayer);
 
             if (depth >= maxDepth) {
@@ -76,7 +89,7 @@ export default class Generator {
             '(Footer)',
             'M5 ;Turn off spindle',
             ...dwell,
-            '(End of Footer)'
+            '(End of Footer)',
         );
 
         //Convert to string for interpretation
@@ -106,17 +119,20 @@ export default class Generator {
 
         const stepoverPercentage = stepover > 80 ? 80 / 100 : stepover / 100;
 
-        const stepoverAmount = this.toFixedValue(bitDiameter * stepoverPercentage);
+        const stepoverAmount = this.toFixedValue(
+            bitDiameter * stepoverPercentage,
+        );
 
         const DEFAULT_FACTOR = { x: 1, y: -1 };
 
-        const axisFactors = {
-            [START_POSITION_BACK_LEFT]: { x: 1, y: -1 },
-            [START_POSITION_BACK_RIGHT]: { x: -1, y: -1 },
-            [START_POSITION_FRONT_LEFT]: { x: 1, y: 1 },
-            [START_POSITION_FRONT_RIGHT]: { x: -1, y: 1 },
-            [START_POSITION_CENTER]: DEFAULT_FACTOR,
-        }[startPosition] ?? DEFAULT_FACTOR;
+        const axisFactors =
+            {
+                [START_POSITION_BACK_LEFT]: { x: 1, y: -1 },
+                [START_POSITION_BACK_RIGHT]: { x: -1, y: -1 },
+                [START_POSITION_FRONT_LEFT]: { x: 1, y: 1 },
+                [START_POSITION_FRONT_RIGHT]: { x: -1, y: 1 },
+                [START_POSITION_CENTER]: DEFAULT_FACTOR,
+            }[startPosition] ?? DEFAULT_FACTOR;
 
         const options = {
             depth,
@@ -132,19 +148,22 @@ export default class Generator {
 
         const executeSurfacing = {
             [SPIRAL_MOVEMENT]: this.generateSpiral,
-            [ZIG_ZAG_MOVEMENT]: this.generateZigZag
+            [ZIG_ZAG_MOVEMENT]: this.generateZigZag,
         }[type];
 
         const gcodeArr = executeSurfacing(options);
 
         const safeHeight = this.getSafeZValue();
         const zValue = this.toFixedValue(safeHeight - (depth - skimDepth));
-        const startPosGcode = count === 1 ? [] : [
-            '(Move to Starting Height)',
-            `G0 Z${zValue}`,
-            '(End of Move to Starting Height)',
-            ''
-        ];
+        const startPosGcode =
+            count === 1
+                ? []
+                : [
+                      '(Move to Starting Height)',
+                      `G0 Z${zValue}`,
+                      '(End of Move to Starting Height)',
+                      '',
+                  ];
 
         return [
             `(*** Layer ${count} ***)`,
@@ -167,13 +186,19 @@ export default class Generator {
         const depth = skimDepth;
         const EXTRA_LENGTH = units === METRIC_UNITS ? 1 : convertToImperial(1);
         const safeHeight = this.getSafeZValue();
-        const EXTRA_RAMP_COAST = units === METRIC_UNITS ? 5 : convertToImperial(5);
-        const RAMP_HEIGHT = (Math.abs(depth) * -1) - safeHeight;
+        const EXTRA_RAMP_COAST =
+            units === METRIC_UNITS ? 5 : convertToImperial(5);
+        const RAMP_HEIGHT = Math.abs(depth) * -1 - safeHeight;
 
-        const rampingLength = Number(((depth + safeHeight + EXTRA_LENGTH) / getTanFromDegrees(degrees)).toFixed(2));
+        const rampingLength = Number(
+            (
+                (depth + safeHeight + EXTRA_LENGTH) /
+                getTanFromDegrees(degrees)
+            ).toFixed(2),
+        );
 
         function getTanFromDegrees(degrees) {
-            return Math.tan(degrees * Math.PI / 180);
+            return Math.tan((degrees * Math.PI) / 180);
         }
 
         const rampingArr = [];
@@ -181,31 +206,38 @@ export default class Generator {
         rampingArr.push(
             '(Ramping into Material)',
             'G91',
-            `G1 ${axis}${(rampingLength * factor)} Z${RAMP_HEIGHT}`,
-            `G1 ${axis}${(EXTRA_RAMP_COAST * factor)}`,
+            `G1 ${axis}${rampingLength * factor} Z${RAMP_HEIGHT}`,
+            `G1 ${axis}${EXTRA_RAMP_COAST * factor}`,
             `G1 ${axis}${(rampingLength + EXTRA_RAMP_COAST) * factor * -1}`,
             'G90',
             '(End of Ramping into Material)',
-            ''
+            '',
         );
 
         return rampingArr;
-    }
+    };
 
-
-    drawInitialPerimeter = (x, y, z, direction, shouldZeroAxisZ = true, startPosition) => {
+    drawInitialPerimeter = (
+        x,
+        y,
+        z,
+        direction,
+        shouldZeroAxisZ = true,
+        startPosition,
+    ) => {
         const enterMaterial = this.rampIntoMaterial(z, direction);
 
-        const mainPerimeterArea = startPosition === START_POSITION_CENTER
-            ? [
-                'G91',
-                `G1 Y${Math.abs(y) * -1}`,
-                `G1 X${Math.abs(x)}`,
-                `G1 Y${Math.abs(y)}`,
-                `G1 X${Math.abs(x) * -1}`,
-                'G90'
-            ]
-            : [`G1 Y${y}`, `G1 X${x}`, 'G1 Y0', 'G1 X0'];
+        const mainPerimeterArea =
+            startPosition === START_POSITION_CENTER
+                ? [
+                      'G91',
+                      `G1 Y${Math.abs(y) * -1}`,
+                      `G1 X${Math.abs(x)}`,
+                      `G1 Y${Math.abs(y)}`,
+                      `G1 X${Math.abs(x) * -1}`,
+                      'G90',
+                  ]
+                : [`G1 Y${y}`, `G1 X${x}`, 'G1 Y0', 'G1 X0'];
 
         return [
             '(Covering Surfacing Perimeter)',
@@ -213,11 +245,17 @@ export default class Generator {
             ...mainPerimeterArea,
             ...(shouldZeroAxisZ ? ['G1 Z0'] : []),
             '(End of Covering Surfacing Perimeter)',
-            ''
+            '',
         ];
-    }
+    };
 
-    enterSpiralStartArea(x, y, singleMovement = false, movementType = 'G0', lastAxis = 'X') {
+    enterSpiralStartArea(
+        x,
+        y,
+        singleMovement = false,
+        movementType = 'G0',
+        lastAxis = 'X',
+    ) {
         const movement = [];
 
         const X = x ? 'X' + x : undefined;
@@ -257,7 +295,7 @@ export default class Generator {
             ...movement,
             'G90',
             '(End of Entering Start Position)',
-            ''
+            '',
         ];
     }
 
@@ -276,9 +314,9 @@ export default class Generator {
             `G0 Z${z}`,
             'G0 X0 Y0',
             '(End of Returning to Zero)',
-            ''
+            '',
         ];
-    }
+    };
 
     generateSpiral = (options) => {
         const {
@@ -289,7 +327,15 @@ export default class Generator {
             rampIntoMaterial,
             toFixedValue,
         } = this;
-        const { depth, length, width, axisFactors, stepoverAmount, cutDirectionFlipped, startPosition } = options;
+        const {
+            depth,
+            length,
+            width,
+            axisFactors,
+            stepoverAmount,
+            cutDirectionFlipped,
+            startPosition,
+        } = options;
         const { x: xFactor, y: yFactor } = axisFactors;
         const startIsInCenter = startPosition === START_POSITION_CENTER;
 
@@ -302,7 +348,9 @@ export default class Generator {
 
         const startPos = {
             x: cutDirectionFlipped ? 0 : toFixedValue(stepoverAmount),
-            y: cutDirectionFlipped ? toFixedValue(stepoverAmount * 2) : toFixedValue(stepoverAmount),
+            y: cutDirectionFlipped
+                ? toFixedValue(stepoverAmount * 2)
+                : toFixedValue(stepoverAmount),
         };
 
         const endPos = {
@@ -334,76 +382,71 @@ export default class Generator {
             };
         }
 
-        function exitCondition (startPos, endPos, prevStartPos, prevEndPos) {
+        function exitCondition(startPos, endPos, prevStartPos, prevEndPos) {
             return endPos.x < startPos.x || endPos.y < startPos.y;
         }
 
-        function processGcode (startPos, endPos, prevStartPos, prevEndPos, xFactor, yFactor) {
+        function processGcode(
+            startPos,
+            endPos,
+            prevStartPos,
+            prevEndPos,
+            xFactor,
+            yFactor,
+        ) {
             const arr = [];
 
-            const xValueStart = startIsInCenter ? toFixedValue((halfOfWidth - endPos.x) * xFactor) : toFixedValue(endPos.x * xFactor);
-            const yValueStart = startIsInCenter ? toFixedValue((halfOfLength - endPos.y) * yFactor) : toFixedValue(endPos.y * yFactor);
+            const xValueStart = startIsInCenter
+                ? toFixedValue((halfOfWidth - endPos.x) * xFactor)
+                : toFixedValue(endPos.x * xFactor);
+            const yValueStart = startIsInCenter
+                ? toFixedValue((halfOfLength - endPos.y) * yFactor)
+                : toFixedValue(endPos.y * yFactor);
             const xValueEnd = startIsInCenter
-                ? toFixedValue((halfOfWidth - (startPos.x + stepoverAmount)) * xFactor)
+                ? toFixedValue(
+                      (halfOfWidth - (startPos.x + stepoverAmount)) * xFactor,
+                  )
                 : toFixedValue((startPos.x + stepoverAmount) * xFactor);
-            const yValueEnd = startIsInCenter ? toFixedValue((halfOfLength - startPos.y) * yFactor) : toFixedValue(startPos.y * yFactor);
+            const yValueEnd = startIsInCenter
+                ? toFixedValue((halfOfLength - startPos.y) * yFactor)
+                : toFixedValue(startPos.y * yFactor);
 
             if (cutDirectionFlipped) {
                 if (endPos.x >= startPos.x) {
-                    arr.push(
-                        `G1 X${xValueStart}`,
-                    );
+                    arr.push(`G1 X${xValueStart}`);
 
                     if (length >= width) {
-                        arr.push(
-                            `G1 Y${yValueStart}`,
-                        );
+                        arr.push(`G1 Y${yValueStart}`);
 
                         if (endPos.x >= startPos.x + stepoverAmount) {
-                            arr.push(`G1 X${xValueEnd}`,);
+                            arr.push(`G1 X${xValueEnd}`);
                         }
                     }
 
-                    if (endPos.y >= (startPos.y)) {
+                    if (endPos.y >= startPos.y) {
                         if (width > length) {
-                            arr.push(
-                                `G1 Y${yValueStart}`,
-                                `G1 X${xValueEnd}`,
-                            );
+                            arr.push(`G1 Y${yValueStart}`, `G1 X${xValueEnd}`);
                         }
 
-                        arr.push(
-                            `G1 Y${yValueEnd}`,
-                        );
+                        arr.push(`G1 Y${yValueEnd}`);
                     }
                 }
             } else {
                 if (endPos.y >= startPos.y) {
-                    arr.push(
-                        `G1 Y${yValueStart}`,
-                    );
+                    arr.push(`G1 Y${yValueStart}`);
 
                     if (width >= length) {
-                        arr.push(
-                            `G1 X${xValueStart}`,
-                            `G1 Y${yValueEnd}`,
-                        );
+                        arr.push(`G1 X${xValueStart}`, `G1 Y${yValueEnd}`);
                     }
                 }
 
-
                 if (endPos.x >= startPos.x) {
                     if (length > width) {
-                        arr.push(
-                            `G1 X${xValueStart}`,
-                            `G1 Y${yValueEnd}`,
-                        );
+                        arr.push(`G1 X${xValueStart}`, `G1 Y${yValueEnd}`);
                     }
 
-                    if (endPos.x >= (startPos.x + stepoverAmount)) {
-                        arr.push(
-                            `G1 X${xValueEnd}`,
-                        );
+                    if (endPos.x >= startPos.x + stepoverAmount) {
+                        arr.push(`G1 X${xValueEnd}`);
                     }
                 }
             }
@@ -413,7 +456,14 @@ export default class Generator {
             return arr;
         }
 
-        const initialPerimeter = drawInitialPerimeter(x, y, z, direction, false, startPosition);
+        const initialPerimeter = drawInitialPerimeter(
+            x,
+            y,
+            z,
+            direction,
+            false,
+            startPosition,
+        );
         const spirals = drawSpiral(
             [],
             startPos,
@@ -424,10 +474,16 @@ export default class Generator {
             processGcode,
             exitCondition,
             getNewStartPos,
-            getNewEndPos
+            getNewEndPos,
         );
         const returnToStart = returnToZero();
-        const spiralStartArea = enterSpiralStartArea(stepoverAmount * xFactor, stepoverAmount * yFactor, false, 'G1', direction.axis);
+        const spiralStartArea = enterSpiralStartArea(
+            stepoverAmount * xFactor,
+            stepoverAmount * yFactor,
+            false,
+            'G1',
+            direction.axis,
+        );
 
         const toolpath = new Toolpath();
         toolpath.loadFromStringSync(spirals.join('\n'));
@@ -435,17 +491,26 @@ export default class Generator {
 
         const mainSpiralArea = [];
 
-        const startFromCenterPerimeter = drawInitialPerimeter(width, length, z, direction, false, startPosition);
+        const startFromCenterPerimeter = drawInitialPerimeter(
+            width,
+            length,
+            z,
+            direction,
+            false,
+            startPosition,
+        );
 
         const startFromCenterPerimeterPosition = [
             '(Entering Perimeter Start Position)',
             `G0 X${halfOfWidth * -1} Y${halfOfLength}`,
             '(End of Entering Perimeter Start Position)',
-            ''
+            '',
         ];
 
         const safeHeight = this.getSafeZValue();
-        const zValue = toFixedValue(safeHeight - (depth - this.surfacing.skimDepth));
+        const zValue = toFixedValue(
+            safeHeight - (depth - this.surfacing.skimDepth),
+        );
 
         //Used to check if where ramp should enter from for center position, depends on if the cut direction is flipped too
         const spiralEndsInXPos = spirals[spirals.length - 2].includes('X');
@@ -454,9 +519,12 @@ export default class Generator {
             '(Entering Start Position)',
             `G0 Z${zValue} ; Start Pos - (Curr Depth - Cut Depth)`,
             `G0 X${position.x} Y${position.y}`,
-            ...rampIntoMaterial(z, { ...direction, factor: spiralEndsInXPos && !cutDirectionFlipped ? -1 : 1 }),
+            ...rampIntoMaterial(z, {
+                ...direction,
+                factor: spiralEndsInXPos && !cutDirectionFlipped ? -1 : 1,
+            }),
             '(End of Entering Start Position)',
-            ''
+            '',
         ];
 
         if (startIsInCenter) {
@@ -467,32 +535,30 @@ export default class Generator {
                 ...spirals.reverse(),
             );
         } else {
-            mainSpiralArea.push(
-                ...spirals,
-            );
+            mainSpiralArea.push(...spirals);
         }
 
         const remainderXFactor = cutDirectionFlipped ? 1 : -1;
         const remainderYFactor = cutDirectionFlipped ? -1 : 1;
         const remainder = cutDirectionFlipped
             ? [
-                '',
-                '(Cover Remaining Area)',
-                `G1 Y${toFixedValue(Math.abs(halfOfLength - stepoverAmount) * remainderYFactor)}`,
-                `G1 X${toFixedValue(Math.abs(halfOfWidth - stepoverAmount) * remainderXFactor * -1)}`,
-                `G1 X${toFixedValue(Math.abs(halfOfWidth - stepoverAmount) * remainderXFactor)}`,
-                `G1 Y${toFixedValue(Math.abs(halfOfLength) * remainderXFactor * -1)}`,
-                '(End of Cover Remaining Area)',
-                ''
-            ]
+                  '',
+                  '(Cover Remaining Area)',
+                  `G1 Y${toFixedValue(Math.abs(halfOfLength - stepoverAmount) * remainderYFactor)}`,
+                  `G1 X${toFixedValue(Math.abs(halfOfWidth - stepoverAmount) * remainderXFactor * -1)}`,
+                  `G1 X${toFixedValue(Math.abs(halfOfWidth - stepoverAmount) * remainderXFactor)}`,
+                  `G1 Y${toFixedValue(Math.abs(halfOfLength) * remainderXFactor * -1)}`,
+                  '(End of Cover Remaining Area)',
+                  '',
+              ]
             : [
-                '',
-                '(Cover Remaining Area)',
-                `G1 X${toFixedValue(Math.abs(halfOfWidth - stepoverAmount) * remainderXFactor * -1)}`,
-                `G1 Y${toFixedValue(Math.abs(halfOfLength) * -remainderYFactor)}`,
-                '(End of Cover Remaining Area)',
-                ''
-            ];
+                  '',
+                  '(Cover Remaining Area)',
+                  `G1 X${toFixedValue(Math.abs(halfOfWidth - stepoverAmount) * remainderXFactor * -1)}`,
+                  `G1 Y${toFixedValue(Math.abs(halfOfLength) * -remainderYFactor)}`,
+                  '(End of Cover Remaining Area)',
+                  '',
+              ];
 
         /**
          * 1. Draw initial surfacing area perimeter
@@ -501,27 +567,43 @@ export default class Generator {
          * 4. End of spiral, move z axis up and return to the zero position
          **/
         const gcodeArr = startIsInCenter
-            ? [
-                ...mainSpiralArea.flat(),
-                ...remainder,
-                ...returnToStart,
-            ]
+            ? [...mainSpiralArea.flat(), ...remainder, ...returnToStart]
             : [
-                ...initialPerimeter,
-                ...spiralStartArea,
-                ...mainSpiralArea.flat(),
-                ...returnToStart,
-            ];
+                  ...initialPerimeter,
+                  ...spiralStartArea,
+                  ...mainSpiralArea.flat(),
+                  ...returnToStart,
+              ];
 
         return gcodeArr;
-    }
+    };
 
-    drawSpiral = (arr, startPos, endPos, prevStartPos, prevEndPos, options, processGcode, exitCondition, getNewStartPos, getNewEndPos) => {
+    drawSpiral = (
+        arr,
+        startPos,
+        endPos,
+        prevStartPos,
+        prevEndPos,
+        options,
+        processGcode,
+        exitCondition,
+        getNewStartPos,
+        getNewEndPos,
+    ) => {
         const { drawSpiral } = this;
-        const { axisFactors, } = options;
+        const { axisFactors } = options;
         const { x: xFactor, y: yFactor } = axisFactors;
 
-        arr.push(...processGcode(startPos, endPos, prevStartPos, prevEndPos, xFactor, yFactor));
+        arr.push(
+            ...processGcode(
+                startPos,
+                endPos,
+                prevStartPos,
+                prevEndPos,
+                xFactor,
+                yFactor,
+            ),
+        );
 
         if (exitCondition(startPos, endPos, prevStartPos, prevEndPos)) {
             return arr;
@@ -530,13 +612,38 @@ export default class Generator {
         const nextStartPos = getNewStartPos(startPos);
         const nextEndPos = getNewEndPos(endPos);
 
-        return drawSpiral(arr, nextStartPos, nextEndPos, startPos, endPos, options, processGcode, exitCondition, getNewStartPos, getNewEndPos);
-    }
+        return drawSpiral(
+            arr,
+            nextStartPos,
+            nextEndPos,
+            startPos,
+            endPos,
+            options,
+            processGcode,
+            exitCondition,
+            getNewStartPos,
+            getNewEndPos,
+        );
+    };
 
     generateZigZag = (options) => {
-        const { depth, length, width, axisFactors, stepoverAmount, cutDirectionFlipped, startPosition } = options;
+        const {
+            depth,
+            length,
+            width,
+            axisFactors,
+            stepoverAmount,
+            cutDirectionFlipped,
+            startPosition,
+        } = options;
         const { x: xFactor, y: yFactor } = axisFactors;
-        const { toFixedValue, drawInitialPerimeter, drawZigZag, returnToZero, rampIntoMaterial } = this;
+        const {
+            toFixedValue,
+            drawInitialPerimeter,
+            drawZigZag,
+            returnToZero,
+            rampIntoMaterial,
+        } = this;
         const startIsInCenter = startPosition === START_POSITION_CENTER;
 
         const x = toFixedValue(width * xFactor);
@@ -553,7 +660,6 @@ export default class Generator {
             y: cutDirectionFlipped ? 0 : toFixedValue(stepoverAmount * 2),
         };
 
-
         const direction = {
             axis: 'Y',
             factor: axisFactors.y,
@@ -565,34 +671,36 @@ export default class Generator {
         }
 
         function exitCondition(startPos, endPos) {
-            return cutDirectionFlipped ? startPos.x >= width : startPos.y >= length;
+            return cutDirectionFlipped
+                ? startPos.x >= width
+                : startPos.y >= length;
         }
 
         function getNewStartPos(startPos, endPos) {
             if (cutDirectionFlipped) {
                 return {
                     x: toFixedValue(endPos.x + stepoverAmount),
-                    y: startPos.y
+                    y: startPos.y,
                 };
             }
 
             return {
                 x: startPos.x,
-                y: toFixedValue(endPos.y + stepoverAmount)
+                y: toFixedValue(endPos.y + stepoverAmount),
             };
         }
 
         function getNewEndPos(endPos) {
             if (cutDirectionFlipped) {
                 return {
-                    x: toFixedValue(endPos.x + (stepoverAmount * 2)),
+                    x: toFixedValue(endPos.x + stepoverAmount * 2),
                     y: endPos.y,
                 };
             }
 
             return {
                 x: endPos.x,
-                y: toFixedValue(endPos.y + (stepoverAmount * 2))
+                y: toFixedValue(endPos.y + stepoverAmount * 2),
             };
         }
 
@@ -610,34 +718,27 @@ export default class Generator {
                         startPos.y - halfOfLength <= halfOfLength &&
                         endPos.y - halfOfLength <= halfOfLength
                     ) {
-                        arr.push(
-                            `G1 Y${toFixedValue(halfOfLength) * -1}`,
-                            ''
-                        );
+                        arr.push(`G1 Y${toFixedValue(halfOfLength) * -1}`, '');
                         return arr;
                     }
 
                     if (startPos.y - halfOfLength <= halfOfLength) {
-                        arr.push(
-                            `G1 Y${toFixedValue(halfOfLength) * -1}`,
-                        );
+                        arr.push(`G1 Y${toFixedValue(halfOfLength) * -1}`);
                     }
 
                     if (startPos.x - halfOfWidth <= halfOfWidth) {
                         arr.push(
-                            `G1 X${toFixedValue((halfOfWidth * -1) + startPos.x)}`,
+                            `G1 X${toFixedValue(halfOfWidth * -1 + startPos.x)}`,
                         );
                     }
 
                     if (endPos.y - halfOfLength <= halfOfLength) {
-                        arr.push(
-                            `G1 Y${toFixedValue(halfOfLength)}`,
-                        );
+                        arr.push(`G1 Y${toFixedValue(halfOfLength)}`);
                     }
 
                     if (endPos.x - halfOfWidth <= halfOfWidth) {
                         arr.push(
-                            `G1 X${toFixedValue((halfOfWidth * -1) + endPos.x)}`
+                            `G1 X${toFixedValue(halfOfWidth * -1 + endPos.x)}`,
                         );
                     }
                 } else {
@@ -696,8 +797,23 @@ export default class Generator {
             return arr;
         }
 
-        const initialPerimeter = drawInitialPerimeter(x, y, z, direction, false,);
-        const spirals = drawZigZag([], startPos, endPos, options, processGcode, exitCondition, getNewStartPos, getNewEndPos);
+        const initialPerimeter = drawInitialPerimeter(
+            x,
+            y,
+            z,
+            direction,
+            false,
+        );
+        const spirals = drawZigZag(
+            [],
+            startPos,
+            endPos,
+            options,
+            processGcode,
+            exitCondition,
+            getNewStartPos,
+            getNewEndPos,
+        );
         const returnToStart = returnToZero();
 
         const startArea = [
@@ -726,22 +842,27 @@ export default class Generator {
          **/
         const gcodeArr = startIsInCenter
             ? [
-                ...startArea,
-                ...rampIntoMaterial(z, direction),
-                ...startFromCenterPerimeter,
-                ...spirals,
-                ...returnToStart,
-            ]
-            : [
-                ...initialPerimeter,
-                ...spirals,
-                ...returnToStart,
-            ];
+                  ...startArea,
+                  ...rampIntoMaterial(z, direction),
+                  ...startFromCenterPerimeter,
+                  ...spirals,
+                  ...returnToStart,
+              ]
+            : [...initialPerimeter, ...spirals, ...returnToStart];
 
         return gcodeArr;
-    }
+    };
 
-    drawZigZag = (arr, startPos, endPos, options, processGcode, exitCondition, getNewStartPos, getNewEndPos) => {
+    drawZigZag = (
+        arr,
+        startPos,
+        endPos,
+        options,
+        processGcode,
+        exitCondition,
+        getNewStartPos,
+        getNewEndPos,
+    ) => {
         const { axisFactors } = options;
         const { x: xFactor, y: yFactor } = axisFactors;
         const { drawZigZag } = this;
@@ -755,6 +876,15 @@ export default class Generator {
         const nextStartPos = getNewStartPos(startPos, endPos);
         const nextEndPos = getNewEndPos(endPos);
 
-        return drawZigZag(arr, nextStartPos, nextEndPos, options, processGcode, exitCondition, getNewStartPos, getNewEndPos);
-    }
+        return drawZigZag(
+            arr,
+            nextStartPos,
+            nextEndPos,
+            options,
+            processGcode,
+            exitCondition,
+            getNewStartPos,
+            getNewEndPos,
+        );
+    };
 }

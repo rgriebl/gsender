@@ -28,8 +28,12 @@ const Tool = ({ metricDiameter, imperialDiameter, type, onDelete }) => {
     return (
         <div className={styles.tool}>
             <div className={styles.toolDimensions}>
-                <div><b>{metricDiameter}</b>mm</div>
-                <div><b>{imperialDiameter}</b>in</div>
+                <div>
+                    <b>{metricDiameter}</b>mm
+                </div>
+                <div>
+                    <b>{imperialDiameter}</b>in
+                </div>
             </div>
             <div>{type}</div>
             <button
@@ -40,7 +44,6 @@ const Tool = ({ metricDiameter, imperialDiameter, type, onDelete }) => {
             >
                 <i className="far fa-trash-alt" />
             </button>
-
         </div>
     );
 };

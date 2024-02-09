@@ -2,9 +2,18 @@ import React, { useEffect, useState } from 'react';
 import ToggleSwitch from 'Components/ToggleSwitch';
 import ensureArray from 'ensure-array';
 import styles from './index.styl';
-import { convertBitfieldToValue, getBitfieldArr } from 'Containers/Firmware/components/HalSettings/inputs/utils';
+import {
+    convertBitfieldToValue,
+    getBitfieldArr,
+} from 'Containers/Firmware/components/HalSettings/inputs/utils';
 
-const BitfieldInput = ({ info, setting, onChange, externalFormat = null, isExclusive = false }) => {
+const BitfieldInput = ({
+    info,
+    setting,
+    onChange,
+    externalFormat = null,
+    isExclusive = false,
+}) => {
     let { format } = info;
     format = ensureArray(format);
 
@@ -34,14 +43,14 @@ const BitfieldInput = ({ info, setting, onChange, externalFormat = null, isExclu
 
     return (
         <div className={styles.column}>
-            {
-                format.map((opt, index) => {
-                    let key = `${setting.setting}-${index}-key`;
-                    const notNA = opt !== 'N/A';
-                    let checked = bitMap[index] === 1;
-                    let disabled = (index > 0) && isExclusive && bitMap[0] !== 1;
-                    const id = `${setting.setting}-${index}-key`;
-                    return notNA && (
+            {format.map((opt, index) => {
+                let key = `${setting.setting}-${index}-key`;
+                const notNA = opt !== 'N/A';
+                let checked = bitMap[index] === 1;
+                let disabled = index > 0 && isExclusive && bitMap[0] !== 1;
+                const id = `${setting.setting}-${index}-key`;
+                return (
+                    notNA && (
                         <div className={styles.row} key={key}>
                             <div>{opt}: </div>
                             <div>
@@ -54,9 +63,9 @@ const BitfieldInput = ({ info, setting, onChange, externalFormat = null, isExclu
                                 />
                             </div>
                         </div>
-                    );
-                })
-            }
+                    )
+                );
+            })}
         </div>
     );
 };

@@ -13,12 +13,12 @@ class GrblHalLineParserResultSettingDetails {
         const payload = {
             id: Number(r[1]),
             unitString: data[1],
-            details: data[4]
+            details: data[4],
         };
 
         return {
             type: GrblHalLineParserResultSettingDetails,
-            payload
+            payload,
         };
     }
 }

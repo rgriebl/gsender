@@ -24,7 +24,11 @@
 import React, { useRef } from 'react';
 import style from './MachinePositionInput.styl';
 
-const MachinePositionInput = ({ value, handleManualMovement, disabled = false }) => {
+const MachinePositionInput = ({
+    value,
+    handleManualMovement,
+    disabled = false,
+}) => {
     const inputRef = useRef();
 
     const onKeyPress = (e) => {

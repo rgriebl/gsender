@@ -24,7 +24,7 @@ const ErrorLog = () => {
     return (
         <div className={styles.errorWrapper}>
             <div className={styles.errorHeading}>
-                { `Errors and Alarms (${logs.length})`}
+                {`Errors and Alarms (${logs.length})`}
             </div>
 
             <div className={styles.errorBody}>

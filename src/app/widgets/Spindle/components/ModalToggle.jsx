@@ -27,7 +27,7 @@ import styles from '../index.styl';
 import { LASER_MODE } from '../../../constants';
 
 const ModalToggle = ({ mode, onChange, ...props }) => {
-    const isToggled = (mode === LASER_MODE);
+    const isToggled = mode === LASER_MODE;
 
     return (
         <div className={styles.modalSelect}>

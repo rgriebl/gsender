@@ -4,8 +4,9 @@ class ShuttleEvents extends React.PureComponent {
     allShuttleControlEvents = {};
 
     updateShuttleEvents(shuttleControlEvents) {
-        Object.keys(shuttleControlEvents).forEach(eventName => {
-            this.allShuttleControlEvents[eventName] = shuttleControlEvents[eventName];
+        Object.keys(shuttleControlEvents).forEach((eventName) => {
+            this.allShuttleControlEvents[eventName] =
+                shuttleControlEvents[eventName];
         });
     }
 

@@ -31,7 +31,7 @@ import { getPagingRange } from './paging';
 import {
     ERR_BAD_REQUEST,
     ERR_NOT_FOUND,
-    ERR_INTERNAL_SERVER_ERROR
+    ERR_INTERNAL_SERVER_ERROR,
 } from '../constants';
 
 const CONFIG_KEY = 'macros';
@@ -58,7 +58,7 @@ const getSanitizedRecords = () => {
             shouldUpdate = true;
         }
         if (!record.column) {
-            record.column = (i % 2 === 0) ? 'column1' : 'column2';
+            record.column = i % 2 === 0 ? 'column1' : 'column2';
             shouldUpdate = true;
         }
     }
@@ -85,19 +85,51 @@ export const fetch = (req, res) => {
             pagination: {
                 page: Number(page),
                 pageLength: Number(pageLength),
-                totalRecords: Number(totalRecords)
+                totalRecords: Number(totalRecords),
             },
-            records: pagedRecords.map(record => {
-                const { id, mtime, name, content, description, column, rowIndex } = { ...record };
-                return { id, mtime, name, content, description, column, rowIndex };
-            })
+            records: pagedRecords.map((record) => {
+                const {
+                    id,
+                    mtime,
+                    name,
+                    content,
+                    description,
+                    column,
+                    rowIndex,
+                } = { ...record };
+                return {
+                    id,
+                    mtime,
+                    name,
+                    content,
+                    description,
+                    column,
+                    rowIndex,
+                };
+            }),
         });
     } else {
         res.send({
-            records: records.map(record => {
-                const { id, mtime, name, content, description, column, rowIndex } = { ...record };
-                return { id, mtime, name, content, description, column, rowIndex };
-            })
+            records: records.map((record) => {
+                const {
+                    id,
+                    mtime,
+                    name,
+                    content,
+                    description,
+                    column,
+                    rowIndex,
+                } = { ...record };
+                return {
+                    id,
+                    mtime,
+                    name,
+                    content,
+                    description,
+                    column,
+                    rowIndex,
+                };
+            }),
         });
     }
 };
@@ -107,14 +139,14 @@ export const create = (req, res) => {
 
     if (!name) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "name" parameter must not be empty'
+            msg: 'The "name" parameter must not be empty',
         });
         return;
     }
 
     if (!content) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "content" parameter must not be empty'
+            msg: 'The "content" parameter must not be empty',
         });
         return;
     }
@@ -124,14 +156,12 @@ export const create = (req, res) => {
         let column, rowIndex;
 
         const column1Length = records
-            .filter(macro => macro.column === 'column1')
-            .sort((a, b) => a.rowIndex - b.rowIndex)
-            .length;
+            .filter((macro) => macro.column === 'column1')
+            .sort((a, b) => a.rowIndex - b.rowIndex).length;
 
         const column2Length = records
-            .filter(macro => macro.column === 'column2')
-            .sort((a, b) => a.rowIndex - b.rowIndex)
-            .length;
+            .filter((macro) => macro.column === 'column2')
+            .sort((a, b) => a.rowIndex - b.rowIndex).length;
 
         if (column2Length >= column1Length) {
             column = 'column1';
@@ -157,7 +187,7 @@ export const create = (req, res) => {
         res.send({ err: null });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -169,12 +199,14 @@ export const read = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
 
-    const { mtime, name, content, description, column, rowIndex } = { ...record };
+    const { mtime, name, content, description, column, rowIndex } = {
+        ...record,
+    };
     res.send({ id, mtime, name, content, description, column, rowIndex });
 };
 
@@ -185,7 +217,7 @@ export const update = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -195,7 +227,7 @@ export const update = (req, res) => {
         content = record.content,
         description = record.description,
         column = record.column,
-        rowIndex = record.rowIndex
+        rowIndex = record.rowIndex,
     } = { ...req.body };
 
     /*
@@ -227,7 +259,7 @@ export const update = (req, res) => {
         res.send({ err: null });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -239,13 +271,13 @@ export const __delete = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
 
     try {
-        const filteredRecords = records.filter(record => {
+        const filteredRecords = records.filter((record) => {
             return record.id !== id;
         });
         config.set(CONFIG_KEY, filteredRecords);
@@ -253,7 +285,7 @@ export const __delete = (req, res) => {
         res.send({ err: null });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };

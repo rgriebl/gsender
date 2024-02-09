@@ -10,18 +10,26 @@ const HelpModal = () => {
     const closeModal = () => dispatch(setCurrentModal(null));
 
     return (
-        <ToolModal
-            onClose={closeModal}
-            size="xs"
-            title="Help with Gamepad"
-        >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        <ToolModal onClose={closeModal} size="xs" title="Help with Gamepad">
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    padding: '1rem',
+                }}
+            >
                 <p>
-                    Your gamepad setup needs to work correctly for shortcuts to behave as expected.{' '}
-                    If you are experiencing issues, use this online diagnostics tool to verify its stability:
+                    Your gamepad setup needs to work correctly for shortcuts to
+                    behave as expected. If you are experiencing issues, use this
+                    online diagnostics tool to verify its stability:
                 </p>
 
-                <a href="https://hardwaretester.com/gamepad" target="_blank" rel="noopener noreferrer">
+                <a
+                    href="https://hardwaretester.com/gamepad"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     Hardware Tester
                 </a>
             </div>

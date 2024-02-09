@@ -33,7 +33,6 @@ import { GRBL_ACTIVE_STATE_IDLE, COOLANT_CATEGORY } from 'app/constants';
 import styles from './index.styl';
 import useKeybinding from '../../lib/useKeybinding';
 
-
 const sendM7 = () => {
     controller.command('gcode', 'M7');
 };
@@ -46,29 +45,47 @@ const sendM9 = () => {
 
 const shuttleControlFunctions = {
     MIST_COOLANT: () => {
-        const isConnected = get(reduxStore.getState(), 'connection.isConnected');
-        const activeState = get(reduxStore.getState(), 'controller.state.status.activeState');
+        const isConnected = get(
+            reduxStore.getState(),
+            'connection.isConnected',
+        );
+        const activeState = get(
+            reduxStore.getState(),
+            'controller.state.status.activeState',
+        );
         const canClick = isConnected && activeState === GRBL_ACTIVE_STATE_IDLE;
         if (canClick) {
             sendM7();
         }
     },
     FLOOD_COOLANT: () => {
-        const isConnected = get(reduxStore.getState(), 'connection.isConnected');
-        const activeState = get(reduxStore.getState(), 'controller.state.status.activeState');
+        const isConnected = get(
+            reduxStore.getState(),
+            'connection.isConnected',
+        );
+        const activeState = get(
+            reduxStore.getState(),
+            'controller.state.status.activeState',
+        );
         const canClick = isConnected && activeState === GRBL_ACTIVE_STATE_IDLE;
         if (canClick) {
             sendM8();
         }
     },
     STOP_COOLANT: () => {
-        const isConnected = get(reduxStore.getState(), 'connection.isConnected');
-        const activeState = get(reduxStore.getState(), 'controller.state.status.activeState');
+        const isConnected = get(
+            reduxStore.getState(),
+            'connection.isConnected',
+        );
+        const activeState = get(
+            reduxStore.getState(),
+            'controller.state.status.activeState',
+        );
         const canClick = isConnected && activeState === GRBL_ACTIVE_STATE_IDLE;
         if (canClick) {
             sendM9();
         }
-    }
+    },
 };
 const shuttleControlEvents = {
     MIST_COOLANT: {
@@ -78,7 +95,7 @@ const shuttleControlEvents = {
         preventDefault: false,
         isActive: true,
         category: COOLANT_CATEGORY,
-        callback: shuttleControlFunctions.MIST_COOLANT
+        callback: shuttleControlFunctions.MIST_COOLANT,
     },
     FLOOD_COOLANT: {
         title: 'Flood Coolant',
@@ -87,7 +104,7 @@ const shuttleControlEvents = {
         preventDefault: false,
         isActive: true,
         category: COOLANT_CATEGORY,
-        callback: shuttleControlFunctions.FLOOD_COOLANT
+        callback: shuttleControlFunctions.FLOOD_COOLANT,
     },
     STOP_COOLANT: {
         title: 'Stop Coolant',
@@ -96,23 +113,25 @@ const shuttleControlEvents = {
         preventDefault: false,
         isActive: true,
         category: COOLANT_CATEGORY,
-        callback: shuttleControlFunctions.STOP_COOLANT
-    }
+        callback: shuttleControlFunctions.STOP_COOLANT,
+    },
 };
 
 const subscribeShuttleControl = () => {
     combokeys.reload();
 
-    Object.keys(shuttleControlEvents).forEach(eventName => {
+    Object.keys(shuttleControlEvents).forEach((eventName) => {
         const callback = shuttleControlEvents[eventName].callback;
         combokeys.on(eventName, callback);
     });
 
-    gamepad.on('gamepad:button', (event) => runAction({ event, shuttleControlEvents: shuttleControlEvents }));
+    gamepad.on('gamepad:button', (event) =>
+        runAction({ event, shuttleControlEvents: shuttleControlEvents }),
+    );
 };
 
 const unsubscribeShuttleControl = () => {
-    Object.keys(shuttleControlEvents).forEach(eventName => {
+    Object.keys(shuttleControlEvents).forEach((eventName) => {
         const callback = shuttleControlEvents[eventName].callback;
         combokeys.removeListener(eventName, callback);
     });
@@ -149,6 +168,6 @@ export default connect((store) => {
     const activeState = get(store, 'controller.state.status.activeState');
     const canClick = isConnected && activeState === GRBL_ACTIVE_STATE_IDLE;
     return {
-        canClick
+        canClick,
     };
 })(CoolantControls);

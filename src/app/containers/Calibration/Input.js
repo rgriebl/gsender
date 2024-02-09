@@ -27,7 +27,15 @@ import classNames from 'classnames';
 
 import styles from './index.styl';
 
-const Input = ({ value, units, onChange, additionalProps, className, style, disabled }) => {
+const Input = ({
+    value,
+    units,
+    onChange,
+    additionalProps,
+    className,
+    style,
+    disabled,
+}) => {
     return (
         <div className={classNames(styles.input, 'form-group', className)}>
             <div className="input-group">
@@ -48,10 +56,7 @@ const Input = ({ value, units, onChange, additionalProps, className, style, disa
 Input.propTypes = {
     units: PropTypes.string,
     onChange: PropTypes.func,
-    value: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     additionalProps: PropTypes.object,
     className: PropTypes.string,
     disabled: PropTypes.bool,

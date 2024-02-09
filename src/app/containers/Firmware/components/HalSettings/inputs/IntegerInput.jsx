@@ -16,9 +16,7 @@ const IntegerInput = ({ info, setting, onChange }) => {
                 step={1}
                 externalOnChange={onChange}
             />
-            {
-                unit && <span className={styles.unit}>{unit}</span>
-            }
+            {unit && <span className={styles.unit}>{unit}</span>}
         </div>
     );
 };

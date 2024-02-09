@@ -12,7 +12,9 @@ import Fieldset from '../components/Fieldset';
 import styles from '../index.styl';
 
 const Toggle = () => {
-    const [showRotaryTab, setShowRotaryTab] = useState(store.get('widgets.rotary.tab.show', false));
+    const [showRotaryTab, setShowRotaryTab] = useState(
+        store.get('widgets.rotary.tab.show', false),
+    );
 
     useEffect(() => {
         const updateRotaryTabShow = (data) => {

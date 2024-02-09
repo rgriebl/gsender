@@ -34,12 +34,12 @@ class GrblHalLineParserResultFeedback {
         }
 
         const payload = {
-            message: r[1]
+            message: r[1],
         };
 
         return {
             type: GrblHalLineParserResultFeedback,
-            payload: payload
+            payload: payload,
         };
     }
 }

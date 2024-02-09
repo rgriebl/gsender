@@ -33,14 +33,14 @@ module.exports = {
         app: [
             path.resolve(__dirname, 'src/app/index.jsx'),
             'webpack-hot-middleware/client?path=/__webpack_hmr&reload=true',
-        ]
+        ],
     },
     output: {
         path: path.resolve(__dirname, 'output/app'),
         chunkFilename: `[name].[hash].bundle.js?_=${timestamp}`,
         filename: `[name].[hash].bundle.js?_=${timestamp}`,
         pathinfo: true,
-        publicPath: publicPath
+        publicPath: publicPath,
     },
     module: {
         rules: [
@@ -52,7 +52,7 @@ module.exports = {
                 test: /\.jsx?$/,
                 loader: 'eslint-loader',
                 enforce: 'pre',
-                exclude: /node_modules/
+                exclude: /node_modules/,
             },
             {
                 test: /\.jsx?$/,
@@ -61,11 +61,11 @@ module.exports = {
                     ...babelConfig,
                     env: {
                         development: {
-                            plugins: ['react-hot-loader/babel']
-                        }
-                    }
+                            plugins: ['react-hot-loader/babel'],
+                        },
+                    },
                 },
-                exclude: /node_modules/
+                exclude: /node_modules/,
             },
             {
                 test: /\.styl$/,
@@ -75,16 +75,15 @@ module.exports = {
                         loader: 'css-loader',
                         options: {
                             modules: true,
-                            localIdentName: '[path][name]__[local]--[hash:base64:5]',
+                            localIdentName:
+                                '[path][name]__[local]--[hash:base64:5]',
                             camelCase: true,
-                            importLoaders: 1
-                        }
+                            importLoaders: 1,
+                        },
                     },
-                    'stylus-loader'
+                    'stylus-loader',
                 ],
-                exclude: [
-                    path.resolve(__dirname, 'src/app/styles')
-                ]
+                exclude: [path.resolve(__dirname, 'src/app/styles')],
             },
             {
                 test: /\.styl$/,
@@ -95,57 +94,52 @@ module.exports = {
                         options: {
                             modules: false,
                             camelCase: true,
-                        }
+                        },
                     },
-                    'stylus-loader'
+                    'stylus-loader',
                 ],
-                include: [
-                    path.resolve(__dirname, 'src/app/styles')
-                ]
+                include: [path.resolve(__dirname, 'src/app/styles')],
             },
             {
                 test: /\.css$/,
-                use: [
-                    'style-loader',
-                    'css-loader'
-                ]
+                use: ['style-loader', 'css-loader'],
             },
             {
                 test: /\.(png|jpg|svg|gif)$/,
                 loader: 'url-loader',
                 options: {
-                    limit: 8192
-                }
+                    limit: 8192,
+                },
             },
             {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    mimetype: 'application/font-woff'
-                }
+                    mimetype: 'application/font-woff',
+                },
             },
             {
                 test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: 'file-loader'
+                loader: 'file-loader',
             },
             {
                 test: /\.hex$/,
-                loader: 'file-loader'
+                loader: 'file-loader',
             },
             {
                 test: /\.hex$/,
                 loader: 'file-loader',
                 include: [
-                    path.resolve(__dirname, 'src/server/lib/FirmwareFlashing')
-                ]
-            }
-        ]
+                    path.resolve(__dirname, 'src/server/lib/FirmwareFlashing'),
+                ],
+            },
+        ],
     },
     node: {
         fs: 'empty',
         net: 'empty',
-        tls: 'empty'
+        tls: 'empty',
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
@@ -154,52 +148,51 @@ module.exports = {
                 NODE_ENV: JSON.stringify('development'),
                 BUILD_VERSION: JSON.stringify(buildVersion),
                 LANGUAGES: JSON.stringify(buildConfig.languages),
-                TRACKING_ID: JSON.stringify(buildConfig.analytics.trackingId)
-            }
+                TRACKING_ID: JSON.stringify(buildConfig.analytics.trackingId),
+            },
         }),
         new webpack.LoaderOptionsPlugin({
-            debug: true
+            debug: true,
         }),
         new stylusLoader.OptionsPlugin({
             default: {
                 // nib - CSS3 extensions for Stylus
                 use: [nib()],
                 // no need to have a '@import "nib"' in the stylesheet
-                import: ['~nib/lib/nib/index.styl']
-            }
+                import: ['~nib/lib/nib/index.styl'],
+            },
         }),
         // https://github.com/gajus/write-file-webpack-plugin
         // Forces webpack-dev-server to write bundle files to the file system.
         new WriteFileWebpackPlugin(),
         new webpack.ContextReplacementPlugin(
             /moment[\/\\]locale$/,
-            new RegExp('^\./(' + without(buildConfig.languages, 'en').join('|') + ')$')
+            new RegExp(
+                '^./(' + without(buildConfig.languages, 'en').join('|') + ')$',
+            ),
         ),
         // Generates a manifest.json file in your root output directory with a mapping of all source file names to their corresponding output file.
         new ManifestPlugin({
-            fileName: 'manifest.json'
+            fileName: 'manifest.json',
         }),
         new MiniCssExtractPlugin({
             filename: `[name].css?_=${timestamp}`,
-            chunkFilename: `[id].css?_=${timestamp}`
+            chunkFilename: `[id].css?_=${timestamp}`,
         }),
         new CSSSplitWebpackPlugin({
             size: 4000,
             imports: '[name].[ext]?[hash]',
             filename: '[name]-[part].[ext]?[hash]',
-            preserve: false
+            preserve: false,
         }),
         new HtmlWebpackPlugin({
             filename: 'index.hbs',
             template: path.resolve(__dirname, 'index.hbs'),
-            chunksSortMode: 'dependency' // Sort chunks by dependency
-        })
+            chunksSortMode: 'dependency', // Sort chunks by dependency
+        }),
     ],
     resolve: {
-        modules: [
-            path.resolve(__dirname, 'src'),
-            'node_modules'
-        ],
+        modules: [path.resolve(__dirname, 'src'), 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
         alias: {
             // Alias paths so that e.g. "../../components/File" becomes "Components/File"
@@ -218,7 +211,7 @@ module.exports = {
             Styles: path.resolve(__dirname, './src/app/styles'),
             Types: path.resolve(__dirname, './src/app/types'),
             Utils: path.resolve(__dirname, './src/app/utils'),
-            Views: path.resolve(__dirname, './src/app/views')
-        }
-    }
+            Views: path.resolve(__dirname, './src/app/views'),
+        },
+    },
 };

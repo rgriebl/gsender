@@ -8,10 +8,13 @@ const StringInput = ({ info, setting, onChange }) => {
 
     return (
         <div className={styles.inputRow}>
-            <ControlledInput type="text" className={styles.textInput} value={value} externalOnChange={onChange} />
-            {
-                unit && <span className={styles.unit}>{unit}</span>
-            }
+            <ControlledInput
+                type="text"
+                className={styles.textInput}
+                value={value}
+                externalOnChange={onChange}
+            />
+            {unit && <span className={styles.unit}>{unit}</span>}
         </div>
     );
 };

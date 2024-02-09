@@ -30,7 +30,7 @@ import {
     SPINDLE_MODES,
     WORKSPACE_MODE,
     ROTARY_MODE_FIRMWARE_SETTINGS,
-    DEFAULT_FIRMWARE_SETTINGS
+    DEFAULT_FIRMWARE_SETTINGS,
 } from 'app/constants';
 import machineProfiles from 'app/containers/Firmware/components/defaultMachineProfiles';
 
@@ -41,7 +41,7 @@ const [M3] = SPINDLE_MODES;
 const defaultState = {
     session: {
         name: '',
-        token: ''
+        token: '',
     },
     workspace: {
         units: METRIC_UNITS,
@@ -54,30 +54,26 @@ const defaultState = {
         longestTimeRun: 0,
         jobTimes: [],
         toolChange: {
-            passthrough: false
+            passthrough: false,
         },
         toolChangeOption: 'Ignore',
         toolChangePosition: {
             x: 0,
             y: 0,
-            z: 0
+            z: 0,
         },
         toolChangeHooks: {
             preHook: '',
-            postHook: ''
+            postHook: '',
         },
         container: {
             primary: {
                 show: true,
-                widgets: [
-                    'location', 'axes', 'secondary'
-                ]
+                widgets: ['location', 'axes', 'secondary'],
             },
             default: {
-                widgets: [
-                    'visualizer', 'job_status'
-                ]
-            }
+                widgets: ['visualizer', 'job_status'],
+            },
         },
         machineProfile: machineProfiles[0],
         probeProfile: {
@@ -88,36 +84,36 @@ const defaultState = {
             functions: {
                 x: true,
                 y: true,
-                z: true
+                z: true,
             },
-            touchplateType: 'Standard Block'
+            touchplateType: 'Standard Block',
         },
         tools: [
             {
                 metricDiameter: 6.35,
                 imperialDiameter: 0.25,
-                type: 'end mill'
+                type: 'end mill',
             },
             {
                 metricDiameter: 3.175,
                 imperialDiameter: 0.125,
-                type: 'end mill'
+                type: 'end mill',
             },
             {
                 metricDiameter: 9.525,
                 imperialDiameter: 0.375,
-                type: 'end mill'
+                type: 'end mill',
             },
             {
                 metricDiameter: 12.7,
                 imperialDiameter: 0.5,
-                type: 'end mill'
+                type: 'end mill',
             },
             {
                 metricDiameter: 15.875,
                 imperialDiameter: 0.625,
-                type: 'end mill'
-            }
+                type: 'end mill',
+            },
         ],
         recentFiles: [],
         gamepad: {
@@ -137,8 +133,8 @@ const defaultState = {
         diagnostics: {
             stepperMotor: {
                 storedValue: null,
-            }
-        }
+            },
+        },
     },
     widgets: {
         axes: {
@@ -166,22 +162,22 @@ const defaultState = {
                     feedrate: 1000,
                 },
                 step: METRIC_STEPS.indexOf(1), // Defaults to 1 mm
-                distances: []
+                distances: [],
             },
             mdi: {
-                disabled: false
+                disabled: false,
             },
             shuttle: {
                 feedrateMin: 500,
                 feedrateMax: 2000,
                 hertz: 10,
-                overshoot: 1
+                overshoot: 1,
             },
         },
         connection: {
             minimized: false,
             controller: {
-                type: 'Grbl' // Grbl
+                type: 'Grbl', // Grbl
             },
             port: '', // will be deprecated in v2
             baudrate: 115200, // will be deprecated in v2
@@ -189,14 +185,14 @@ const defaultState = {
                 type: 'serial',
                 serial: {
                     // Hardware flow control (RTS/CTS)
-                    rtscts: false
-                }
+                    rtscts: false,
+                },
             },
             autoReconnect: false,
-            ip: [192, 168, 5, 1]
+            ip: [192, 168, 5, 1],
         },
         console: {
-            minimized: false
+            minimized: false,
         },
         job_status: {
             minimized: false,
@@ -209,15 +205,15 @@ const defaultState = {
             minimized: false,
             panel: {
                 queueReports: {
-                    expanded: true
+                    expanded: true,
                 },
                 statusReports: {
-                    expanded: true
+                    expanded: true,
                 },
                 modalGroups: {
-                    expanded: true
-                }
-            }
+                    expanded: true,
+                },
+            },
         },
         location: {
             minimized: false,
@@ -230,20 +226,20 @@ const defaultState = {
                     xyStep: 5,
                     zStep: 0.5,
                     feedrate: 5000,
-                }
+                },
             },
             mdi: {
-                disabled: false
+                disabled: false,
             },
             shuttle: {
                 feedrateMin: 500,
                 feedrateMax: 2000,
                 hertz: 10,
-                overshoot: 1
-            }
+                overshoot: 1,
+            },
         },
         macro: {
-            minimized: false
+            minimized: false,
         },
         probe: {
             minimized: false,
@@ -272,11 +268,11 @@ const defaultState = {
                     startHeight: 50,
                     finalHeight: 40,
                     enableRehoming: false,
-                }
+                },
             },
             tab: {
                 show: false,
-            }
+            },
         },
         spindle: {
             minimized: false,
@@ -291,8 +287,8 @@ const defaultState = {
                 xOffset: 0,
                 yOffset: 0,
                 minPower: 0,
-                maxPower: 255
-            }
+                maxPower: 255,
+            },
         },
         surfacing: {
             bitDiameter: 22,
@@ -321,7 +317,7 @@ const defaultState = {
             theme: 'Dark',
             SVGEnabled: false,
             gcode: {
-                displayName: true
+                displayName: true,
             },
             objects: {
                 limits: {
@@ -335,23 +331,23 @@ const defaultState = {
                 },
                 cuttingTool: {
                     visible: true,
-                    visibleLite: false
+                    visibleLite: false,
                 },
                 cuttingToolAnimation: {
                     visible: true,
-                    visibleLite: false
+                    visibleLite: false,
                 },
                 cutPath: {
                     visible: true,
-                    visibleLite: true
-                }
+                    visibleLite: true,
+                },
             },
             showWarning: false,
             showLineWarnings: false,
-            showSoftLimitWarning: false
-        }
+            showSoftLimitWarning: false,
+        },
     },
-    commandKeys: {}
+    commandKeys: {},
 };
 
 export default defaultState;

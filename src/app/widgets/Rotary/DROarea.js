@@ -12,7 +12,7 @@ import {
     AXIS_B,
     AXIS_C,
     METRIC_UNITS,
-    WORKSPACE_MODE
+    WORKSPACE_MODE,
 } from 'app/constants';
 import store from 'app/store';
 
@@ -24,9 +24,9 @@ import PositionLabel from '../Location/components/PositionLabel';
 const DROarea = ({ canClick = true, actions }) => {
     const units = store.get('workspace.units', METRIC_UNITS);
 
-    const machinePosition = useSelector(state => state.controller.mpos);
-    const workPosition = useSelector(state => state.controller.wpos);
-    const { state: controllerState } = useSelector(state => state.controller);
+    const machinePosition = useSelector((state) => state.controller.mpos);
+    const workPosition = useSelector((state) => state.controller.wpos);
+    const { state: controllerState } = useSelector((state) => state.controller);
     const [positionInput] = useState({
         [AXIS_E]: false,
         [AXIS_X]: false,
@@ -34,11 +34,14 @@ const DROarea = ({ canClick = true, actions }) => {
         [AXIS_Z]: false,
         [AXIS_A]: false,
         [AXIS_B]: false,
-        [AXIS_C]: false
+        [AXIS_C]: false,
     });
 
     const renderAxis = (axis, label) => {
-        const workspaceMode = store.get('workspace.mode', WORKSPACE_MODE.DEFAULT);
+        const workspaceMode = store.get(
+            'workspace.mode',
+            WORKSPACE_MODE.DEFAULT,
+        );
         const inRotaryMode = workspaceMode === WORKSPACE_MODE.ROTARY;
 
         // Report the y value in the DRO since the A-axis is not reported back from the grbl controller we are simulating the rotary axis
@@ -53,14 +56,15 @@ const DROarea = ({ canClick = true, actions }) => {
         const handleAxisButtonClick = () => {
             const wcs = controllerState.parserstate?.modal?.wcs || 'G54';
 
-            const p = {
-                'G54': 1,
-                'G55': 2,
-                'G56': 3,
-                'G57': 4,
-                'G58': 5,
-                'G59': 6
-            }[wcs] || 0;
+            const p =
+                {
+                    G54: 1,
+                    G55: 2,
+                    G56: 3,
+                    G57: 4,
+                    G58: 5,
+                    G59: 6,
+                }[wcs] || 0;
 
             controller.command('gcode', `G10 L20 P${p} ${axisLabel}0`);
         };
@@ -75,9 +79,11 @@ const DROarea = ({ canClick = true, actions }) => {
             const wholeLength = num.split('.')[0].length;
 
             let result = num.slice(0, wholeLength + 1 + places); // cut off the javascript weirdness
-            if (DRO > places) { // add more 0s
+            if (DRO > places) {
+                // add more 0s
                 result = result.padEnd(wholeLength + 1 + DRO, '0'); // +1 for ., +DRO for decimal places
-            } else { // remove decimal places (with rounding)
+            } else {
+                // remove decimal places (with rounding)
                 result = Number(num).toFixed(DRO === 0 ? defaultPlaces : DRO);
             }
             return result;
@@ -90,28 +96,35 @@ const DROarea = ({ canClick = true, actions }) => {
                         disabled={!canClick}
                         onClick={() => {
                             const commands = [];
-                            const modal = (units === METRIC_UNITS) ? 'G21' : 'G20';
+                            const modal =
+                                units === METRIC_UNITS ? 'G21' : 'G20';
                             commands.push(`G90 G0 ${axisLabel}0`); //Move to Work Position Zero
                             controller.command('gcode:safe', commands, modal);
                         }}
                     />
-                    <AxisButton axis={label || axisLabel} onClick={handleAxisButtonClick} disabled={!canClick} />
+                    <AxisButton
+                        axis={label || axisLabel}
+                        onClick={handleAxisButtonClick}
+                        disabled={!canClick}
+                    />
                 </div>
                 <div>
                     <MachinePositionInput
                         value={customMathRound(wpos)}
                         disabled
-                        handleManualMovement={(value) => actions.handleManualMovement(value, axis)}
+                        handleManualMovement={(value) =>
+                            actions.handleManualMovement(value, axis)
+                        }
                     />
-                    {!showPositionInput && <PositionLabel value={customMathRound(mpos)} small />}
+                    {!showPositionInput && (
+                        <PositionLabel value={customMathRound(mpos)} small />
+                    )}
                 </div>
             </div>
         );
     };
 
-    return (
-        <div>{renderAxis(AXIS_A, 'A')}</div>
-    );
+    return <div>{renderAxis(AXIS_A, 'A')}</div>;
 };
 
 export default DROarea;

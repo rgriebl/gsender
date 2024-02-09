@@ -50,7 +50,7 @@ class Console extends PureComponent {
 
         return (
             <Terminal
-                ref={node => {
+                ref={(node) => {
                     if (node) {
                         this.terminal = node;
                     }

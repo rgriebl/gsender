@@ -36,23 +36,40 @@ import reduxStore from 'app/store/redux';
 import _get from 'lodash/get';
 import { FirmwareContext } from '../../containers/Firmware/utils';
 
-const ToolsNotificationModal = ({ onClose, show, title, children, footer, footerTwo, yesFunction, showOptions }) => {
+const ToolsNotificationModal = ({
+    onClose,
+    show,
+    title,
+    children,
+    footer,
+    footerTwo,
+    yesFunction,
+    showOptions,
+}) => {
     const { machineProfile } = useContext(FirmwareContext);
-    const getMachineProfileLabel = ({ name, type }) => `${name} ${type && type}`.trim();
+    const getMachineProfileLabel = ({ name, type }) =>
+        `${name} ${type && type}`.trim();
     const [port, setPort] = useState(controller.port);
     const [profileId, setProfileId] = useState(machineProfile.id);
 
-    const [portList, setPortList] = useState(_get(reduxStore.getState(), 'connection.ports'));
+    const [portList, setPortList] = useState(
+        _get(reduxStore.getState(), 'connection.ports'),
+    );
 
-    const genericCNCProfile = machineProfiles.find(profile => profile.name === 'Generic CNC');
+    const genericCNCProfile = machineProfiles.find(
+        (profile) => profile.name === 'Generic CNC',
+    );
 
     //Refresh port and clear state variables if machine disconnected
     const refreshPorts = () => {
         controller.listPorts();
         setPortList(_get(reduxStore.getState(), 'connection.ports') || []);
-        if (port !== '' && portList.findIndex((p) => {
-            return p.port === port;
-        }) === -1) {
+        if (
+            port !== '' &&
+            portList.findIndex((p) => {
+                return p.port === port;
+            }) === -1
+        ) {
             setPort('');
             setProfileId(-1);
         }
@@ -60,7 +77,9 @@ const ToolsNotificationModal = ({ onClose, show, title, children, footer, footer
 
     const handleYes = () => {
         refreshPorts();
-        const foundProfile = machineProfiles.find(machineProfile => machineProfile.id === profileId);
+        const foundProfile = machineProfiles.find(
+            (machineProfile) => machineProfile.id === profileId,
+        );
 
         if (foundProfile) {
             const newProfile = {
@@ -72,7 +91,7 @@ const ToolsNotificationModal = ({ onClose, show, title, children, footer, footer
                     xmax: foundProfile.mm.width,
                     ymax: foundProfile.mm.depth,
                     zmax: foundProfile.mm.height,
-                }
+                },
             };
             store.replace('workspace.machineProfile', newProfile);
             controller.command('machineprofile:load', newProfile);
@@ -86,25 +105,42 @@ const ToolsNotificationModal = ({ onClose, show, title, children, footer, footer
             unmountOnExit
             timeout={{ enter: 0, exit: 300 }}
         >
-            <div className={`modalFirmware ${show ? 'show' : ''}`} onClick={onClose}>
+            <div
+                className={`modalFirmware ${show ? 'show' : ''}`}
+                onClick={onClose}
+            >
                 <div
-                    className="modal-content" onClick={e => e.stopPropagation()}
+                    className="modal-content"
+                    onClick={(e) => e.stopPropagation()}
                 >
                     <div className="modal-header">
-                        <div className="fas fa-exclamation-triangle" style={{ fontSize: '1.3rem', color: 'red', textAlign: 'center', marginLeft: '0.6rem' }} />
+                        <div
+                            className="fas fa-exclamation-triangle"
+                            style={{
+                                fontSize: '1.3rem',
+                                color: 'red',
+                                textAlign: 'center',
+                                marginLeft: '0.6rem',
+                            }}
+                        />
                         <h4 className="modal-title">{title}</h4>
                     </div>
                     <div className="modal-body">{children}</div>
                     {showOptions ? (
-                        <div
-                            className="optionsWrapper"
-                        >
+                        <div className="optionsWrapper">
                             <div
                                 className="port"
                                 onMouseEnter={refreshPorts}
                                 onMouseLeave={refreshPorts}
                             >
-                                <span style={{ width: '14%', lineHeight: '2.5rem' }}>Port: </span>
+                                <span
+                                    style={{
+                                        width: '14%',
+                                        lineHeight: '2.5rem',
+                                    }}
+                                >
+                                    Port:{' '}
+                                </span>
                                 <Select
                                     placeholder="select"
                                     styles={{
@@ -115,9 +151,14 @@ const ToolsNotificationModal = ({ onClose, show, title, children, footer, footer
                                             fontWeight: 400,
                                         }),
                                     }}
-                                    value={port ? { value: port, label: port } : ''}
+                                    value={
+                                        port ? { value: port, label: port } : ''
+                                    }
                                     options={portList.map((element) => {
-                                        return { value: element.port, label: element.port };
+                                        return {
+                                            value: element.port,
+                                            label: element.port,
+                                        };
                                     })}
                                     onChange={(e) => {
                                         setPort(e.value);
@@ -125,15 +166,52 @@ const ToolsNotificationModal = ({ onClose, show, title, children, footer, footer
                                 />
                             </div>
                             <div className="profile">
-                                <span style={{ width: '14%', lineHeight: '2.5rem' }}>Profile: </span>
+                                <span
+                                    style={{
+                                        width: '14%',
+                                        lineHeight: '2.5rem',
+                                    }}
+                                >
+                                    Profile:{' '}
+                                </span>
                                 <Select
-                                    options={
-                                        machineProfiles
-                                            .filter(profile => profile.company === 'Sienci Labs' || profile.name === 'Generic CNC')
-                                            .sort((a, b) => getMachineProfileLabel(a).localeCompare(getMachineProfileLabel(b)))
-                                            .map(({ id, name, type }) => ({ key: id, value: id, label: getMachineProfileLabel({ name, type }) }))
+                                    options={machineProfiles
+                                        .filter(
+                                            (profile) =>
+                                                profile.company ===
+                                                    'Sienci Labs' ||
+                                                profile.name === 'Generic CNC',
+                                        )
+                                        .sort((a, b) =>
+                                            getMachineProfileLabel(
+                                                a,
+                                            ).localeCompare(
+                                                getMachineProfileLabel(b),
+                                            ),
+                                        )
+                                        .map(({ id, name, type }) => ({
+                                            key: id,
+                                            value: id,
+                                            label: getMachineProfileLabel({
+                                                name,
+                                                type,
+                                            }),
+                                        }))}
+                                    defaultValue={
+                                        machineProfile.company !== 'Sienci Labs'
+                                            ? {
+                                                  value: genericCNCProfile,
+                                                  label: getMachineProfileLabel(
+                                                      genericCNCProfile,
+                                                  ),
+                                              }
+                                            : {
+                                                  value: machineProfile,
+                                                  label: getMachineProfileLabel(
+                                                      machineProfile,
+                                                  ),
+                                              }
                                     }
-                                    defaultValue={machineProfile.company !== 'Sienci Labs' ? { value: genericCNCProfile, label: getMachineProfileLabel(genericCNCProfile) } : { value: machineProfile, label: getMachineProfileLabel(machineProfile) }}
                                     onChange={(e) => {
                                         setProfileId(e.value);
                                     }}
@@ -141,17 +219,23 @@ const ToolsNotificationModal = ({ onClose, show, title, children, footer, footer
                                 />
                             </div>
                         </div>
-                    ) : ''}
+                    ) : (
+                        ''
+                    )}
                     <div className="modal-footer">
                         <h1 className="footer-text">{footer}</h1>
                         <h1 className="footer-textTwo">{footerTwo}</h1>
                         <div className="buttonContainer">
-                            <button onClick={onClose} className="button-no">No</button>
+                            <button onClick={onClose} className="button-no">
+                                No
+                            </button>
                             <button
-                                className="button" onClick={handleYes}
+                                className="button"
+                                onClick={handleYes}
                                 onMouseEnter={refreshPorts}
                                 onMouseLeave={refreshPorts}
-                            >Yes
+                            >
+                                Yes
                             </button>
                         </div>
                     </div>

@@ -30,12 +30,12 @@ class GrblLineParserResultAlarm {
         }
 
         const payload = {
-            message: r[1]
+            message: r[1],
         };
 
         return {
             type: GrblLineParserResultAlarm,
-            payload: payload
+            payload: payload,
         };
     }
 }

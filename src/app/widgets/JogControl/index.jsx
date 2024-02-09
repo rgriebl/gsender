@@ -59,10 +59,8 @@ import {
     WORKFLOW_STATE_IDLE,
     WORKFLOW_STATE_RUNNING,
     WORKFLOW_STATE_PAUSED,
-
     JOGGING_CATEGORY,
     GENERAL_CATEGORY,
-
     AXIS_X,
     AXIS_Y,
     AXIS_Z,
@@ -74,19 +72,22 @@ import {
     DEFAULT_AXES,
     SPEED_NORMAL,
     SPEED_RAPID,
-    SPEED_PRECISE
+    SPEED_PRECISE,
 } from './constants';
 import styles from './index.styl';
 import useKeybinding from '../../lib/useKeybinding';
 import { JoystickLoop, checkThumbsticskAreIdle } from './JoystickLoop';
 import { MPGHelper } from './MPGHelper';
-import { convertToImperial, convertToMetric } from '../../containers/Preferences/calculate';
+import {
+    convertToImperial,
+    convertToMetric,
+} from '../../containers/Preferences/calculate';
 
 class AxesWidget extends PureComponent {
     static propTypes = {
         widgetId: PropTypes.string.isRequired,
         sortable: PropTypes.object,
-        isSecondary: PropTypes.bool
+        isSecondary: PropTypes.bool,
     };
 
     pubsubTokens = [];
@@ -97,17 +98,19 @@ class AxesWidget extends PureComponent {
 
     axisThrottle = null;
 
-    joystickLoop = null
+    joystickLoop = null;
 
     mpgHelper = null;
 
     subscribe() {
         const tokens = [
             pubsub.subscribe('jogSpeeds', (msg, speeds) => {
-                this.setState({ jog: {
-                    ...this.state.jog,
-                    ...speeds,
-                } });
+                this.setState({
+                    jog: {
+                        ...this.state.jog,
+                        ...speeds,
+                    },
+                });
             }),
             pubsub.subscribe('addKeybindingsListener', () => {
                 this.addShuttleControlEvents();
@@ -117,7 +120,7 @@ class AxesWidget extends PureComponent {
             }),
             pubsub.subscribe('units:change', (event, units) => {
                 this.changeUnits(units);
-            })
+            }),
         ];
 
         this.pubsubTokens = this.pubsubTokens.concat(tokens);
@@ -148,7 +151,7 @@ class AxesWidget extends PureComponent {
             const { minimized, isFullscreen } = this.state;
             this.setState({
                 minimized: isFullscreen ? minimized : false,
-                isFullscreen: !isFullscreen
+                isFullscreen: !isFullscreen,
             });
         },
         toggleMinimized: () => {
@@ -159,16 +162,16 @@ class AxesWidget extends PureComponent {
             this.setState({
                 modal: {
                     name: name,
-                    params: params
-                }
+                    params: params,
+                },
             });
         },
         closeModal: () => {
             this.setState({
                 modal: {
                     name: MODAL_NONE,
-                    params: {}
-                }
+                    params: {},
+                },
             });
         },
         updateModalParams: (params = {}) => {
@@ -177,9 +180,9 @@ class AxesWidget extends PureComponent {
                     ...this.state.modal,
                     params: {
                         ...this.state.modal.params,
-                        ...params
-                    }
-                }
+                        ...params,
+                    },
+                },
             });
         },
         getXYJogDistance: () => {
@@ -210,18 +213,21 @@ class AxesWidget extends PureComponent {
         getJogDistance: () => {
             const { units } = this.state;
 
-            const step = units === IMPERIAL_UNITS ? this.config.get('jog.step') : convertToImperial(this.config.get('jog.step'));
-            let jogDistances = ensureArray(this.config.get('jog.distances', []));
+            const step =
+                units === IMPERIAL_UNITS
+                    ? this.config.get('jog.step')
+                    : convertToImperial(this.config.get('jog.step'));
+            let jogDistances = ensureArray(
+                this.config.get('jog.distances', []),
+            );
             if (units === IMPERIAL_UNITS) {
                 jogDistances.forEach((el, index) => {
                     jogDistances[index] = convertToImperial(el);
                 });
             }
-            const unitSteps = units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
-            const jogSteps = [
-                ...jogDistances,
-                ...unitSteps
-            ];
+            const unitSteps =
+                units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
+            const jogSteps = [...jogDistances, ...unitSteps];
             const distance = Number(jogSteps[step]) || 0;
             return distance;
         },
@@ -234,19 +240,20 @@ class AxesWidget extends PureComponent {
         setSelectedSpeed: (speed) => {
             pubsub.publish('jog_preset_selected', speed);
             this.setState({
-                selectedSpeed: speed
+                selectedSpeed: speed,
             });
         },
         setWorkOffsets: (axis, value) => {
             const wcs = this.actions.getWorkCoordinateSystem();
-            const p = {
-                'G54': 1,
-                'G55': 2,
-                'G56': 3,
-                'G57': 4,
-                'G58': 5,
-                'G59': 6
-            }[wcs] || 0;
+            const p =
+                {
+                    G54: 1,
+                    G55: 2,
+                    G56: 3,
+                    G57: 4,
+                    G58: 5,
+                    G59: 6,
+                }[wcs] || 0;
             axis = (axis || '').toUpperCase();
             value = Number(value) || 0;
 
@@ -255,22 +262,26 @@ class AxesWidget extends PureComponent {
         },
         jog: (params = {}) => {
             const { units } = this.state;
-            const modal = (units === METRIC_UNITS) ? 'G21' : 'G20';
-            const s = map(params, (value, letter) => ('' + letter.toUpperCase() + value)).join(' ');
-            const commands = [
-                `$J=${modal}G91 ` + s,
-            ];
+            const modal = units === METRIC_UNITS ? 'G21' : 'G20';
+            const s = map(
+                params,
+                (value, letter) => '' + letter.toUpperCase() + value,
+            ).join(' ');
+            const commands = [`$J=${modal}G91 ` + s];
             controller.command('gcode', commands, modal);
         },
         startContinuousJog: (params = {}, feedrate = 1000) => {
             const { units } = this.state;
-            this.setState({
-                isContinuousJogging: true
-            }, controller.command('jog:start', params, feedrate, units));
+            this.setState(
+                {
+                    isContinuousJogging: true,
+                },
+                controller.command('jog:start', params, feedrate, units),
+            );
         },
         stopContinuousJog: () => {
             this.setState({
-                isContinuousJogging: false
+                isContinuousJogging: false,
             });
             controller.command('jog:stop');
         },
@@ -288,87 +299,90 @@ class AxesWidget extends PureComponent {
             }
         },
         move: (params = {}) => {
-            const s = map(params, (value, letter) => ('' + letter.toUpperCase() + value)).join(' ');
+            const s = map(
+                params,
+                (value, letter) => '' + letter.toUpperCase() + value,
+            ).join(' ');
             controller.command('gcode', 'G0 ' + s);
         },
         toggleMDIMode: () => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 mdi: {
                     ...state.mdi,
-                    disabled: !state.mdi.disabled
-                }
+                    disabled: !state.mdi.disabled,
+                },
             }));
         },
         toggleKeypadJogging: () => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 jog: {
                     ...state.jog,
-                    keypad: !state.jog.keypad
-                }
+                    keypad: !state.jog.keypad,
+                },
             }));
         },
         selectAxis: (axis = '') => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 jog: {
                     ...state.jog,
-                    axis: axis
-                }
+                    axis: axis,
+                },
             }));
         },
         selectStep: (value = '') => {
             const step = Number(value);
-            this.setState(state => ({
+            this.setState((state) => ({
                 jog: {
                     ...state.jog,
-                    step: (state.units === METRIC_UNITS) ? step : state.jog.step
-                }
+                    step: state.units === METRIC_UNITS ? step : state.jog.step,
+                },
             }));
         },
         stepForward: () => {
-            this.setState(state => {
-                const unitSteps = state.units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
-                const jogSteps = [
-                    ...state.jog.distances,
-                    ...unitSteps
-                ];
+            this.setState((state) => {
+                const unitSteps =
+                    state.units === METRIC_UNITS
+                        ? METRIC_STEPS
+                        : IMPERIAL_STEPS;
+                const jogSteps = [...state.jog.distances, ...unitSteps];
 
                 return {
                     jog: {
                         ...state.jog,
-                        step: limit(state.jog.step + 1, 0, jogSteps.length - 1)
-                    }
+                        step: limit(state.jog.step + 1, 0, jogSteps.length - 1),
+                    },
                 };
             });
         },
         stepBackward: () => {
-            this.setState(state => {
-                const unitSteps = state.units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
-                const jogSteps = [
-                    ...state.jog.distances,
-                    ...unitSteps
-                ];
+            this.setState((state) => {
+                const unitSteps =
+                    state.units === METRIC_UNITS
+                        ? METRIC_STEPS
+                        : IMPERIAL_STEPS;
+                const jogSteps = [...state.jog.distances, ...unitSteps];
 
                 return {
                     jog: {
                         ...state.jog,
-                        step: limit(state.jog.step - 1, 0, jogSteps.length - 1)
-                    }
+                        step: limit(state.jog.step - 1, 0, jogSteps.length - 1),
+                    },
                 };
             });
         },
         stepNext: () => {
-            this.setState(state => {
-                const unitSteps = state.units === METRIC_UNITS ? METRIC_STEPS : IMPERIAL_STEPS;
-                const jogSteps = [
-                    ...state.jog.distances,
-                    ...unitSteps
-                ];
+            this.setState((state) => {
+                const unitSteps =
+                    state.units === METRIC_UNITS
+                        ? METRIC_STEPS
+                        : IMPERIAL_STEPS;
+                const jogSteps = [...state.jog.distances, ...unitSteps];
 
                 return {
                     jog: {
                         ...state.jog,
-                        step: (state.jog.step + 1) % jogSteps.length
-                    }
+                        step: (state.jog.step + 1) % jogSteps.length,
+                    },
                 };
             });
         },
@@ -378,11 +392,15 @@ class AxesWidget extends PureComponent {
             this.setState({
                 jog: {
                     ...jog,
-                    xyStep: value
-                }
+                    xyStep: value,
+                },
             });
 
-            pubsub.publish('jogSpeeds', { xyStep: value, zStep: jog.zStep, feedrate: jog.feedrate });
+            pubsub.publish('jogSpeeds', {
+                xyStep: value,
+                zStep: jog.zStep,
+                feedrate: jog.feedrate,
+            });
         },
         handleZStepChange: (value) => {
             const { jog } = this.state;
@@ -390,11 +408,15 @@ class AxesWidget extends PureComponent {
             this.setState({
                 jog: {
                     ...jog,
-                    zStep: value
-                }
+                    zStep: value,
+                },
             });
 
-            pubsub.publish('jogSpeeds', { xyStep: jog.xyStep, zStep: value, feedrate: jog.feedrate });
+            pubsub.publish('jogSpeeds', {
+                xyStep: jog.xyStep,
+                zStep: value,
+                feedrate: jog.feedrate,
+            });
         },
         handleFeedrateChange: (value) => {
             const { jog } = this.state;
@@ -402,11 +424,15 @@ class AxesWidget extends PureComponent {
             this.setState({
                 jog: {
                     ...jog,
-                    feedrate: value
-                }
+                    feedrate: value,
+                },
             });
 
-            pubsub.publish('jogSpeeds', { xyStep: jog.xyStep, zStep: jog.zStep, feedrate: value });
+            pubsub.publish('jogSpeeds', {
+                xyStep: jog.xyStep,
+                zStep: jog.zStep,
+                feedrate: value,
+            });
         },
         changeMovementRates: (xyStep, zStep, feedrate) => {
             const { jog } = this.state;
@@ -415,8 +441,8 @@ class AxesWidget extends PureComponent {
                     ...jog,
                     xyStep: xyStep,
                     zStep: zStep,
-                    feedrate: feedrate
-                }
+                    feedrate: feedrate,
+                },
             });
 
             pubsub.publish('jogSpeeds', { xyStep, zStep, feedrate });
@@ -428,15 +454,16 @@ class AxesWidget extends PureComponent {
             this.setState({
                 jog: {
                     ...jog,
-                    ...jogObj
-                }
+                    ...jogObj,
+                },
             });
-        }
+        },
     };
 
     shuttleControlFunctions = {
         JOG: (event, { axis = null }) => {
-            const isInRotaryMode = store.get('workspace.mode', '') === WORKSPACE_MODE.ROTARY;
+            const isInRotaryMode =
+                store.get('workspace.mode', '') === WORKSPACE_MODE.ROTARY;
             const firmwareType = this.props.type;
             const isGrbl = firmwareType.toLocaleLowerCase() === 'grbl';
             if (event) {
@@ -450,10 +477,17 @@ class AxesWidget extends PureComponent {
             this.handleShortcutJog({ axis });
         },
         UPDATE_WORKSPACE_MODE: () => {
-            const currentWorkspaceMode = store.get('workspace.mode', WORKSPACE_MODE.DEFAULT);
+            const currentWorkspaceMode = store.get(
+                'workspace.mode',
+                WORKSPACE_MODE.DEFAULT,
+            );
             const workspaceModesList = Object.values(WORKSPACE_MODE);
-            const currentWorkspaceModeIndex = workspaceModesList.findIndex(mode => mode === currentWorkspaceMode);
-            const nextWorkspaceMode = workspaceModesList[currentWorkspaceModeIndex + 1] ?? workspaceModesList[0];
+            const currentWorkspaceModeIndex = workspaceModesList.findIndex(
+                (mode) => mode === currentWorkspaceMode,
+            );
+            const nextWorkspaceMode =
+                workspaceModesList[currentWorkspaceModeIndex + 1] ??
+                workspaceModesList[0];
             const rotaryTabEnabled = store.get('widgets.rotary.tab.show');
 
             if (!rotaryTabEnabled) {
@@ -464,7 +498,7 @@ class AxesWidget extends PureComponent {
 
             Toaster.pop({
                 type: TOASTER_INFO,
-                msg: `Workspace Mode set to ${nextWorkspaceMode.charAt(0).toUpperCase() + nextWorkspaceMode.slice(1).toLowerCase()}`
+                msg: `Workspace Mode set to ${nextWorkspaceMode.charAt(0).toUpperCase() + nextWorkspaceMode.slice(1).toLowerCase()}`,
             });
         },
         SET_JOG_PRESET: (event, { key }) => {
@@ -521,7 +555,15 @@ class AxesWidget extends PureComponent {
 
                 for (const key of keys) {
                     const presetVal = preset[key];
-                    const newVal = Number((presetVal - getStep({ value: presetVal, increment: shouldIncrement })).toFixed(fixedAmount));
+                    const newVal = Number(
+                        (
+                            presetVal -
+                            getStep({
+                                value: presetVal,
+                                increment: shouldIncrement,
+                            })
+                        ).toFixed(fixedAmount),
+                    );
 
                     newJog[key] = newVal;
 
@@ -540,13 +582,14 @@ class AxesWidget extends PureComponent {
                     rapid: newJogSpeeds[0],
                     normal: newJogSpeeds[1],
                     precise: newJogSpeeds[2],
-                }
+                },
             }));
-        }
-    }
+        },
+    };
 
     shuttleControlEvents = {
-        JOG_A_PLUS: { // Jog A+
+        JOG_A_PLUS: {
+            // Jog A+
             id: 100,
             title: 'Jog: A+',
             keys: ['ctrl', '6'].join('+'),
@@ -559,7 +602,8 @@ class AxesWidget extends PureComponent {
             category: JOGGING_CATEGORY,
             callback: this.shuttleControlFunctions.JOG,
         },
-        JOG_A_MINUS: { // Jog A-
+        JOG_A_MINUS: {
+            // Jog A-
             id: 101,
             title: 'Jog: A-',
             keys: ['ctrl', '4'].join('+'),
@@ -580,7 +624,7 @@ class AxesWidget extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: GENERAL_CATEGORY,
-            callback: this.shuttleControlFunctions.UPDATE_WORKSPACE_MODE
+            callback: this.shuttleControlFunctions.UPDATE_WORKSPACE_MODE,
         },
         JOG_X_P: {
             title: 'Jog: X+',
@@ -594,7 +638,7 @@ class AxesWidget extends PureComponent {
             preventDefault: false,
             isActive: true,
             category: JOGGING_CATEGORY,
-            callback: this.shuttleControlFunctions.JOG
+            callback: this.shuttleControlFunctions.JOG,
         },
         JOG_X_M: {
             title: 'Jog: X-',
@@ -743,7 +787,7 @@ class AxesWidget extends PureComponent {
             keys: ['shift', 'v'].join('+'),
             cmd: 'SET_R_JOG_PRESET',
             payload: {
-                key: SPEED_RAPID
+                key: SPEED_RAPID,
             },
             preventDefault: false,
             isActive: true,
@@ -755,7 +799,7 @@ class AxesWidget extends PureComponent {
             keys: ['shift', 'c'].join('+'),
             cmd: 'SET_N_JOG_PRESET',
             payload: {
-                key: SPEED_NORMAL
+                key: SPEED_NORMAL,
             },
             preventDefault: false,
             isActive: true,
@@ -767,7 +811,7 @@ class AxesWidget extends PureComponent {
             keys: ['shift', 'x'].join('+'),
             cmd: 'SET_P_JOG_PRESET',
             payload: {
-                key: SPEED_PRECISE
+                key: SPEED_PRECISE,
             },
             preventDefault: false,
             isActive: true,
@@ -785,8 +829,11 @@ class AxesWidget extends PureComponent {
                 const { selectedSpeed } = this.state;
 
                 const presets = [SPEED_RAPID, SPEED_NORMAL, SPEED_PRECISE];
-                const nextIndex = presets.findIndex(preset => preset === selectedSpeed) + 1;
-                const key = presets[nextIndex] ? presets[nextIndex] : presets[0];
+                const nextIndex =
+                    presets.findIndex((preset) => preset === selectedSpeed) + 1;
+                const key = presets[nextIndex]
+                    ? presets[nextIndex]
+                    : presets[0];
 
                 this.actions.setSelectedSpeed(key);
                 this.actions.setJogFromPreset(key);
@@ -799,12 +846,12 @@ class AxesWidget extends PureComponent {
             keysName: 'Right Trigger',
             cmd: 'JOG_SPEED_I',
             payload: {
-                speed: 'increase'
+                speed: 'increase',
             },
             preventDefault: false,
             isActive: true,
             category: JOGGING_CATEGORY,
-            callback: this.shuttleControlFunctions.JOG_SPEED
+            callback: this.shuttleControlFunctions.JOG_SPEED,
         },
         JOG_SPEED_D: {
             title: 'Decrease Jog Speed',
@@ -813,13 +860,13 @@ class AxesWidget extends PureComponent {
             keysName: 'Left Trigger',
             cmd: 'JOG_SPEED_D',
             payload: {
-                speed: 'decrease'
+                speed: 'decrease',
             },
             preventDefault: false,
             isActive: true,
             category: JOGGING_CATEGORY,
-            callback: this.shuttleControlFunctions.JOG_SPEED
-        }
+            callback: this.shuttleControlFunctions.JOG_SPEED,
+        },
     };
 
     handleJoystickJog = (params, { doRegularJog } = {}) => {
@@ -834,7 +881,7 @@ class AxesWidget extends PureComponent {
             x: xyStep,
             y: xyStep,
             z: zStep,
-            a: xyStep
+            a: xyStep,
         };
 
         if (doRegularJog) {
@@ -879,17 +926,22 @@ class AxesWidget extends PureComponent {
             x: xyStep,
             y: xyStep,
             z: zStep,
-            a: xyStep
+            a: xyStep,
         };
 
         const jogCB = (given) => this.actions.jog(given);
 
-        const startContinuousJogCB = (coordinates, feedrate) => this.actions.startContinuousJog(coordinates, feedrate);
+        const startContinuousJogCB = (coordinates, feedrate) =>
+            this.actions.startContinuousJog(coordinates, feedrate);
 
         const stopContinuousJogCB = () => this.actions.stopContinuousJog();
 
         if (!this.joggingHelper) {
-            this.joggingHelper = new JogHelper({ jogCB, startContinuousJogCB, stopContinuousJogCB });
+            this.joggingHelper = new JogHelper({
+                jogCB,
+                startContinuousJogCB,
+                stopContinuousJogCB,
+            });
         }
 
         const axisList = {};
@@ -908,7 +960,7 @@ class AxesWidget extends PureComponent {
         }
 
         this.joggingHelper.onKeyDown(axisList, feedrate);
-    }
+    };
 
     handleShortcutStop = (payload) => {
         const feedrate = Number(this.actions.getFeedrate());
@@ -930,11 +982,12 @@ class AxesWidget extends PureComponent {
         for (const axis in axisList) {
             if (axis) {
                 const givenAxis = axis.toUpperCase();
-                const axisValue = {
-                    X: xyStep,
-                    Y: xyStep,
-                    Z: zStep
-                }[givenAxis] * axisList[axis];
+                const axisValue =
+                    {
+                        X: xyStep,
+                        Y: xyStep,
+                        Z: zStep,
+                    }[givenAxis] * axisList[axis];
 
                 axisObj[givenAxis] = axisValue;
             }
@@ -943,7 +996,7 @@ class AxesWidget extends PureComponent {
         if (this.joggingHelper) {
             this.joggingHelper.onKeyUp({ F: feedrate });
         }
-    }
+    };
 
     shuttleControl = null;
 
@@ -957,7 +1010,11 @@ class AxesWidget extends PureComponent {
 
         const { rapid, normal, precise } = data;
 
-        if (jog.rapid === rapid && jog.normal === normal && jog.precise === precise) {
+        if (
+            jog.rapid === rapid &&
+            jog.normal === normal &&
+            jog.precise === precise
+        ) {
             return;
         }
 
@@ -966,10 +1023,10 @@ class AxesWidget extends PureComponent {
                 ...jog,
                 rapid,
                 normal,
-                precise
-            }
+                precise,
+            },
         });
-    }
+    };
 
     componentDidMount() {
         store.on('change', this.updateJogPresets);
@@ -977,7 +1034,17 @@ class AxesWidget extends PureComponent {
         useKeybinding(this.shuttleControlEvents);
         this.subscribe();
 
-        gamepad.on('gamepad:button', throttle((event) => runAction({ event, shuttleControlEvents: this.shuttleControlEvents })), 50, { leading: false, trailing: true });
+        gamepad.on(
+            'gamepad:button',
+            throttle((event) =>
+                runAction({
+                    event,
+                    shuttleControlEvents: this.shuttleControlEvents,
+                }),
+            ),
+            50,
+            { leading: false, trailing: true },
+        );
 
         gamepad.on('gamepad:axis', ({ detail }) => {
             if (gamepad.shouldHold || !this.props.isConnected) {
@@ -988,7 +1055,9 @@ class AxesWidget extends PureComponent {
 
             const gamepadProfiles = store.get('workspace.gamepad.profiles', []);
 
-            const currentProfile = gamepadProfiles.find(profile => profile.id.includes(detail.gamepad.id));
+            const currentProfile = gamepadProfiles.find((profile) =>
+                profile.id.includes(detail.gamepad.id),
+            );
 
             if (!currentProfile) {
                 return;
@@ -997,16 +1066,34 @@ class AxesWidget extends PureComponent {
             const { joystickOptions } = currentProfile;
             const { leftStick, rightStick } = degrees;
 
-            const activeAxisAngle = [leftStick, leftStick, rightStick, rightStick][axis];
+            const activeAxisAngle = [
+                leftStick,
+                leftStick,
+                rightStick,
+                rightStick,
+            ][axis];
             const activeStick = ['stick1', 'stick1', 'stick2', 'stick2'][axis];
 
-            const isHoldingModifierButton = checkButtonHold('modifier', currentProfile);
+            const isHoldingModifierButton = checkButtonHold(
+                'modifier',
+                currentProfile,
+            );
 
-            const actionType = !isHoldingModifierButton ? 'primaryAction' : 'secondaryAction';
+            const actionType = !isHoldingModifierButton
+                ? 'primaryAction'
+                : 'secondaryAction';
 
-            const activeAxis = get(joystickOptions, [activeStick, 'mpgMode', actionType], 0);
+            const activeAxis = get(
+                joystickOptions,
+                [activeStick, 'mpgMode', actionType],
+                0,
+            );
 
-            const isReversed = get(joystickOptions, [activeStick, 'mpgMode', 'isReversed'], false);
+            const isReversed = get(
+                joystickOptions,
+                [activeStick, 'mpgMode', 'isReversed'],
+                false,
+            );
 
             const isUsingMPGMode = !!activeAxis;
 
@@ -1014,7 +1101,8 @@ class AxesWidget extends PureComponent {
                 return;
             }
 
-            const { getXYJogDistance, getZJogDistance, getAJogDistance } = this.actions;
+            const { getXYJogDistance, getZJogDistance, getAJogDistance } =
+                this.actions;
 
             const xyStep = getXYJogDistance();
             const zStep = getZJogDistance();
@@ -1026,7 +1114,7 @@ class AxesWidget extends PureComponent {
                 x: xyStep,
                 y: xyStep,
                 z: zStep,
-                a: aStep
+                a: aStep,
             }[activeAxis];
 
             if (!this.mpgHelper) {
@@ -1040,171 +1128,287 @@ class AxesWidget extends PureComponent {
                 return;
             }
 
-            this.mpgHelper.update(activeAxisAngle, activeAxis, axisStep, feedrate, isReversed ? -1 : 1);
+            this.mpgHelper.update(
+                activeAxisAngle,
+                activeAxis,
+                axisStep,
+                feedrate,
+                isReversed ? -1 : 1,
+            );
         });
 
-        gamepad.on('gamepad:axis', throttle(({ detail }) => {
-            if (gamepad.shouldHold || !this.props.isConnected) {
-                return;
-            }
+        gamepad.on(
+            'gamepad:axis',
+            throttle(
+                ({ detail }) => {
+                    if (gamepad.shouldHold || !this.props.isConnected) {
+                        return;
+                    }
 
-            const { degrees, axis } = detail;
+                    const { degrees, axis } = detail;
 
-            // detail.axis
-            // 0 - left stick x-axis
-            // 1 - left stick y-axis
-            // 2 - right stick x-axis
-            // 3 - right stick y-axis
+                    // detail.axis
+                    // 0 - left stick x-axis
+                    // 1 - left stick y-axis
+                    // 2 - right stick x-axis
+                    // 3 - right stick y-axis
 
-            const gamepadProfiles = store.get('workspace.gamepad.profiles', []);
+                    const gamepadProfiles = store.get(
+                        'workspace.gamepad.profiles',
+                        [],
+                    );
 
-            const currentProfile = gamepadProfiles.find(profile => profile.id.includes(detail.gamepad.id));
+                    const currentProfile = gamepadProfiles.find((profile) =>
+                        profile.id.includes(detail.gamepad.id),
+                    );
 
-            if (!currentProfile) {
-                return;
-            }
+                    if (!currentProfile) {
+                        return;
+                    }
 
-            const { joystickOptions } = currentProfile;
-            const { leftStick, rightStick } = degrees;
+                    const { joystickOptions } = currentProfile;
+                    const { leftStick, rightStick } = degrees;
 
-            const activeStickDegrees = [leftStick, leftStick, rightStick, rightStick][axis];
-            const activeStick = ['stick1', 'stick1', 'stick2', 'stick2'][axis];
+                    const activeStickDegrees = [
+                        leftStick,
+                        leftStick,
+                        rightStick,
+                        rightStick,
+                    ][axis];
+                    const activeStick = [
+                        'stick1',
+                        'stick1',
+                        'stick2',
+                        'stick2',
+                    ][axis];
 
-            const isHoldingModifierButton = checkButtonHold('modifier', currentProfile);
+                    const isHoldingModifierButton = checkButtonHold(
+                        'modifier',
+                        currentProfile,
+                    );
 
-            const actionType = !isHoldingModifierButton ? 'primaryAction' : 'secondaryAction';
+                    const actionType = !isHoldingModifierButton
+                        ? 'primaryAction'
+                        : 'secondaryAction';
 
-            const isUsingMPGMode = !!get(joystickOptions, `${activeStick}.mpgMode.${actionType}`, false);
+                    const isUsingMPGMode = !!get(
+                        joystickOptions,
+                        `${activeStick}.mpgMode.${actionType}`,
+                        false,
+                    );
 
-            if (isUsingMPGMode) {
-                return;
-            }
+                    if (isUsingMPGMode) {
+                        return;
+                    }
 
-            const computeAxesAndDirection = (degrees) => {
-                const { horizontal, vertical } = joystickOptions[activeStick];
+                    const computeAxesAndDirection = (degrees) => {
+                        const { horizontal, vertical } =
+                            joystickOptions[activeStick];
 
-                const getDirection = (isReversed) => (!isReversed ? 1 : -1);
+                        const getDirection = (isReversed) =>
+                            !isReversed ? 1 : -1;
 
-                const MOVEMENT_DISTANCE = 1;
+                        const MOVEMENT_DISTANCE = 1;
 
-                const stickX = {
-                    axis: horizontal[actionType],
-                    positiveDirection: MOVEMENT_DISTANCE * getDirection(horizontal.isReversed),
-                    negativeDirection: MOVEMENT_DISTANCE * getDirection(!horizontal.isReversed),
-                };
+                        const stickX = {
+                            axis: horizontal[actionType],
+                            positiveDirection:
+                                MOVEMENT_DISTANCE *
+                                getDirection(horizontal.isReversed),
+                            negativeDirection:
+                                MOVEMENT_DISTANCE *
+                                getDirection(!horizontal.isReversed),
+                        };
 
-                const stickY = {
-                    axis: vertical[actionType],
-                    positiveDirection: MOVEMENT_DISTANCE * getDirection(vertical.isReversed),
-                    negativeDirection: MOVEMENT_DISTANCE * getDirection(!vertical.isReversed)
-                };
+                        const stickY = {
+                            axis: vertical[actionType],
+                            positiveDirection:
+                                MOVEMENT_DISTANCE *
+                                getDirection(vertical.isReversed),
+                            negativeDirection:
+                                MOVEMENT_DISTANCE *
+                                getDirection(!vertical.isReversed),
+                        };
 
-                // X-axis Positive
-                if (inRange(degrees, 0, 30) || inRange(degrees, 330, 360)) {
-                    return [
-                        stickX.axis ? { [stickX.axis]: stickX.positiveDirection } : null
-                    ];
-                }
+                        // X-axis Positive
+                        if (
+                            inRange(degrees, 0, 30) ||
+                            inRange(degrees, 330, 360)
+                        ) {
+                            return [
+                                stickX.axis
+                                    ? {
+                                          [stickX.axis]:
+                                              stickX.positiveDirection,
+                                      }
+                                    : null,
+                            ];
+                        }
 
-                // Top Right
-                if (inRange(degrees, 31, 59)) {
-                    return [
-                        stickX.axis ? { [stickX.axis]: stickX.positiveDirection } : null,
-                        stickY.axis ? { [stickY.axis]: stickY.positiveDirection } : null,
-                    ];
-                }
+                        // Top Right
+                        if (inRange(degrees, 31, 59)) {
+                            return [
+                                stickX.axis
+                                    ? {
+                                          [stickX.axis]:
+                                              stickX.positiveDirection,
+                                      }
+                                    : null,
+                                stickY.axis
+                                    ? {
+                                          [stickY.axis]:
+                                              stickY.positiveDirection,
+                                      }
+                                    : null,
+                            ];
+                        }
 
-                // Y-axis Positive
-                if (inRange(degrees, 60, 120)) {
-                    return [
-                        null,
-                        stickY.axis ? { [stickY.axis]: stickY.positiveDirection } : null
-                    ];
-                }
+                        // Y-axis Positive
+                        if (inRange(degrees, 60, 120)) {
+                            return [
+                                null,
+                                stickY.axis
+                                    ? {
+                                          [stickY.axis]:
+                                              stickY.positiveDirection,
+                                      }
+                                    : null,
+                            ];
+                        }
 
-                // Top Left
-                if (inRange(degrees, 121, 149)) {
-                    return [
-                        stickX.axis ? { [stickX.axis]: stickX.negativeDirection } : null,
-                        stickY.axis ? { [stickY.axis]: stickY.positiveDirection } : null,
-                    ];
-                }
+                        // Top Left
+                        if (inRange(degrees, 121, 149)) {
+                            return [
+                                stickX.axis
+                                    ? {
+                                          [stickX.axis]:
+                                              stickX.negativeDirection,
+                                      }
+                                    : null,
+                                stickY.axis
+                                    ? {
+                                          [stickY.axis]:
+                                              stickY.positiveDirection,
+                                      }
+                                    : null,
+                            ];
+                        }
 
-                // X-axis Negative
-                if (inRange(degrees, 150, 210)) {
-                    return [
-                        stickX.axis ? { [stickX.axis]: stickX.negativeDirection } : null,
-                    ];
-                }
+                        // X-axis Negative
+                        if (inRange(degrees, 150, 210)) {
+                            return [
+                                stickX.axis
+                                    ? {
+                                          [stickX.axis]:
+                                              stickX.negativeDirection,
+                                      }
+                                    : null,
+                            ];
+                        }
 
-                // Bottom Left
-                if (inRange(degrees, 211, 239)) {
-                    return [
-                        stickX.axis ? { [stickX.axis]: stickX.negativeDirection } : null,
-                        stickY.axis ? { [stickY.axis]: stickY.negativeDirection } : null,
-                    ];
-                }
+                        // Bottom Left
+                        if (inRange(degrees, 211, 239)) {
+                            return [
+                                stickX.axis
+                                    ? {
+                                          [stickX.axis]:
+                                              stickX.negativeDirection,
+                                      }
+                                    : null,
+                                stickY.axis
+                                    ? {
+                                          [stickY.axis]:
+                                              stickY.negativeDirection,
+                                      }
+                                    : null,
+                            ];
+                        }
 
-                // Y-axis Negative
-                if (inRange(degrees, 240, 300)) {
-                    return [
-                        null,
-                        stickY.axis ? { [stickY.axis]: stickY.negativeDirection } : null
-                    ];
-                }
+                        // Y-axis Negative
+                        if (inRange(degrees, 240, 300)) {
+                            return [
+                                null,
+                                stickY.axis
+                                    ? {
+                                          [stickY.axis]:
+                                              stickY.negativeDirection,
+                                      }
+                                    : null,
+                            ];
+                        }
 
-                // Bottom Right
-                if (inRange(degrees, 301, 329)) {
-                    return [
-                        stickX.axis ? { [stickX.axis]: stickX.positiveDirection } : null,
-                        stickY.axis ? { [stickY.axis]: stickY.negativeDirection } : null,
-                    ];
-                }
+                        // Bottom Right
+                        if (inRange(degrees, 301, 329)) {
+                            return [
+                                stickX.axis
+                                    ? {
+                                          [stickX.axis]:
+                                              stickX.positiveDirection,
+                                      }
+                                    : null,
+                                stickY.axis
+                                    ? {
+                                          [stickY.axis]:
+                                              stickY.negativeDirection,
+                                      }
+                                    : null,
+                            ];
+                        }
 
-                return [];
-            };
+                        return [];
+                    };
 
-            const data = computeAxesAndDirection(activeStickDegrees);
+                    const data = computeAxesAndDirection(activeStickDegrees);
 
-            if (!this.joystickLoop) {
-                this.joystickLoop = new JoystickLoop({
-                    gamepadProfile: currentProfile,
-                    jog: (params, doRegularJog) => this.handleJoystickJog(params, { doRegularJog }),
-                    feedrate: this.actions.getFeedrate(),
-                    cancelJog: this.actions.cancelJog
-                });
-            }
+                    if (!this.joystickLoop) {
+                        this.joystickLoop = new JoystickLoop({
+                            gamepadProfile: currentProfile,
+                            jog: (params, doRegularJog) =>
+                                this.handleJoystickJog(params, {
+                                    doRegularJog,
+                                }),
+                            feedrate: this.actions.getFeedrate(),
+                            cancelJog: this.actions.cancelJog,
+                        });
+                    }
 
-            const thumbsticksAreIdle = checkThumbsticskAreIdle(detail.gamepad.axes, currentProfile);
+                    const thumbsticksAreIdle = checkThumbsticskAreIdle(
+                        detail.gamepad.axes,
+                        currentProfile,
+                    );
 
-            if (thumbsticksAreIdle) {
-                this.joystickLoop.stop();
-                return;
-            }
+                    if (thumbsticksAreIdle) {
+                        this.joystickLoop.stop();
+                        return;
+                    }
 
-            const { isRunning, activeAxis } = this.joystickLoop;
+                    const { isRunning, activeAxis } = this.joystickLoop;
 
-            const isUsingSameThumbstick =
-                (activeAxis === axis) ||
-                (activeAxis === 0 && axis === 1) ||
-                (activeAxis === 1 && axis === 0) ||
-                (activeAxis === 2 && axis === 3) ||
-                (activeAxis === 3 && axis === 2);
+                    const isUsingSameThumbstick =
+                        activeAxis === axis ||
+                        (activeAxis === 0 && axis === 1) ||
+                        (activeAxis === 1 && axis === 0) ||
+                        (activeAxis === 2 && axis === 3) ||
+                        (activeAxis === 3 && axis === 2);
 
-            if (!isUsingSameThumbstick && isRunning) {
-                return;
-            }
+                    if (!isUsingSameThumbstick && isRunning) {
+                        return;
+                    }
 
-            this.joystickLoop.setOptions({
-                gamepadProfile: currentProfile,
-                feedrate: this.actions.getFeedrate(),
-                activeAxis: axis,
-                axes: data,
-                multiplier: detail.distance,
-                degrees: activeStickDegrees,
-            });
-            this.joystickLoop.start(axis);
-        }, 50, { leading: false, trailing: true }));
+                    this.joystickLoop.setOptions({
+                        gamepadProfile: currentProfile,
+                        feedrate: this.actions.getFeedrate(),
+                        activeAxis: axis,
+                        axes: data,
+                        multiplier: detail.distance,
+                        degrees: activeStickDegrees,
+                    });
+                    this.joystickLoop.start(axis);
+                },
+                50,
+                { leading: false, trailing: true },
+            ),
+        );
     }
 
     componentWillUnmount() {
@@ -1213,12 +1417,7 @@ class AxesWidget extends PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const {
-            units,
-            minimized,
-            axes,
-            jog,
-        } = this.state;
+        const { units, minimized, axes, jog } = this.state;
 
         this.config.set('minimized', minimized);
         this.config.set('axes', axes);
@@ -1233,7 +1432,8 @@ class AxesWidget extends PureComponent {
     }
 
     convertPresetUnits(units, preset) {
-        const conversionFunc = units === METRIC_UNITS ? convertToMetric : convertToImperial;
+        const conversionFunc =
+            units === METRIC_UNITS ? convertToMetric : convertToImperial;
         let convertedPreset = JSON.parse(JSON.stringify(preset));
         for (const key of Object.keys(preset)) {
             convertedPreset[key] = conversionFunc(preset[key]);
@@ -1256,7 +1456,13 @@ class AxesWidget extends PureComponent {
 
     getInitialState() {
         const initialUnits = store.get('workspace.units', METRIC_UNITS);
-        let { rapid, normal, precise } = initialUnits === IMPERIAL_UNITS ? this.convertAllPresetsUnits(initialUnits, store.get('widgets.axes.jog')) : store.get('widgets.axes.jog');
+        let { rapid, normal, precise } =
+            initialUnits === IMPERIAL_UNITS
+                ? this.convertAllPresetsUnits(
+                      initialUnits,
+                      store.get('widgets.axes.jog'),
+                  )
+                : store.get('widgets.axes.jog');
 
         return {
             minimized: this.config.get('minimized', false),
@@ -1268,24 +1474,26 @@ class AxesWidget extends PureComponent {
             selectedSpeed: SPEED_NORMAL,
             modal: {
                 name: MODAL_NONE,
-                params: {}
+                params: {},
             },
             axes: this.config.get('axes', DEFAULT_AXES),
-            machinePosition: { // Machine position
+            machinePosition: {
+                // Machine position
                 x: '0.000',
                 y: '0.000',
                 z: '0.000',
                 a: '0.000',
                 b: '0.000',
-                c: '0.000'
+                c: '0.000',
             },
-            workPosition: { // Work position
+            workPosition: {
+                // Work position
                 x: '0.000',
                 y: '0.000',
                 z: '0.000',
                 a: '0.000',
                 b: '0.000',
-                c: '0.000'
+                c: '0.000',
             },
             jog: {
                 xyStep: this.getInitialXYStep(),
@@ -1299,7 +1507,7 @@ class AxesWidget extends PureComponent {
                 axis: '', // Defaults to empty
                 keypad: this.config.get('jog.keypad'),
                 step: this.config.get('jog.step'),
-                distances: ensureArray(this.config.get('jog.distances', []))
+                distances: ensureArray(this.config.get('jog.distances', [])),
             },
             prevJog: null,
             prevDirection: null,
@@ -1310,35 +1518,45 @@ class AxesWidget extends PureComponent {
         const units = store.get('workspace.units', METRIC_UNITS);
         const speeds = this.config.get('jog.normal');
 
-        return (units === METRIC_UNITS) ? speeds.xyStep : convertToImperial(speeds.xyStep);
+        return units === METRIC_UNITS
+            ? speeds.xyStep
+            : convertToImperial(speeds.xyStep);
     }
 
     getInitialXAStep() {
         const units = store.get('workspace.units', METRIC_UNITS);
         const speeds = this.config.get('jog.normal');
 
-        return (units === METRIC_UNITS) ? speeds.xaStep : convertToImperial(speeds.xaStep);
+        return units === METRIC_UNITS
+            ? speeds.xaStep
+            : convertToImperial(speeds.xaStep);
     }
 
     getInitialZStep() {
         const units = store.get('workspace.units', METRIC_UNITS);
         const speeds = this.config.get('jog.normal');
 
-        return (units === METRIC_UNITS) ? speeds.zStep : convertToImperial(speeds.zStep);
+        return units === METRIC_UNITS
+            ? speeds.zStep
+            : convertToImperial(speeds.zStep);
     }
 
     getInitialAStep() {
         const units = store.get('workspace.units', METRIC_UNITS);
         const speeds = this.config.get('jog.normal');
 
-        return (units === METRIC_UNITS) ? speeds.aStep : convertToImperial(speeds.aStep);
+        return units === METRIC_UNITS
+            ? speeds.aStep
+            : convertToImperial(speeds.aStep);
     }
 
     getInitialFeedRate() {
         const units = store.get('workspace.units', METRIC_UNITS);
         const speeds = this.config.get('jog.normal');
 
-        return (units === METRIC_UNITS) ? speeds.feedrate : convertToImperial(speeds.feedrate);
+        return units === METRIC_UNITS
+            ? speeds.feedrate
+            : convertToImperial(speeds.feedrate);
     }
 
     changeUnits(units) {
@@ -1368,31 +1586,37 @@ class AxesWidget extends PureComponent {
                 feedrate,
                 rapid,
                 normal,
-                precise
-            }
+                precise,
+            },
         });
     }
 
     addShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
 
         // Shuttle Zone
         this.shuttleControl = new ShuttleControl();
-        this.shuttleControl.on('flush', ({ axis, feedrate, relativeDistance }) => {
-            feedrate = feedrate.toFixed(3) * 1;
-            relativeDistance = relativeDistance.toFixed(4) * 1;
+        this.shuttleControl.on(
+            'flush',
+            ({ axis, feedrate, relativeDistance }) => {
+                feedrate = feedrate.toFixed(3) * 1;
+                relativeDistance = relativeDistance.toFixed(4) * 1;
 
-            controller.command('gcode', 'G91'); // relative
-            controller.command('gcode', 'G1 F' + feedrate + ' ' + axis + relativeDistance);
-            controller.command('gcode', 'G90'); // absolute
-        });
+                controller.command('gcode', 'G91'); // relative
+                controller.command(
+                    'gcode',
+                    'G1 F' + feedrate + ' ' + axis + relativeDistance,
+                );
+                controller.command('gcode', 'G90'); // absolute
+            },
+        );
     }
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
@@ -1414,14 +1638,14 @@ class AxesWidget extends PureComponent {
         const states = [
             GRBL_ACTIVE_STATE_IDLE,
             //GRBL_ACTIVE_STATE_HOLD,
-            GRBL_ACTIVE_STATE_JOG
+            GRBL_ACTIVE_STATE_JOG,
         ];
         return includes(states, activeState);
     }
 
     isJogging() {
         const activeState = get(this.props.state, 'status.activeState');
-        return (activeState === GRBL_ACTIVE_STATE_JOG);
+        return activeState === GRBL_ACTIVE_STATE_JOG;
     }
 
     canClickCancel() {
@@ -1437,18 +1661,29 @@ class AxesWidget extends PureComponent {
         const states = [
             GRBL_ACTIVE_STATE_IDLE,
             GRBL_ACTIVE_STATE_RUN,
-            GRBL_ACTIVE_STATE_JOG
+            GRBL_ACTIVE_STATE_JOG,
         ];
         return includes(states, activeState);
     }
 
     render() {
-        const { widgetId, machinePosition, workPosition, canJog, isSecondary, type } = this.props;
+        const {
+            widgetId,
+            machinePosition,
+            workPosition,
+            canJog,
+            isSecondary,
+            type,
+        } = this.props;
         const { minimized, isFullscreen } = this.state;
         const { units } = this.state;
         const isForkedWidget = widgetId.match(/\w+:[\w\-]+/);
         const config = this.config;
-        const activeState = get(this.props.state, 'status.activeState', GRBL_ACTIVE_STATE_IDLE);
+        const activeState = get(
+            this.props.state,
+            'status.activeState',
+            GRBL_ACTIVE_STATE_IDLE,
+        );
         const state = {
             ...this.state,
             // Determine if the motion button is clickable
@@ -1466,10 +1701,10 @@ class AxesWidget extends PureComponent {
                 return String(mapPositionToUnits(pos, units));
             }),
             canJog,
-            isSecondary
+            isSecondary,
         };
         const actions = {
-            ...this.actions
+            ...this.actions,
         };
 
         if (isSecondary) {
@@ -1480,18 +1715,20 @@ class AxesWidget extends PureComponent {
             <Widget fullscreen={isFullscreen}>
                 <Widget.Header>
                     <Widget.Title>
-                        {isForkedWidget &&
-                        <i className="fa fa-code-fork" style={{ marginRight: 5 }} />
-                        }
+                        {isForkedWidget && (
+                            <i
+                                className="fa fa-code-fork"
+                                style={{ marginRight: 5 }}
+                            />
+                        )}
                         {i18n._('Jog Control')}
                     </Widget.Title>
                     <Widget.Controls />
                 </Widget.Header>
                 <Widget.Content
-                    className={cx(
-                        styles['widget-content'],
-                        { [styles.hidden]: minimized }
-                    )}
+                    className={cx(styles['widget-content'], {
+                        [styles.hidden]: minimized,
+                    })}
                 >
                     <Axes config={config} state={state} actions={actions} />
                 </Widget.Content>
@@ -1507,7 +1744,9 @@ export default connect((store) => {
     const workPosition = get(store, 'controller.wpos');
     const machinePosition = get(store, 'controller.mpos');
     const workflow = get(store, 'controller.workflow');
-    const canJog = [WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED].includes(workflow.state);
+    const canJog = [WORKFLOW_STATE_IDLE, WORKFLOW_STATE_PAUSED].includes(
+        workflow.state,
+    );
     const isConnected = get(store, 'connection.isConnected');
     const activeState = get(state, 'status.activeState');
     return {

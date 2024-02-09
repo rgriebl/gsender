@@ -30,21 +30,21 @@ const FirmwareSelector = ({ options = [], selectedFirmware, handleSelect }) => {
     return (
         <div className={styles.firmwareSelector}>
             <div className={styles.selectorWrapper}>
-                {
-                    options.map((option) => {
-                        const active = selectedFirmware === option;
-                        return (
-                            <button
-                                key={uniqueId()}
-                                type="button"
-                                onClick={() => handleSelect(option)}
-                                className={cx(styles.selectorButton, { [styles.selected]: active })}
-                            >
-                                { option }
-                            </button>
-                        );
-                    })
-                }
+                {options.map((option) => {
+                    const active = selectedFirmware === option;
+                    return (
+                        <button
+                            key={uniqueId()}
+                            type="button"
+                            onClick={() => handleSelect(option)}
+                            className={cx(styles.selectorButton, {
+                                [styles.selected]: active,
+                            })}
+                        >
+                            {option}
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );

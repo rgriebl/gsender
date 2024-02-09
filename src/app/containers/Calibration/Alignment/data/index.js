@@ -25,9 +25,7 @@ const jogMachine = ({ axis, value }) => {
     // const modal = units === 'mm' ? 'G21' : 'G20';
     const modal = 'G21';
 
-    const commands = [
-        `$J=${modal}G91 ${axis}${value} F${jog.feedrate}`,
-    ];
+    const commands = [`$J=${modal}G91 ${axis}${value} F${jog.feedrate}`];
     controller.command('gcode', commands, modal);
 };
 
@@ -46,10 +44,11 @@ export const step1 = [
                 isActive: true,
                 show: true,
                 clearPrevious: true,
-                label: '1'
+                label: '1',
             },
         ],
-        description: 'The red ‘X’ at the bottom left of the triangle indicates the location your CNC should be at right now. Use your first piece of tape and place it onto the wasteboard, directly under where your tool tip is.'
+        description:
+            'The red ‘X’ at the bottom left of the triangle indicates the location your CNC should be at right now. Use your first piece of tape and place it onto the wasteboard, directly under where your tool tip is.',
     },
     {
         id: 1,
@@ -97,10 +96,11 @@ export const step1 = [
                 isActive: true,
                 show: true,
                 clearPrevious: true,
-                label: 'X-Axis Movement'
+                label: 'X-Axis Movement',
             },
         ],
-        description: 'Moving to the second point will happen in the X-axis. You can use the default value or enter your own value if you wish. Click the “Move X-Axis” button once you’re ready.'
+        description:
+            'Moving to the second point will happen in the X-axis. You can use the default value or enter your own value if you wish. Click the “Move X-Axis” button once you’re ready.',
     },
     {
         id: 2,
@@ -119,7 +119,8 @@ export const step1 = [
                 label: '2',
             },
         ],
-        description: 'Now mark the second location with your second piece of tape.'
+        description:
+            'Now mark the second location with your second piece of tape.',
     },
     {
         id: 3,
@@ -167,10 +168,11 @@ export const step1 = [
                 isActive: true,
                 show: true,
                 clearPrevious: true,
-                label: 'Y-Axis Movement'
+                label: 'Y-Axis Movement',
             },
         ],
-        description: 'Moving to the third point will happen in the Y-axis. You can use the default value or enter your own value if you wish. Click the “Move Y-Axis” button once you’re ready.'
+        description:
+            'Moving to the third point will happen in the Y-axis. You can use the default value or enter your own value if you wish. Click the “Move Y-Axis” button once you’re ready.',
     },
     {
         id: 4,
@@ -189,7 +191,8 @@ export const step1 = [
                 label: '3',
             },
         ],
-        description: 'This will be your last mark with the last piece of tape. Hitting the button to complete this step will enable you to move on to making your measurements.'
+        description:
+            'This will be your last mark with the last piece of tape. Hitting the button to complete this step will enable you to move on to making your measurements.',
     },
 ];
 
@@ -199,7 +202,12 @@ export const step2 = [
         checked: false,
         hasBeenChanged: false,
         label: () => {
-            return <span>Measure and Record the Distance Between Points <strong>1</strong> and <strong>2</strong></span>;
+            return (
+                <span>
+                    Measure and Record the Distance Between Points{' '}
+                    <strong>1</strong> and <strong>2</strong>
+                </span>
+            );
         },
         shapeActions: [
             {
@@ -214,11 +222,16 @@ export const step2 = [
                             style={inputStyle}
                             units="mm"
                             value={triangle.a}
-                            onChange={(e) => onTriangleChange({ id: 'a', value: e.target.value })}
+                            onChange={(e) =>
+                                onTriangleChange({
+                                    id: 'a',
+                                    value: e.target.value,
+                                })
+                            }
                             additionalProps={{ type: 'number' }}
                         />
                     );
-                }
+                },
             },
             {
                 shapeType: 'circlePoints',
@@ -235,14 +248,20 @@ export const step2 = [
                 label: '2',
             },
         ],
-        description: 'Measure the distance between points 1 and 2 and record it into the distance entry box.'
+        description:
+            'Measure the distance between points 1 and 2 and record it into the distance entry box.',
     },
     {
         id: 1,
         checked: false,
         hasBeenChanged: false,
         label: () => {
-            return <span>Measure and Record the Distance Between Points <strong>2</strong> and <strong>3</strong></span>;
+            return (
+                <span>
+                    Measure and Record the Distance Between Points{' '}
+                    <strong>2</strong> and <strong>3</strong>
+                </span>
+            );
         },
         shapeActions: [
             {
@@ -257,10 +276,12 @@ export const step2 = [
                         style={inputStyle}
                         units="mm"
                         value={triangle.b}
-                        onChange={(e) => onTriangleChange({ id: 'b', value: e.target.value })}
+                        onChange={(e) =>
+                            onTriangleChange({ id: 'b', value: e.target.value })
+                        }
                         additionalProps={{ type: 'number' }}
                     />
-                )
+                ),
             },
             {
                 shapeType: 'circlePoints',
@@ -270,14 +291,20 @@ export const step2 = [
                 label: '3',
             },
         ],
-        description: 'Now measure the distance between points 2 and 3 and record it into the distance entry box.'
+        description:
+            'Now measure the distance between points 2 and 3 and record it into the distance entry box.',
     },
     {
         id: 2,
         checked: false,
         hasBeenChanged: false,
         label: () => {
-            return <span>Measure and Record the Distance Between Points <strong>3</strong> and <strong>1</strong></span>;
+            return (
+                <span>
+                    Measure and Record the Distance Between Points{' '}
+                    <strong>3</strong> and <strong>1</strong>
+                </span>
+            );
         },
         shapeActions: [
             {
@@ -292,12 +319,15 @@ export const step2 = [
                         style={inputStyle}
                         units="mm"
                         value={triangle.c}
-                        onChange={(e) => onTriangleChange({ id: 'c', value: e.target.value })}
+                        onChange={(e) =>
+                            onTriangleChange({ id: 'c', value: e.target.value })
+                        }
                         additionalProps={{ type: 'number' }}
                     />
-                )
+                ),
             },
         ],
-        description: 'Lastly, measure the distance between points 3 and 1 and record it into the distance entry box. The next page will show you the results of how square your CNC currently is and provide feedback on how to fix it if it needs some adjustment.'
+        description:
+            'Lastly, measure the distance between points 3 and 1 and record it into the distance entry box. The next page will show you the results of how square your CNC currently is and provide feedback on how to fix it if it needs some adjustment.',
     },
 ];

@@ -46,6 +46,6 @@ export const Confirm = (options = {}) => {
         onConfirm: onConfirm,
         confirmLabel: confirmLabel,
         cancelLabel: cancelLabel,
-        show: show
+        show: show,
     });
 };

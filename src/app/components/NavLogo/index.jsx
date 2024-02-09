@@ -28,17 +28,16 @@ const NavLogo = ({ updateAvailable = false, onClick }) => {
     return (
         <div className={styles.NavLogo}>
             <img alt="gSender Logo" src="images/icon-round.png" />
-            {
-                updateAvailable && (
-                    <button
-                        type="button"
-                        title="New Version Available!"
-                        className={styles.updateNotification}
-                        onClick={onClick}
-                    >
-                        <i className="fas fa-download" />
-                    </button>
-                )}
+            {updateAvailable && (
+                <button
+                    type="button"
+                    title="New Version Available!"
+                    className={styles.updateNotification}
+                    onClick={onClick}
+                >
+                    <i className="fas fa-download" />
+                </button>
+            )}
         </div>
     );
 };

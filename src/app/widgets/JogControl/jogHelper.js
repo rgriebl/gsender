@@ -42,8 +42,14 @@ class JogHelper {
 
     constructor({ jogCB, startContinuousJogCB, stopContinuousJogCB }) {
         this.jog = _.throttle(jogCB, 150, { trailing: false });
-        this.continuousJog = _.throttle(startContinuousJogCB, 150, { trailing: false });
-        this.stopContinuousJog = _.throttle(stopContinuousJogCB, this.timeout - 25, { leading: true, trailing: false });
+        this.continuousJog = _.throttle(startContinuousJogCB, 150, {
+            trailing: false,
+        });
+        this.stopContinuousJog = _.throttle(
+            stopContinuousJogCB,
+            this.timeout - 25,
+            { leading: true, trailing: false },
+        );
     }
 
     onKeyDown(coordinates, feedrate) {

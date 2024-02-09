@@ -46,7 +46,7 @@ const ReconnectButton = ({ onClick, disabled = false }) => {
 
 ReconnectButton.propTypes = {
     onClick: PropType.func.isRequired,
-    disabled: PropType.bool
+    disabled: PropType.bool,
 };
 
 export default ReconnectButton;

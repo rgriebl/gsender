@@ -23,7 +23,16 @@
 
 // import colornames from 'colornames';
 import * as THREE from 'three';
-import { BACKGROUND_PART, CUTTING_PART, G0_PART, G1_PART, G2_PART, G3_PART, LASER_PART, PLANNED_PART } from './constants';
+import {
+    BACKGROUND_PART,
+    CUTTING_PART,
+    G0_PART,
+    G1_PART,
+    G2_PART,
+    G3_PART,
+    LASER_PART,
+    PLANNED_PART,
+} from './constants';
 
 class GCodeVisualizer {
     constructor(theme) {
@@ -49,11 +58,12 @@ class GCodeVisualizer {
         const fillColor = new THREE.Color(this.theme.get(BACKGROUND_PART));
         const maxSpindleValue = Math.max(...[...this.spindleSpeeds]);
 
-        const calculateOpacity = (speed) => ((maxSpindleValue === 0) ? 1 : (speed / maxSpindleValue));
+        const calculateOpacity = (speed) =>
+            maxSpindleValue === 0 ? 1 : speed / maxSpindleValue;
 
         for (let i = 0; i < this.frames.length; i++) {
             const { spindleOn, spindleSpeed } = this.spindleChanges[i];
-            const offsetIndex = (this.frames[i] * 4);
+            const offsetIndex = this.frames[i] * 4;
             if (spindleOn) {
                 let opacity = calculateOpacity(spindleSpeed);
                 const color = [...defaultColor.toArray(), opacity];
@@ -65,7 +75,14 @@ class GCodeVisualizer {
         }
     }
 
-    render({ vertices, colors, frames, spindleSpeeds, isLaser = false, spindleChanges }) {
+    render({
+        vertices,
+        colors,
+        frames,
+        spindleSpeeds,
+        isLaser = false,
+        spindleChanges,
+    }) {
         this.vertices = new THREE.Float32BufferAttribute(vertices, 3);
         this.frames = frames;
         this.spindleSpeeds = spindleSpeeds;
@@ -78,17 +95,20 @@ class GCodeVisualizer {
 
         // Get line colors for current theme
         const motionColor = {
-            'G0': new THREE.Color(this.theme.get(G0_PART)),
-            'G1': new THREE.Color(this.theme.get(G1_PART)),
-            'G2': new THREE.Color(this.theme.get(G2_PART)),
-            'G3': new THREE.Color(this.theme.get(G3_PART)),
-            'default': defaultColor
+            G0: new THREE.Color(this.theme.get(G0_PART)),
+            G1: new THREE.Color(this.theme.get(G1_PART)),
+            G2: new THREE.Color(this.theme.get(G2_PART)),
+            G3: new THREE.Color(this.theme.get(G3_PART)),
+            default: defaultColor,
         };
 
         //this.geometry.setFromPoints(this.vertices);
         const colorArray = this.getColorTypedArray(colors, motionColor);
         this.geometry.setAttribute('position', this.vertices);
-        this.geometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 4));
+        this.geometry.setAttribute(
+            'color',
+            new THREE.BufferAttribute(colorArray, 4),
+        );
 
         const workpiece = new THREE.Line(
             this.geometry,
@@ -97,7 +117,7 @@ class GCodeVisualizer {
                 vertexColors: true,
                 transparent: true,
                 opacity: 0.9,
-            })
+            }),
         );
 
         this.group.add(workpiece);
@@ -108,7 +128,7 @@ class GCodeVisualizer {
     /* Turns our array of Three colors into a float typed array we can set as a bufferAttribute */
     getColorTypedArray(colors, motionColor) {
         const colorArray = [];
-        colors.forEach(colorTag => {
+        colors.forEach((colorTag) => {
             const [motion, opacity] = colorTag;
             const color = motionColor[motion] || motionColor.default;
             colorArray.push(...color.toArray(), opacity);
@@ -121,7 +141,6 @@ class GCodeVisualizer {
 
         return new Float32Array(colorArray);
     }
-
 
     setFrameIndex(frameIndex) {
         if (this.frames.length === 0) {
@@ -165,16 +184,32 @@ class GCodeVisualizer {
                 placeHolderLength += num;
             });
 
-            const colorArray = Array.from({ length: (this.frameDifferences[0]) }, () => defaultColorArray).flat(); // grey, 16 movements ago
-            const bufferColorArray = Array.from({ length: (v2 - v1) }, () => defaultBufferColorArray).flat(); // current movement
-            const placeHolderArray = Array.from({ length: (placeHolderLength) }, () => placeHolderColorArray).flat(); // all movements in between
+            const colorArray = Array.from(
+                { length: this.frameDifferences[0] },
+                () => defaultColorArray,
+            ).flat(); // grey, 16 movements ago
+            const bufferColorArray = Array.from(
+                { length: v2 - v1 },
+                () => defaultBufferColorArray,
+            ).flat(); // current movement
+            const placeHolderArray = Array.from(
+                { length: placeHolderLength },
+                () => placeHolderColorArray,
+            ).flat(); // all movements in between
 
             // if finished counting down, start greying out the old movements
             if (this.countdown <= 0) {
-                colorAttr.set([...colorArray, ...placeHolderArray, ...bufferColorArray], offsetIndex);
-                colorAttr.updateRange.count = colorArray.length + placeHolderArray.length + bufferColorArray.length;
+                colorAttr.set(
+                    [...colorArray, ...placeHolderArray, ...bufferColorArray],
+                    offsetIndex,
+                );
+                colorAttr.updateRange.count =
+                    colorArray.length +
+                    placeHolderArray.length +
+                    bufferColorArray.length;
                 colorAttr.updateRange.offset = offsetIndex;
-            } else { // if not finished, continue colouring yellow
+            } else {
+                // if not finished, continue colouring yellow
                 colorAttr.set([...bufferColorArray], bufferOffsetIndex);
                 colorAttr.updateRange.count = bufferColorArray.length;
                 colorAttr.updateRange.offset = bufferOffsetIndex;
@@ -193,7 +228,10 @@ class GCodeVisualizer {
             const workpiece = this.group.children[0];
             for (let i = v2; i < v1; ++i) {
                 const offsetIndex = i * 4; // Account for RGB buffer
-                workpiece.geometry.attributes.color.set([...this.colors.slice(offsetIndex, offsetIndex + 4)], offsetIndex);
+                workpiece.geometry.attributes.color.set(
+                    [...this.colors.slice(offsetIndex, offsetIndex + 4)],
+                    offsetIndex,
+                );
             }
             workpiece.geometry.attributes.color.needsUpdate = true;
         }
@@ -206,7 +244,7 @@ class GCodeVisualizer {
         return {
             x: this.vertices.array[offset],
             y: this.vertices.array[offset + 1],
-            z: this.vertices.array[offset + 2]
+            z: this.vertices.array[offset + 2],
         };
     }
 

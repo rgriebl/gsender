@@ -29,15 +29,12 @@ import { Button, ButtonGroup } from 'app/components/Buttons';
 import Space from 'app/components/Space';
 import Table from 'app/components/Table';
 import i18n from 'app/lib/i18n';
-import {
-    MODAL_CREATE_RECORD,
-    MODAL_UPDATE_RECORD
-} from './constants';
+import { MODAL_CREATE_RECORD, MODAL_UPDATE_RECORD } from './constants';
 
 class TableRecords extends PureComponent {
     static propTypes = {
         state: PropTypes.object,
-        action: PropTypes.object
+        action: PropTypes.object,
     };
 
     render() {
@@ -50,7 +47,7 @@ class TableRecords extends PureComponent {
                 hoverable={false}
                 maxHeight={300}
                 useFixedHeader={true}
-                data={(state.api.err || state.api.fetching) ? [] : state.records}
+                data={state.api.err || state.api.fetching ? [] : state.records}
                 rowKey={(record) => {
                     return record.id;
                 }}
@@ -115,10 +112,15 @@ class TableRecords extends PureComponent {
                                     btnSize="xs"
                                     btnStyle="flat"
                                     compact
-                                    disabled={rowIndex === (state.records.length - 1)}
+                                    disabled={
+                                        rowIndex === state.records.length - 1
+                                    }
                                     title={i18n._('Move Down')}
                                     onClick={() => {
-                                        if (rowIndex < (state.records.length - 1)) {
+                                        if (
+                                            rowIndex <
+                                            state.records.length - 1
+                                        ) {
                                             const from = rowIndex;
                                             const to = rowIndex + 1;
                                             action.moveRecord(from, to);
@@ -128,13 +130,13 @@ class TableRecords extends PureComponent {
                                     <i className="fa fa-fw fa-chevron-down" />
                                 </Button>
                             </ButtonGroup>
-                        )
+                        ),
                     },
                     {
                         title: i18n._('Name'),
                         className: 'text-nowrap',
                         key: 'name',
-                        dataKey: 'name'
+                        dataKey: 'name',
                     },
                     {
                         title: i18n._('Command'),
@@ -144,7 +146,7 @@ class TableRecords extends PureComponent {
                                 background: 'inherit',
                                 border: 'none',
                                 margin: 0,
-                                padding: 0
+                                padding: 0,
                             };
                             const { command } = row;
                             const lines = ('' + row.command).split('\n');
@@ -160,10 +162,8 @@ class TableRecords extends PureComponent {
                                 );
                             }
 
-                            return (
-                                <pre style={style}>{command}</pre>
-                            );
-                        }
+                            return <pre style={style}>{command}</pre>;
+                        },
                     },
                     {
                         title: i18n._('Button Width'),
@@ -171,21 +171,67 @@ class TableRecords extends PureComponent {
                         key: 'grid.xs',
                         render: (value, row, rowIndex) => {
                             value = get(row, 'grid.xs');
-                            return {
-                                1: (<span><sup>1</sup>/<sub>12</sub></span>),
-                                2: (<span><sup>1</sup>/<sub>6</sub></span>),
-                                3: (<span><sup>1</sup>/<sub>4</sub></span>),
-                                4: (<span><sup>1</sup>/<sub>3</sub></span>),
-                                5: (<span><sup>5</sup>/<sub>12</sub></span>),
-                                6: (<span><sup>1</sup>/<sub>2</sub></span>),
-                                7: (<span><sup>7</sup>/<sub>12</sub></span>),
-                                8: (<span><sup>2</sup>/<sub>3</sub></span>),
-                                9: (<span><sup>3</sup>/<sub>4</sub></span>),
-                                10: (<span><sup>5</sup>/<sub>6</sub></span>),
-                                11: (<span><sup>11</sup>/<sub>12</sub></span>),
-                                12: '100%'
-                            }[value] || '–';
-                        }
+                            return (
+                                {
+                                    1: (
+                                        <span>
+                                            <sup>1</sup>/<sub>12</sub>
+                                        </span>
+                                    ),
+                                    2: (
+                                        <span>
+                                            <sup>1</sup>/<sub>6</sub>
+                                        </span>
+                                    ),
+                                    3: (
+                                        <span>
+                                            <sup>1</sup>/<sub>4</sub>
+                                        </span>
+                                    ),
+                                    4: (
+                                        <span>
+                                            <sup>1</sup>/<sub>3</sub>
+                                        </span>
+                                    ),
+                                    5: (
+                                        <span>
+                                            <sup>5</sup>/<sub>12</sub>
+                                        </span>
+                                    ),
+                                    6: (
+                                        <span>
+                                            <sup>1</sup>/<sub>2</sub>
+                                        </span>
+                                    ),
+                                    7: (
+                                        <span>
+                                            <sup>7</sup>/<sub>12</sub>
+                                        </span>
+                                    ),
+                                    8: (
+                                        <span>
+                                            <sup>2</sup>/<sub>3</sub>
+                                        </span>
+                                    ),
+                                    9: (
+                                        <span>
+                                            <sup>3</sup>/<sub>4</sub>
+                                        </span>
+                                    ),
+                                    10: (
+                                        <span>
+                                            <sup>5</sup>/<sub>6</sub>
+                                        </span>
+                                    ),
+                                    11: (
+                                        <span>
+                                            <sup>11</sup>/<sub>12</sub>
+                                        </span>
+                                    ),
+                                    12: '100%',
+                                }[value] || '–'
+                            );
+                        },
                     },
                     {
                         title: i18n._('Action'),
@@ -200,7 +246,10 @@ class TableRecords extends PureComponent {
                                     compact
                                     title={i18n._('Update')}
                                     onClick={(event) => {
-                                        action.openModal(MODAL_UPDATE_RECORD, row);
+                                        action.openModal(
+                                            MODAL_UPDATE_RECORD,
+                                            row,
+                                        );
                                     }}
                                 >
                                     <i className="fa fa-fw fa-edit" />
@@ -217,8 +266,8 @@ class TableRecords extends PureComponent {
                                     <i className="fa fa-fw fa-close" />
                                 </Button>
                             </div>
-                        )
-                    }
+                        ),
+                    },
                 ]}
             />
         );

@@ -2,7 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Tooltip as MainToolTip } from 'app/components/Tooltip';
 
-const Tooltip = ({ location, content, disabled, children, style, wrapperStyle, wrapperClassName }) => {
+const Tooltip = ({
+    location,
+    content,
+    disabled,
+    children,
+    style,
+    wrapperStyle,
+    wrapperClassName,
+}) => {
     return (
         <MainToolTip
             content={content}
@@ -23,7 +31,7 @@ Tooltip.propTypes = {
     content: PropTypes.string || PropTypes.node,
     disabled: PropTypes.bool,
     wrapperStyle: PropTypes.object,
-    wrapperClassName: PropTypes.string
+    wrapperClassName: PropTypes.string,
 };
 
 export default Tooltip;

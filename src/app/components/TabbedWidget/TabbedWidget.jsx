@@ -29,12 +29,12 @@ import WidgetStyles from '../Widget/index.styl';
 class TabbedWidget extends PureComponent {
     static propTypes = {
         borderless: PropTypes.bool,
-        fullscreen: PropTypes.bool
+        fullscreen: PropTypes.bool,
     };
 
     static defaultProps = {
         borderless: false,
-        fullscreen: false
+        fullscreen: false,
     };
 
     render() {
@@ -47,7 +47,7 @@ class TabbedWidget extends PureComponent {
                     className,
                     WidgetStyles.widget,
                     { [WidgetStyles.widgetBorderless]: borderless },
-                    { [WidgetStyles.widgetFullscreen]: fullscreen }
+                    { [WidgetStyles.widgetFullscreen]: fullscreen },
                 )}
             />
         );

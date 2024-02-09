@@ -36,17 +36,19 @@ import VisualizerWidget from 'app/widgets/Visualizer';
 import SecondaryFunctionality from 'app/widgets/SecondaryFunctionality';
 
 const getWidgetByName = (name) => {
-    return {
-        'axes': AxesWidget,
-        'console': ConsoleWidget,
-        'job_status': JobStatusWidget,
-        'location': LocationWidget,
-        'macro': MacroWidget,
-        'probe': ProbeWidget,
-        'spindle': SpindleWidget,
-        'visualizer': VisualizerWidget,
-        'secondary': SecondaryFunctionality
-    }[name] || null;
+    return (
+        {
+            axes: AxesWidget,
+            console: ConsoleWidget,
+            job_status: JobStatusWidget,
+            location: LocationWidget,
+            macro: MacroWidget,
+            probe: ProbeWidget,
+            spindle: SpindleWidget,
+            visualizer: VisualizerWidget,
+            secondary: SecondaryFunctionality,
+        }[name] || null
+    );
 };
 
 class WidgetWrapper extends PureComponent {
@@ -66,7 +68,7 @@ class WidgetWrapper extends PureComponent {
         }
     }
 
-    registerIPCListeners () {
+    registerIPCListeners() {
         // recieve state of console and controller port from main window
         window.ipcRenderer.on('recieve-data-' + this.name, (event, data) => {
             const { port, state } = data;
@@ -119,7 +121,7 @@ class WidgetWrapper extends PureComponent {
 }
 
 WidgetWrapper.propTypes = {
-    widgetId: PropTypes.string.isRequired
+    widgetId: PropTypes.string.isRequired,
 };
 
 export default WidgetWrapper;

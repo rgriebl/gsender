@@ -65,7 +65,7 @@ class SPCharCounting {
         bufferSize: 128, // Defaults to 128
         dataLength: 0,
         queue: [],
-        line: ''
+        line: '',
     };
 
     constructor(options, callback = noop) {
@@ -192,17 +192,21 @@ class Sender extends events.EventEmitter {
                     sp.dataLength -= lineLength;
                 }
 
-                while (!this.state.hold && (this.state.sent < this.state.total)) {
+                while (!this.state.hold && this.state.sent < this.state.total) {
                     // Remove leading and trailing whitespace from both ends of a string
-                    sp.line = sp.line || this.state.lines[this.state.sent].trim();
+                    sp.line =
+                        sp.line || this.state.lines[this.state.sent].trim();
 
                     if (this.dataFilter) {
-                        sp.line = this.dataFilter(sp.line, this.state.context) || '';
+                        sp.line =
+                            this.dataFilter(sp.line, this.state.context) || '';
                     }
 
-
                     // The newline character (\n) consumed the RX buffer space
-                    if ((sp.line.length > 0) && ((sp.dataLength + sp.line.length + 1) >= sp.bufferSize)) {
+                    if (
+                        sp.line.length > 0 &&
+                        sp.dataLength + sp.line.length + 1 >= sp.bufferSize
+                    ) {
                         break;
                     }
 
@@ -226,7 +230,7 @@ class Sender extends events.EventEmitter {
         // send-response
         if (type === SP_TYPE_SEND_RESPONSE) {
             this.sp = new SPSendResponse(options, (sp) => {
-                while (!this.state.hold && (this.state.sent < this.state.total)) {
+                while (!this.state.hold && this.state.sent < this.state.total) {
                     // Remove leading and trailing whitespace from both ends of a string
                     let line = this.state.lines[this.state.sent].trim();
 
@@ -311,7 +315,7 @@ class Sender extends events.EventEmitter {
         }
 
         let lines = gcode.split('\n');
-        lines = lines.filter(line => (line.trim().length > 0));
+        lines = lines.filter((line) => line.trim().length > 0);
 
         if (this.sp) {
             this.sp.clear();
@@ -437,9 +441,14 @@ class Sender extends events.EventEmitter {
 
         // Make a 1 second delay before estimating the remaining time
         if (this.state.elapsedTime >= 1000 && this.state.received > 0) {
-            if (this.state.estimatedTime > 0) { // in case smth goes wrong with the estimate, don't want to show negative time
+            if (this.state.estimatedTime > 0) {
+                // in case smth goes wrong with the estimate, don't want to show negative time
                 if (this.state.received < this.state.estimateData.length) {
-                    this.state.remainingTime -= (Number(this.state.estimateData[this.state.received] || 0) / (this.state.ovF / 100));
+                    this.state.remainingTime -=
+                        Number(
+                            this.state.estimateData[this.state.received] || 0,
+                        ) /
+                        (this.state.ovF / 100);
                 }
             }
         }

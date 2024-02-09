@@ -31,11 +31,7 @@ import controller from 'app/lib/controller';
 import i18n from 'app/lib/i18n';
 
 const FeederPaused = (props) => (
-    <Modal
-        size="xs"
-        disableOverlayClick
-        showCloseButton={false}
-    >
+    <Modal size="xs" disableOverlayClick showCloseButton={false}>
         <Modal.Body>
             <ModalTemplate type="warning">
                 <h5>{props.title}</h5>
@@ -46,22 +42,16 @@ const FeederPaused = (props) => (
             <Button
                 className="pull-left"
                 btnStyle="danger"
-                onClick={chainedFunction(
-                    () => {
-                        controller.command('feeder:stop');
-                    },
-                    props.onClose
-                )}
+                onClick={chainedFunction(() => {
+                    controller.command('feeder:stop');
+                }, props.onClose)}
             >
                 {i18n._('Stop')}
             </Button>
             <Button
-                onClick={chainedFunction(
-                    () => {
-                        controller.command('feeder:start');
-                    },
-                    props.onClose
-                )}
+                onClick={chainedFunction(() => {
+                    controller.command('feeder:start');
+                }, props.onClose)}
             >
                 {i18n._('Resume')}
             </Button>
@@ -71,7 +61,7 @@ const FeederPaused = (props) => (
 
 FeederPaused.propTypes = {
     title: PropTypes.string,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
 };
 
 export default FeederPaused;

@@ -44,7 +44,7 @@ class General extends PureComponent {
     static propTypes = {
         axes: PropTypes.array.isRequired,
         imperialJogDistances: PropTypes.array.isRequired,
-        metricJogDistances: PropTypes.array.isRequired
+        metricJogDistances: PropTypes.array.isRequired,
     };
 
     field = {
@@ -53,12 +53,12 @@ class General extends PureComponent {
         axisZ: null,
         axisA: null,
         axisB: null,
-        axisC: null
+        axisC: null,
     };
 
     state = {
         imperialJogDistances: ensureArray(this.props.imperialJogDistances),
-        metricJogDistances: ensureArray(this.props.metricJogDistances)
+        metricJogDistances: ensureArray(this.props.metricJogDistances),
     };
 
     get value() {
@@ -92,7 +92,7 @@ class General extends PureComponent {
         return {
             axes,
             imperialJogDistances,
-            metricJogDistances
+            metricJogDistances,
         };
     }
 
@@ -101,63 +101,65 @@ class General extends PureComponent {
     };
 
     addMetricJogDistance = () => (event) => {
-        this.setState(state => ({
-            metricJogDistances: state.metricJogDistances.concat('')
+        this.setState((state) => ({
+            metricJogDistances: state.metricJogDistances.concat(''),
         }));
     };
 
     changeMetricJogDistance = (targetIndex) => (event) => {
         const targetValue = event.target.value;
 
-        this.setState(state => ({
+        this.setState((state) => ({
             metricJogDistances: state.metricJogDistances.map((value, index) => {
                 if (index === targetIndex) {
                     return targetValue;
                 }
                 return value;
-            })
+            }),
         }));
     };
 
     removeMetricJogDistance = (index) => (event) => {
-        this.setState(state => {
+        this.setState((state) => {
             const metricJogDistances = [...state.metricJogDistances];
             // Remove the array element at the index
             metricJogDistances.splice(index, 1);
 
             return {
-                metricJogDistances: metricJogDistances
+                metricJogDistances: metricJogDistances,
             };
         });
     };
 
     addImperialJogDistance = () => (event) => {
-        this.setState(state => ({
-            imperialJogDistances: state.imperialJogDistances.concat('')
+        this.setState((state) => ({
+            imperialJogDistances: state.imperialJogDistances.concat(''),
         }));
     };
 
     changeImperialJogDistance = (targetIndex) => (event) => {
         const targetValue = event.target.value;
 
-        this.setState(state => ({
-            imperialJogDistances: state.imperialJogDistances.map((value, index) => {
-                if (index === targetIndex) {
-                    return targetValue;
-                }
-                return value;
-            })
+        this.setState((state) => ({
+            imperialJogDistances: state.imperialJogDistances.map(
+                (value, index) => {
+                    if (index === targetIndex) {
+                        return targetValue;
+                    }
+                    return value;
+                },
+            ),
         }));
     };
 
     removeImperialJogDistance = (index) => (event) => {
-        this.setState(state => {
+        this.setState((state) => {
             const imperialJogDistances = [...state.imperialJogDistances];
             // Remove the array element at the index
             imperialJogDistances.splice(index, 1);
 
             return {
-                imperialJogDistances: imperialJogDistances
+                imperialJogDistances: imperialJogDistances,
             };
         });
     };
@@ -169,7 +171,9 @@ class General extends PureComponent {
         return (
             <FlexContainer fluid gutterWidth={0}>
                 <Margin bottom={15}>
-                    <label><strong>{i18n._('Axes')}</strong></label>
+                    <label>
+                        <strong>{i18n._('Axes')}</strong>
+                    </label>
                     <Row>
                         <Col xs={4}>
                             <FormGroup>
@@ -245,7 +249,11 @@ class General extends PureComponent {
                 <Margin bottom={15}>
                     <Row>
                         <Col>
-                            <label><strong>{i18n._('Custom Jog Distance (mm)')}</strong></label>
+                            <label>
+                                <strong>
+                                    {i18n._('Custom Jog Distance (mm)')}
+                                </strong>
+                            </label>
                             <ForEach items={metricJogDistances}>
                                 {(value, index) => (
                                     <FormGroup key={_uniqueId()}>
@@ -253,7 +261,9 @@ class General extends PureComponent {
                                             <Col>
                                                 <Input
                                                     type="number"
-                                                    onChange={this.changeMetricJogDistance(index)}
+                                                    onChange={this.changeMetricJogDistance(
+                                                        index,
+                                                    )}
                                                     defaultValue={value}
                                                 />
                                             </Col>
@@ -262,7 +272,9 @@ class General extends PureComponent {
                                                 <Button
                                                     btnStyle="flat"
                                                     compact
-                                                    onClick={this.removeMetricJogDistance(index)}
+                                                    onClick={this.removeMetricJogDistance(
+                                                        index,
+                                                    )}
                                                 >
                                                     <i className="fa fa-close" />
                                                 </Button>
@@ -271,7 +283,8 @@ class General extends PureComponent {
                                     </FormGroup>
                                 )}
                             </ForEach>
-                            {metricJogDistances.length < METRIC_JOG_DISTANCES_MAX && (
+                            {metricJogDistances.length <
+                                METRIC_JOG_DISTANCES_MAX && (
                                 <Button
                                     btnStyle="flat"
                                     onClick={this.addMetricJogDistance()}
@@ -286,7 +299,11 @@ class General extends PureComponent {
                             <Space width="24" />
                         </Col>
                         <Col>
-                            <label><strong>{i18n._('Custom Jog Distance (inches)')}</strong></label>
+                            <label>
+                                <strong>
+                                    {i18n._('Custom Jog Distance (inches)')}
+                                </strong>
+                            </label>
                             <ForEach items={imperialJogDistances}>
                                 {(value, index) => (
                                     <FormGroup key={_uniqueId()}>
@@ -295,7 +312,9 @@ class General extends PureComponent {
                                                 <Input
                                                     type="number"
                                                     defaultValue={value}
-                                                    onChange={this.changeImperialJogDistance(index)}
+                                                    onChange={this.changeImperialJogDistance(
+                                                        index,
+                                                    )}
                                                 />
                                             </Col>
                                             <Col>
@@ -303,7 +322,9 @@ class General extends PureComponent {
                                                 <Button
                                                     btnStyle="flat"
                                                     compact
-                                                    onClick={this.removeImperialJogDistance(index)}
+                                                    onClick={this.removeImperialJogDistance(
+                                                        index,
+                                                    )}
                                                 >
                                                     <i className="fa fa-close" />
                                                 </Button>
@@ -312,7 +333,8 @@ class General extends PureComponent {
                                     </FormGroup>
                                 )}
                             </ForEach>
-                            {imperialJogDistances.length < IMPERIAL_JOG_DISTANCES_MAX && (
+                            {imperialJogDistances.length <
+                                IMPERIAL_JOG_DISTANCES_MAX && (
                                 <Button
                                     btnStyle="flat"
                                     onClick={this.addImperialJogDistance()}

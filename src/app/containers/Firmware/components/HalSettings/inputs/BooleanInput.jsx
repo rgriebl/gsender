@@ -7,7 +7,7 @@ const BooleanInput = ({ info, setting, onChange }) => {
 
     useEffect(() => {
         let { value } = setting;
-        value = (Number(setting.value) === 1);
+        value = Number(setting.value) === 1;
         setBool(value);
     }, []);
 
@@ -19,7 +19,9 @@ const BooleanInput = ({ info, setting, onChange }) => {
     };
 
     return (
-        <div className={styles.row}><ToggleSwitch checked={bool} onChange={booleanOnChange} /></div>
+        <div className={styles.row}>
+            <ToggleSwitch checked={bool} onChange={booleanOnChange} />
+        </div>
     );
 };
 

@@ -78,7 +78,10 @@ const SortableTable = (props) => {
     const defaultData = props.defaultData || []; // same as data
     const height = props.height || '520px';
     const width = props.width || '760px';
-    const enableSortingRemoval = props.enableSortingRemoval !== undefined ? props.enableSortingRemoval : true;
+    const enableSortingRemoval =
+        props.enableSortingRemoval !== undefined
+            ? props.enableSortingRemoval
+            : true;
     /*
         const sortBy = [
             {
@@ -88,7 +91,10 @@ const SortableTable = (props) => {
         ];
     */
     const sortBy = props.sortBy || null;
-    const rowColours = props.rowColours || ['#f9f9f9', 'rgba(255, 255, 255, 0)']; // every other row colours
+    const rowColours = props.rowColours || [
+        '#f9f9f9',
+        'rgba(255, 255, 255, 0)',
+    ]; // every other row colours
     const onAdd = props.onAdd || null; // function for when add button is pressed
     const rowSpan = props.rowSpan || new Map(); // map: accessorKey => num rows to span
 
@@ -159,10 +165,19 @@ const SortableTable = (props) => {
 
     /***** RENDERING *****/
     return (
-        <div className="container flex flex-col items-center justify-center gap-3 px-4 py-16 " style={{ maxWidth: width, marginBottom: '0px', padding: 0 }}>
+        <div
+            className="container flex flex-col items-center justify-center gap-3 px-4 py-16 "
+            style={{ maxWidth: width, marginBottom: '0px', padding: 0 }}
+        >
             {/*** PAGINATION ***/}
             {/*** GLOBAL SEARCH ***/}
-            <div className={['flex items-center gap-2', styles.navContainer].join(' ')} style={{ marginBottom: '5px' }}>
+            <div
+                className={[
+                    'flex items-center gap-2',
+                    styles.navContainer,
+                ].join(' ')}
+                style={{ marginBottom: '5px' }}
+            >
                 <input
                     value={globalSearchText ?? ''}
                     onChange={(e) => {
@@ -176,28 +191,42 @@ const SortableTable = (props) => {
                     className="font-lg border-block border p-2 shadow"
                     placeholder="Search all columns..."
                 />
-                {
-                    onAdd &&
-                        <div
-                            className="flex items-center gap-1"
-                            style={{ display: 'flex', alignItems: 'center', float: 'right' }}
-                        >
-                            <button
-                                title="Add New"
-                                onClick={onAdd}
-                            >
-                                Add New <i className="fas fa-plus" />
-                            </button>
-                        </div>
-                }
+                {onAdd && (
+                    <div
+                        className="flex items-center gap-1"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            float: 'right',
+                        }}
+                    >
+                        <button title="Add New" onClick={onAdd}>
+                            Add New <i className="fas fa-plus" />
+                        </button>
+                    </div>
+                )}
             </div>
             {/*** TABLE ***/}
-            <div style={{ maxHeight: height, minHeight: height, marginBottom: '5px', overflowY: 'scroll' }}>
-                <BTable striped bordered hover size="sm" variant="dark" style={{ tableLayout: 'fixed' }}>
+            <div
+                style={{
+                    maxHeight: height,
+                    minHeight: height,
+                    marginBottom: '5px',
+                    overflowY: 'scroll',
+                }}
+            >
+                <BTable
+                    striped
+                    bordered
+                    hover
+                    size="sm"
+                    variant="dark"
+                    style={{ tableLayout: 'fixed' }}
+                >
                     <thead>
                         {table.getHeaderGroups().map(
                             (
-                                headerGroup // we currently only have 1 group
+                                headerGroup, // we currently only have 1 group
                             ) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
@@ -207,55 +236,94 @@ const SortableTable = (props) => {
                                             style={{
                                                 width: header.getSize(),
                                                 whiteSpace: 'unset',
-                                                fontWeight: 'bold'
+                                                fontWeight: 'bold',
                                             }}
                                         >
                                             {header.isPlaceholder ? null : (
                                                 <>
                                                     <div
                                                         {...{
-                                                            className: header.column.getCanSort()
-                                                                ? 'cursor-pointer select-none'
-                                                                : '',
-                                                            onClick: header.column.getToggleSortingHandler(),
+                                                            className:
+                                                                header.column.getCanSort()
+                                                                    ? 'cursor-pointer select-none'
+                                                                    : '',
+                                                            onClick:
+                                                                header.column.getToggleSortingHandler(),
                                                         }}
                                                     >
                                                         {flexRender(
-                                                            header.column.columnDef.header,
-                                                            header.getContext()
+                                                            header.column
+                                                                .columnDef
+                                                                .header,
+                                                            header.getContext(),
                                                         )}
                                                         {{
                                                             asc: ' 🔼',
                                                             desc: ' 🔽',
-                                                        }[header.column.getIsSorted().toString()] ?? null}
+                                                        }[
+                                                            header.column
+                                                                .getIsSorted()
+                                                                .toString()
+                                                        ] ?? null}
                                                     </div>
                                                 </>
                                             )}
                                         </th>
                                     ))}
                                 </tr>
-                            )
+                            ),
                         )}
                     </thead>
                     <tbody>
                         {table.getRowModel().rows.map((row, i) => {
                             return (
                                 <React.Fragment key={row.id + 'parent'}>
-                                    <tr key={row.id} style={{ backgroundColor: rowColours[i % 2] }}>
+                                    <tr
+                                        key={row.id}
+                                        style={{
+                                            backgroundColor: rowColours[i % 2],
+                                        }}
+                                    >
                                         {row.getVisibleCells().map((cell) => (
-                                            <td key={cell.id} rowSpan={rowSpan.get(cell.column.columnDef.accessorKey) || 1} style={{ whiteSpace: 'unset', overflowWrap: 'break-word' }}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            <td
+                                                key={cell.id}
+                                                rowSpan={
+                                                    rowSpan.get(
+                                                        cell.column.columnDef
+                                                            .accessorKey,
+                                                    ) || 1
+                                                }
+                                                style={{
+                                                    whiteSpace: 'unset',
+                                                    overflowWrap: 'break-word',
+                                                }}
+                                            >
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
                                             </td>
                                         ))}
                                     </tr>
-                                    {
-                                        row.original.subRow &&
-                                        <tr key={row.id + 'subRow'} style={{ backgroundColor: rowColours[i % 2] }}>
-                                            <td colSpan={colSpanLength} style={{ whiteSpace: 'pre-line', overflowWrap: 'break-word' }}>
+                                    {row.original.subRow && (
+                                        <tr
+                                            key={row.id + 'subRow'}
+                                            style={{
+                                                backgroundColor:
+                                                    rowColours[i % 2],
+                                            }}
+                                        >
+                                            <td
+                                                colSpan={colSpanLength}
+                                                style={{
+                                                    whiteSpace: 'pre-line',
+                                                    overflowWrap: 'break-word',
+                                                }}
+                                            >
                                                 {row.original.subRow}
                                             </td>
                                         </tr>
-                                    }
+                                    )}
                                 </React.Fragment>
                             );
                         })}
@@ -263,7 +331,12 @@ const SortableTable = (props) => {
                 </BTable>
             </div>
             {/* buttons */}
-            <div className={['flex items-center gap-2', styles.navContainer].join(' ')}>
+            <div
+                className={[
+                    'flex items-center gap-2',
+                    styles.navContainer,
+                ].join(' ')}
+            >
                 <button
                     className="rounded border p-1"
                     onClick={() => table.setPageIndex(0)}
@@ -309,7 +382,11 @@ const SortableTable = (props) => {
                 {/* jump to page */}
                 <div
                     className="flex items-center gap-1"
-                    style={{ display: 'flex', alignItems: 'center', float: 'right' }}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        float: 'right',
+                    }}
                 >
                     <span style={{ marginRight: '5px' }}>
                         {'Jump to page: '}
@@ -317,14 +394,21 @@ const SortableTable = (props) => {
                             type="number"
                             defaultValue={currentPage}
                             onChange={(e) => {
-                                setPageNum(e.target.value ? Number(e.target.value) - 1 : 0);
+                                setPageNum(
+                                    e.target.value
+                                        ? Number(e.target.value) - 1
+                                        : 0,
+                                );
                             }}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     table.setPageIndex(pageNum);
                                 }
                             }}
-                            className={['w-16 rounded border p-1 ', styles.input].join(' ')}
+                            className={[
+                                'w-16 rounded border p-1 ',
+                                styles.input,
+                            ].join(' ')}
                             min="1"
                             max={maxPages}
                             style={{ minWidth: '60px' }}
@@ -342,7 +426,7 @@ const SortableTable = (props) => {
                         >
                             {[15, 30, 50, 75, 100].map((pageSize) => (
                                 <option key={pageSize} value={pageSize}>
-                                Show {pageSize}
+                                    Show {pageSize}
                                 </option>
                             ))}
                         </select>

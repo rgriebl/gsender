@@ -30,12 +30,12 @@ import styles from './index.styl';
 class Button extends PureComponent {
     static propTypes = {
         ...Anchor.propTypes,
-        inverted: PropTypes.bool
+        inverted: PropTypes.bool,
     };
 
     static defaultProps = {
         ...Anchor.defaultProps,
-        inverted: false
+        inverted: false,
     };
 
     render() {
@@ -46,7 +46,7 @@ class Button extends PureComponent {
                 {...props}
                 className={classNames(className, styles.widgetButton, {
                     [styles.disabled]: !!props.disabled,
-                    [styles.inverted]: inverted
+                    [styles.inverted]: inverted,
                 })}
             />
         );

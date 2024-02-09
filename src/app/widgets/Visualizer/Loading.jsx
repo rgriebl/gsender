@@ -35,7 +35,7 @@ const Loading = () => {
         const tokens = [
             pubsub.subscribe('toolpath:progress', (msg, progress) => {
                 setProgress(progress);
-            })
+            }),
         ];
         return tokens;
     };
@@ -51,8 +51,20 @@ const Loading = () => {
         <div className={styles.loaderWrapper}>
             <div className={styles.bitContainer}>
                 <div>
-                    <img src={bitEffect} width="33px" height="60px" alt="" className={styles.bitEffect} />
-                    <img src={bitImage} width="26px" height="60px" alt="" className={styles.bit} />
+                    <img
+                        src={bitEffect}
+                        width="33px"
+                        height="60px"
+                        alt=""
+                        className={styles.bitEffect}
+                    />
+                    <img
+                        src={bitImage}
+                        width="26px"
+                        height="60px"
+                        alt=""
+                        className={styles.bit}
+                    />
                 </div>
             </div>
             <div className={styles.loader}>
@@ -69,9 +81,7 @@ const Loading = () => {
                     </div>
                     <strong className="justify-content-center d-flex position-absolute w-100">{`${progress}%`}</strong>
                 </div>
-                <div className={styles.loaderText}>
-                    {i18n._('Loading...')}
-                </div>
+                <div className={styles.loaderText}>{i18n._('Loading...')}</div>
             </div>
         </div>
     );

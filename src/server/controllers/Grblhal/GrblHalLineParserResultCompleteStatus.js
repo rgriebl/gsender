@@ -1,4 +1,3 @@
-
 // More specific Full report sent on startup
 //import _ from 'lodash';
 
@@ -6,7 +5,9 @@ import _ from 'lodash';
 
 class GrblHalLineParserResultCompleteStatus {
     static parse(line) {
-        const r = line.match(/^<(Idle|Run|Hold|Jog|Alarm|Door|Check|Home|Sleep|Tool)(:\d*)?\|(.*\|FW:grblHAL)(.*)?>$/);
+        const r = line.match(
+            /^<(Idle|Run|Hold|Jog|Alarm|Door|Check|Home|Sleep|Tool)(:\d*)?\|(.*\|FW:grblHAL)(.*)?>$/,
+        );
         if (!r) {
             return null;
         }
@@ -75,14 +76,14 @@ class GrblHalLineParserResultCompleteStatus {
         if (_.has(result, 'Pn')) {
             const pins = _.get(result, 'Pn[0]', '');
             payload.pinState = {};
-            pins.split('').forEach(pin => {
+            pins.split('').forEach((pin) => {
                 payload.pinState[pin] = true;
             });
         }
 
         return {
             type: GrblHalLineParserResultCompleteStatus,
-            payload
+            payload,
         };
     }
 }

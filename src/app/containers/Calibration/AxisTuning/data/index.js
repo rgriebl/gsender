@@ -30,9 +30,7 @@ const jogMachine = ({ axis, value }) => {
     const { jog } = store.get('widgets.axes');
     const modal = 'G21';
 
-    const commands = [
-        `$J=${modal}G91 ${axis}${value} F${jog.feedrate}`,
-    ];
+    const commands = [`$J=${modal}G91 ${axis}${value} F${jog.feedrate}`];
     controller.command('gcode', commands, modal);
 };
 
@@ -55,7 +53,8 @@ export const yAxisStep = [
                 label: '2',
             },
         ],
-        description: 'First, mark next to the gantry in the location shown with your marker, pencil, or using a strip of tape.'
+        description:
+            'First, mark next to the gantry in the location shown with your marker, pencil, or using a strip of tape.',
     },
     {
         id: 1,
@@ -105,11 +104,12 @@ export const yAxisStep = [
                 isActive: true,
                 show: true,
                 clearPrevious: true,
-                label: 'Y-Axis Movement'
+                label: 'Y-Axis Movement',
             },
         ],
-        description: 'Now move any distance you wish. A larger value will better tune your movement just make sure you don’t hit your machine limits. ' +
-            'Once you are ready, click the “Move Y-Axis” button.'
+        description:
+            'Now move any distance you wish. A larger value will better tune your movement just make sure you don’t hit your machine limits. ' +
+            'Once you are ready, click the “Move Y-Axis” button.',
     },
     {
         id: 2,
@@ -148,7 +148,6 @@ export const yAxisStep = [
                         additionalProps={{ type: 'number' }}
                     />
                 </div>
-
             );
         },
         shapeActions: [
@@ -161,7 +160,8 @@ export const yAxisStep = [
                 label: '3',
             },
         ],
-        description: 'Lastly, measure the distance travelled between the original mark and the current gantry location. Take your time when entering this value, a more accurate measurement will give you better tuning results.'
+        description:
+            'Lastly, measure the distance travelled between the original mark and the current gantry location. Take your time when entering this value, a more accurate measurement will give you better tuning results.',
     },
 ];
 
@@ -184,7 +184,8 @@ export const xAxisStep = [
                 label: '2',
             },
         ],
-        description: 'First, mark next to the gantry in the location shown with your marker, pencil, or using a strip of tape.'
+        description:
+            'First, mark next to the gantry in the location shown with your marker, pencil, or using a strip of tape.',
     },
     {
         id: 1,
@@ -233,11 +234,12 @@ export const xAxisStep = [
                 isActive: true,
                 show: true,
                 clearPrevious: true,
-                label: 'X-Axis Movement'
+                label: 'X-Axis Movement',
             },
         ],
-        description: 'Now move any distance you wish. A larger value will better tune your movement just make sure you don’t hit your machine limits. ' +
-            'Once you are ready, click the “Move X-Axis” button.'
+        description:
+            'Now move any distance you wish. A larger value will better tune your movement just make sure you don’t hit your machine limits. ' +
+            'Once you are ready, click the “Move X-Axis” button.',
     },
     {
         id: 2,
@@ -276,7 +278,6 @@ export const xAxisStep = [
                         additionalProps={{ type: 'number' }}
                     />
                 </div>
-
             );
         },
         shapeActions: [
@@ -289,7 +290,8 @@ export const xAxisStep = [
                 label: '3',
             },
         ],
-        description: 'Lastly, measure the distance travelled between the original mark and the current gantry location. Take your time when entering this value, a more accurate measurement will give you better tuning results.'
+        description:
+            'Lastly, measure the distance travelled between the original mark and the current gantry location. Take your time when entering this value, a more accurate measurement will give you better tuning results.',
     },
 ];
 
@@ -312,7 +314,8 @@ export const zAxisStep = [
                 label: '2',
             },
         ],
-        description: 'First, mark next to the gantry in the location shown with your marker, pencil, or using a strip of tape.'
+        description:
+            'First, mark next to the gantry in the location shown with your marker, pencil, or using a strip of tape.',
     },
     {
         id: 1,
@@ -362,11 +365,12 @@ export const zAxisStep = [
                 isActive: true,
                 show: true,
                 clearPrevious: true,
-                label: 'Z-Axis Movement'
+                label: 'Z-Axis Movement',
             },
         ],
-        description: 'Now move any distance you wish. A larger value will better tune your movement just make sure you don’t hit your machine limits. ' +
-            'Once you are ready, click the “Move Z-Axis” button.'
+        description:
+            'Now move any distance you wish. A larger value will better tune your movement just make sure you don’t hit your machine limits. ' +
+            'Once you are ready, click the “Move Z-Axis” button.',
     },
     {
         id: 2,
@@ -404,7 +408,6 @@ export const zAxisStep = [
                         additionalProps={{ type: 'number' }}
                     />
                 </div>
-
             );
         },
         shapeActions: [
@@ -417,12 +420,13 @@ export const zAxisStep = [
                 label: '3',
             },
         ],
-        description: 'Lastly, measure the distance travelled between the original mark and the current gantry location. Take your time when entering this value, a more accurate measurement will give you better tuning results.'
+        description:
+            'Lastly, measure the distance travelled between the original mark and the current gantry location. Take your time when entering this value, a more accurate measurement will give you better tuning results.',
     },
 ];
 
 export const axisSteps = {
     x: xAxisStep,
     y: yAxisStep,
-    z: zAxisStep
+    z: zAxisStep,
 };

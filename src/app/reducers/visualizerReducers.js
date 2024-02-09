@@ -1,17 +1,20 @@
 import { createReducer } from 'redux-action';
-import { SET_CURRENT_VISUALIZER, UPDATE_JOB_OVERRIDES } from 'app/actions/visualizerActions';
+import {
+    SET_CURRENT_VISUALIZER,
+    UPDATE_JOB_OVERRIDES,
+} from 'app/actions/visualizerActions';
 import { VISUALIZER_PRIMARY } from 'app/constants';
 
 const initialState = {
     activeVisualizer: VISUALIZER_PRIMARY,
-    jobOverrides: { isChecked: false, toggleStatus: 'jobStatus' }
+    jobOverrides: { isChecked: false, toggleStatus: 'jobStatus' },
 };
 
 const reducer = createReducer(initialState, {
     [SET_CURRENT_VISUALIZER]: (payload, state) => {
         return {
             ...state,
-            activeVisualizer: payload
+            activeVisualizer: payload,
         };
     },
     [UPDATE_JOB_OVERRIDES]: (payload, state) => {

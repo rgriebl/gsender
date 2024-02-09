@@ -1,8 +1,18 @@
 import React from 'react';
 
-import { MultiInputBlockContainer, Divider, InputWrapper, InputLabelStyled } from './styled';
+import {
+    MultiInputBlockContainer,
+    Divider,
+    InputWrapper,
+    InputLabelStyled,
+} from './styled';
 
-const MultiInputBlock = ({ label, firstComponent, secondComponent, divider }) => {
+const MultiInputBlock = ({
+    label,
+    firstComponent,
+    secondComponent,
+    divider,
+}) => {
     return (
         <InputWrapper>
             {label && <InputLabelStyled>{label}</InputLabelStyled>}
@@ -10,7 +20,11 @@ const MultiInputBlock = ({ label, firstComponent, secondComponent, divider }) =>
             <MultiInputBlockContainer hasDivider={!!divider}>
                 {firstComponent}
 
-                {divider && typeof divider === 'string' ? <Divider>{divider}</Divider> : divider}
+                {divider && typeof divider === 'string' ? (
+                    <Divider>{divider}</Divider>
+                ) : (
+                    divider
+                )}
 
                 {secondComponent}
             </MultiInputBlockContainer>

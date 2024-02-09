@@ -44,7 +44,7 @@ class EventTrigger {
                 enabled = false,
                 event,
                 trigger,
-                commands
+                commands,
             } = { ...element };
 
             if (!enabled) {

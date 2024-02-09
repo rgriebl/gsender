@@ -31,7 +31,6 @@ const FileStat = ({ label, children }) => {
                 <div className={styles.fileStatLabel}>{label}</div>
                 <div className={styles.fileStatContent}>{children}</div>
             </div>
-
         </div>
     );
 };

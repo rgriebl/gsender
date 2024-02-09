@@ -7,7 +7,12 @@ import { SET_CURRENT_VISUALIZER } from 'app/actions/visualizerActions';
 import store from 'app/store';
 import reduxStore from 'app/store/redux';
 import controller from 'app/lib/controller';
-import { METRIC_UNITS, VISUALIZER_PRIMARY, VISUALIZER_SECONDARY, USAGE_TOOL_NAME } from 'app/constants';
+import {
+    METRIC_UNITS,
+    VISUALIZER_PRIMARY,
+    VISUALIZER_SECONDARY,
+    USAGE_TOOL_NAME,
+} from 'app/constants';
 import GcodeViewer from 'app/components/GcodeViewer';
 import { Toaster, TOASTER_DANGER } from 'app/lib/toaster/ToasterLib';
 
@@ -34,7 +39,10 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
     const [currentTab, setCurrentTab] = useState(0);
 
     const runGenerate = () => {
-        reduxStore.dispatch({ type: SET_CURRENT_VISUALIZER, payload: VISUALIZER_SECONDARY });
+        reduxStore.dispatch({
+            type: SET_CURRENT_VISUALIZER,
+            payload: VISUALIZER_SECONDARY,
+        });
         setCurrentTab(0);
 
         try {
@@ -48,7 +56,7 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
                 content: gcode,
                 size: serializedFile.size,
                 name: serializedFile.name,
-                visualizer: VISUALIZER_SECONDARY
+                visualizer: VISUALIZER_SECONDARY,
             };
 
             pubsub.publish('visualizer:load', payload);
@@ -59,7 +67,7 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
                 Toaster.pop({
                     msg: 'Exceeded surfacing limit, please decrease cut depth, max depth, or X/Y values',
                     type: TOASTER_DANGER,
-                    duration: 5000
+                    duration: 5000,
                 });
             }
         }
@@ -81,11 +89,11 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
 
         const val = Math.abs(Number(value));
 
-        setSurfacing(prev => ({ ...prev, [id]: val }));
+        setSurfacing((prev) => ({ ...prev, [id]: val }));
     };
 
     const handleSelect = ({ type, value }) => {
-        setSurfacing(prev => ({ ...prev, [type]: value }));
+        setSurfacing((prev) => ({ ...prev, [type]: value }));
     };
 
     /**
@@ -97,10 +105,16 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
             const machineProfile = store.get('workspace.machineProfile');
 
             if (machineProfile) {
-                setSurfacing(prev => ({
+                setSurfacing((prev) => ({
                     ...prev,
-                    length: units === METRIC_UNITS ? machineProfile.mm.depth : machineProfile.in.depth,
-                    width: units === METRIC_UNITS ? machineProfile.mm.width : machineProfile.in.width
+                    length:
+                        units === METRIC_UNITS
+                            ? machineProfile.mm.depth
+                            : machineProfile.in.depth,
+                    width:
+                        units === METRIC_UNITS
+                            ? machineProfile.mm.width
+                            : machineProfile.in.width,
                 }));
             }
         }
@@ -111,7 +125,10 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
 
         return () => {
             clearTimeout(timeout);
-            reduxStore.dispatch({ type: SET_CURRENT_VISUALIZER, payload: VISUALIZER_PRIMARY });
+            reduxStore.dispatch({
+                type: SET_CURRENT_VISUALIZER,
+                payload: VISUALIZER_PRIMARY,
+            });
         };
     }, []);
 
@@ -128,21 +145,24 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
 
     const canLoad = !!gcode; //For accessing the gcode line viewer
 
-    const tabs = useMemo(() => [
-        {
-            id: 0,
-            label: 'Visualizer Preview',
-            widgetId: 'viz-preview',
-            component: <Visualizer gcode={gcode} surfacing={surfacing} />,
-        },
-        {
-            id: 1,
-            label: `G-code Viewer ${gcode && `(${gcode.split('\n').length} lines)`}`,
-            widgetId: 'gcode-viewer',
-            component: <GcodeViewer gcode={gcode} />,
-            disabled: !gcode,
-        },
-    ], [gcode]);
+    const tabs = useMemo(
+        () => [
+            {
+                id: 0,
+                label: 'Visualizer Preview',
+                widgetId: 'viz-preview',
+                component: <Visualizer gcode={gcode} surfacing={surfacing} />,
+            },
+            {
+                id: 1,
+                label: `G-code Viewer ${gcode && `(${gcode.split('\n').length} lines)`}`,
+                widgetId: 'gcode-viewer',
+                component: <GcodeViewer gcode={gcode} />,
+                disabled: !gcode,
+            },
+        ],
+        [gcode],
+    );
     const contextValue = {
         surfacing,
         gcode,
@@ -153,7 +173,7 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
         onChange: handleChange,
         onSelect: handleSelect,
         runGenerate,
-        loadGcode
+        loadGcode,
     };
 
     return (
@@ -168,8 +188,20 @@ const Surfacing = ({ onClose, showTitle, isDisabled }) => {
                 <div className={styles.container}>
                     <div className={styles.mainContainer}>
                         <div>
-                            <p style={{ fontSize: '1.1rem', lineHeight: '1.25', marginTop: '1rem', color: 'grey' }}>
-                                <b>For ideal wasteboard surfacing:</b> know your CNCs exact movement limits accounting for limit switches and other add-ons, get nicer and faster cuts using your widest diameter bit, and consider turning off hard and soft limits so you don&apos;t encounter alarms or errors.
+                            <p
+                                style={{
+                                    fontSize: '1.1rem',
+                                    lineHeight: '1.25',
+                                    marginTop: '1rem',
+                                    color: 'grey',
+                                }}
+                            >
+                                <b>For ideal wasteboard surfacing:</b> know your
+                                CNCs exact movement limits accounting for limit
+                                switches and other add-ons, get nicer and faster
+                                cuts using your widest diameter bit, and
+                                consider turning off hard and soft limits so you
+                                don&apos;t encounter alarms or errors.
                             </p>
                             <InputArea />
                         </div>

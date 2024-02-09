@@ -8,11 +8,14 @@ import ToolModalButton from 'app/components/ToolModalButton/ToolModalButton';
 import { Container } from './styled';
 import { RotaryContext } from '../../../Context';
 
-
 const Actions = ({ loadGcode, generateGcode }) => {
     const { state } = useContext(RotaryContext);
-    const controllerState = useSelector(store => get(store, 'controller.state'));
-    const isFileRunning = controllerState.status?.activeState === 'Hold' || controllerState.status?.activeState === 'Run';
+    const controllerState = useSelector((store) =>
+        get(store, 'controller.state'),
+    );
+    const isFileRunning =
+        controllerState.status?.activeState === 'Hold' ||
+        controllerState.status?.activeState === 'Run';
 
     return (
         <Container>

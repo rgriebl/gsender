@@ -51,7 +51,7 @@ class ConsoleWidget extends PureComponent {
         onRemove: PropTypes.func.isRequired,
         sortable: PropTypes.object,
         embedded: PropTypes.bool,
-        active: PropTypes.bool
+        active: PropTypes.bool,
     };
 
     senderId = uuid.v4();
@@ -73,22 +73,25 @@ class ConsoleWidget extends PureComponent {
 
     name = this.props.widgetId.split(':')[0];
 
-    throttledRefitTerminal = throttle(() => this.terminal.refitTerminal(), 3000);
+    throttledRefitTerminal = throttle(
+        () => this.terminal.refitTerminal(),
+        3000,
+    );
 
     actions = {
         toggleFullscreen: () => {
-            this.setState(state => ({
+            this.setState((state) => ({
                 minimized: state.isFullscreen ? state.minimized : false,
                 isFullscreen: !state.isFullscreen,
                 terminal: {
                     ...state.terminal,
-                    rows: state.isFullscreen ? TERMINAL_ROWS : 'auto'
-                }
+                    rows: state.isFullscreen ? TERMINAL_ROWS : 'auto',
+                },
             }));
         },
         toggleMinimized: () => {
-            this.setState(state => ({
-                minimized: !state.minimized
+            this.setState((state) => ({
+                minimized: !state.minimized,
             }));
         },
         clearAll: () => {
@@ -96,10 +99,10 @@ class ConsoleWidget extends PureComponent {
         },
         onTerminalData: (data) => {
             const context = {
-                __sender__: this.senderId
+                __sender__: this.senderId,
             };
             controller.write(data, context);
-        }
+        },
     };
 
     controllerEvents = {
@@ -109,11 +112,30 @@ class ConsoleWidget extends PureComponent {
             setTimeout(() => {
                 if (this.terminal) {
                     this.terminal.refitTerminal();
-                    this.terminal.writeln(color.white.bold(`gSender - [${controller.type}]`));
-                    this.terminal.writeln(color.white(i18n._('Connected to {{-port}} with a baud rate of {{baudrate}}', { port: color.yellowBright(port), baudrate: color.blueBright(baudrate) })));
+                    this.terminal.writeln(
+                        color.white.bold(`gSender - [${controller.type}]`),
+                    );
+                    this.terminal.writeln(
+                        color.white(
+                            i18n._(
+                                'Connected to {{-port}} with a baud rate of {{baudrate}}',
+                                {
+                                    port: color.yellowBright(port),
+                                    baudrate: color.blueBright(baudrate),
+                                },
+                            ),
+                        ),
+                    );
 
-                    this.terminal.updateTerminalHistory(`gSender - [${controller.type}]`);
-                    this.terminal.updateTerminalHistory(i18n._('Connected to {{-port}} with a baud rate of {{baudrate}}', { port: port, baudrate: baudrate }));
+                    this.terminal.updateTerminalHistory(
+                        `gSender - [${controller.type}]`,
+                    );
+                    this.terminal.updateTerminalHistory(
+                        i18n._(
+                            'Connected to {{-port}} with a baud rate of {{baudrate}}',
+                            { port: port, baudrate: baudrate },
+                        ),
+                    );
                 }
             }, 0);
         },
@@ -142,7 +164,10 @@ class ConsoleWidget extends PureComponent {
             });
 
             if (source) {
-                this.terminal.writeln(color.blackBright(source) + color.xterm(GREY)(this.terminal.prompt + data));
+                this.terminal.writeln(
+                    color.blackBright(source) +
+                        color.xterm(GREY)(this.terminal.prompt + data),
+                );
             } else {
                 this.terminal.writeln(color.white(this.terminal.prompt + data));
             }
@@ -158,7 +183,7 @@ class ConsoleWidget extends PureComponent {
 
             this.terminal.writeln(data);
             this.terminal.updateTerminalHistory(data);
-        }
+        },
     };
 
     terminal = null;
@@ -177,9 +202,7 @@ class ConsoleWidget extends PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const {
-            minimized
-        } = this.state;
+        const { minimized } = this.state;
 
         this.config.set('minimized', minimized);
 
@@ -205,28 +228,31 @@ class ConsoleWidget extends PureComponent {
                 rows: TERMINAL_ROWS,
                 cursorBlink: true,
                 scrollback: 200,
-                tabStopWidth: 4
-            }
+                tabStopWidth: 4,
+            },
         };
     }
 
-    registerIPCListeners () {
+    registerIPCListeners() {
         // send state of this console to the new window
         window.ipcRenderer.on('get-data-' + this.name, (event) => {
             const data = { state: this.state, port: controller.port };
-            window.ipcRenderer.send('recieve-data', { widget: this.name, data: data });
+            window.ipcRenderer.send('recieve-data', {
+                widget: this.name,
+                data: data,
+            });
         });
     }
 
     addControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.addListener(eventName, callback);
         });
     }
 
     removeControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.removeListener(eventName, callback);
         });
@@ -237,39 +263,40 @@ class ConsoleWidget extends PureComponent {
         const { minimized, isFullscreen } = this.state;
         const isForkedWidget = widgetId.match(/\w+:[\w\-]+/);
         const state = {
-            ...this.state
+            ...this.state,
         };
         const actions = {
-            ...this.actions
+            ...this.actions,
         };
 
         return (
             <Widget fullscreen={isFullscreen}>
-                {
-                    isMainWindow && (
-                        <Widget.Header embedded={embedded}>
-                            <Widget.Title>
-                                {isForkedWidget &&
-                                <i className="fa fa-code-fork" style={{ marginRight: 5 }} />
-                                }
-                                {i18n._('Console')}
-                            </Widget.Title>
-                            <Widget.Controls />
-                        </Widget.Header>
-                    )
-                }
+                {isMainWindow && (
+                    <Widget.Header embedded={embedded}>
+                        <Widget.Title>
+                            {isForkedWidget && (
+                                <i
+                                    className="fa fa-code-fork"
+                                    style={{ marginRight: 5 }}
+                                />
+                            )}
+                            {i18n._('Console')}
+                        </Widget.Title>
+                        <Widget.Controls />
+                    </Widget.Header>
+                )}
                 <Widget.Content
                     className={cx(
                         styles.widgetContent,
                         { [styles.popOut]: !isMainWindow },
                         styles.terminalContent,
                         { [styles.hidden]: minimized },
-                        { [styles.fullscreen]: isFullscreen }
+                        { [styles.fullscreen]: isFullscreen },
                     )}
                     style={{ width: '100%' }}
                 >
                     <Console
-                        ref={node => {
+                        ref={(node) => {
                             if (node) {
                                 this.terminal = node.terminal;
                             }
@@ -278,10 +305,9 @@ class ConsoleWidget extends PureComponent {
                         actions={actions}
                         active={active}
                     />
-                    {
-                        isElectron() && this.props.isMainWindow &&
+                    {isElectron() && this.props.isMainWindow && (
                         <PopOutButton id={widgetId} state={state} />
-                    }
+                    )}
                 </Widget.Content>
             </Widget>
         );

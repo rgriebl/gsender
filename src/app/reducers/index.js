@@ -33,7 +33,7 @@ const consolidatedReducer = combineReducers({
     connection,
     file,
     visualizer,
-    preferences
+    preferences,
 });
 
 export default consolidatedReducer;

@@ -30,5 +30,5 @@ export const Image = ({ alt = '', src = '', ...props }) => (
 
 Image.propTypes = {
     alt: PropTypes.string,
-    src: PropTypes.string
+    src: PropTypes.string,
 };

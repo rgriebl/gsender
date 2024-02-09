@@ -26,15 +26,26 @@ import cx from 'classnames';
 import styles from './index.styl';
 import { DIALOG_CANCEL, DIALOG_CONFIRM } from './ConfirmationDialogLib';
 
-
-const ConfirmationDialogButton = ({ children, onClick, variant = DIALOG_CONFIRM }) => {
+const ConfirmationDialogButton = ({
+    children,
+    onClick,
+    variant = DIALOG_CONFIRM,
+}) => {
     return (
         <button
             type="button"
             onClick={onClick}
-            className={cx(styles.confirmationDialogButton,
-                { [styles.confirmationDialogButtonConfirm]: variant === DIALOG_CONFIRM },
-                { [styles.confirmationDialogButtonCancel]: variant === DIALOG_CANCEL })}
+            className={cx(
+                styles.confirmationDialogButton,
+                {
+                    [styles.confirmationDialogButtonConfirm]:
+                        variant === DIALOG_CONFIRM,
+                },
+                {
+                    [styles.confirmationDialogButtonCancel]:
+                        variant === DIALOG_CANCEL,
+                },
+            )}
         >
             {children}
         </button>

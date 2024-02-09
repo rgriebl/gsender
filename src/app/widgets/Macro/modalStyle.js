@@ -23,12 +23,12 @@
 
 export const modalStyle = {
     border: 'none',
-    backgroundColor: '#d1d5db'
+    backgroundColor: '#d1d5db',
 };
 
 export const modalHeaderStyle = {
     backgroundColor: '#d1d5db',
-    border: 'none'
+    border: 'none',
 };
 
 export const modalTitleStyle = {
@@ -36,13 +36,13 @@ export const modalTitleStyle = {
 };
 
 export const modalBodyStyle = {
-    padding: '2rem'
+    padding: '2rem',
 };
 
 export const modalContainerStyle = {
     display: 'grid',
     gridTemplateRows: '6fr 1fr',
-    height: '100%'
+    height: '100%',
 };
 
 export const modalFooterStyle = {

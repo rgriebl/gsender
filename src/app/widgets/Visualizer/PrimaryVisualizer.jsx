@@ -5,7 +5,12 @@ import Icon from '@mdi/react';
 import { mdiEmoticonSadOutline } from '@mdi/js';
 
 import * as WebGL from 'app/lib/three/WebGL';
-import { GRBL_ACTIVE_STATE_ALARM, GRBL_ACTIVE_STATE_HOLD, WORKFLOW_STATE_IDLE, GRBL_ACTIVE_STATE_DOOR } from 'app/constants';
+import {
+    GRBL_ACTIVE_STATE_ALARM,
+    GRBL_ACTIVE_STATE_HOLD,
+    WORKFLOW_STATE_IDLE,
+    GRBL_ACTIVE_STATE_DOOR,
+} from 'app/constants';
 import Widget from 'app/components/Widget';
 import ToggleSwitch from 'app/components/ToggleSwitch';
 import UnlockButton from 'app/widgets/Visualizer/UnlockButton';
@@ -22,13 +27,36 @@ import { MODAL_WATCH_DIRECTORY } from './constants';
 import styles from './index.styl';
 import SoftLimitsWarningArea from './SoftLimitsWarningArea';
 
-
-const PrimaryVisualizer = ({ actions, state, capable, showLoading, showRendering, showVisualizer, visualizerRef, workflowRef, widgetContentRef }) => {
-    const { liteMode, modal, cameraPosition, invalidLine, invalidGcode, alarmCode, activeState, workflow, isConnected } = state;
-    const isHomingAlarm = activeState === GRBL_ACTIVE_STATE_ALARM && alarmCode === 'Homing'; // We are alarmed and
-    const holdWithoutWorkflowPause = activeState === GRBL_ACTIVE_STATE_HOLD && workflow.state === WORKFLOW_STATE_IDLE;
+const PrimaryVisualizer = ({
+    actions,
+    state,
+    capable,
+    showLoading,
+    showRendering,
+    showVisualizer,
+    visualizerRef,
+    workflowRef,
+    widgetContentRef,
+}) => {
+    const {
+        liteMode,
+        modal,
+        cameraPosition,
+        invalidLine,
+        invalidGcode,
+        alarmCode,
+        activeState,
+        workflow,
+        isConnected,
+    } = state;
+    const isHomingAlarm =
+        activeState === GRBL_ACTIVE_STATE_ALARM && alarmCode === 'Homing'; // We are alarmed and
+    const holdWithoutWorkflowPause =
+        activeState === GRBL_ACTIVE_STATE_HOLD &&
+        workflow.state === WORKFLOW_STATE_IDLE;
     const doorOpen = activeState === GRBL_ACTIVE_STATE_DOOR;
-    const showUnlockButton = isConnected && (doorOpen || isHomingAlarm || holdWithoutWorkflowPause);
+    const showUnlockButton =
+        isConnected && (doorOpen || isHomingAlarm || holdWithoutWorkflowPause);
     const { handleLiteModeToggle, handleRun, reset } = actions;
 
     const containerID = 'visualizer_container';
@@ -36,9 +64,7 @@ const PrimaryVisualizer = ({ actions, state, capable, showLoading, showRendering
     return (
         <Widget className={styles.vizWidgetOverride}>
             <Widget.Header className={styles['visualizer-header']}>
-                <Widget.Title>
-                    Visualizer
-                </Widget.Title>
+                <Widget.Title>Visualizer</Widget.Title>
                 <Widget.Controls style={{ top: '-4px' }}>
                     <ToggleSwitch
                         label="Lightweight Mode"
@@ -53,51 +79,40 @@ const PrimaryVisualizer = ({ actions, state, capable, showLoading, showRendering
                 reference={widgetContentRef}
                 className={classNames(
                     { [styles.view3D]: capable.view3D },
-                    styles['visualizer-component'],
+                    styles['visualizer-component']
                 )}
                 id={containerID}
             >
-                {showLoading &&
-                <Loading />
-                }
-                {showRendering &&
-                <Rendering />
-                }
+                {showLoading && <Loading />}
+                {showRendering && <Rendering />}
                 {modal.name === MODAL_WATCH_DIRECTORY && (
-                    <WatchDirectory
-                        state={state}
-                        actions={actions}
-                    />
+                    <WatchDirectory state={state} actions={actions} />
                 )}
-
 
                 <div className={styles.visualizerWrapper}>
                     <SoftLimitsWarningArea />
-                    {
-                        (isConnected && true || showUnlockButton) && <UnlockButton />
-                    }
-                    <MachineStatusArea
-                        state={state}
-                        actions={actions}
-                    />
-                    {
-                        WebGL.isWebGLAvailable() ? (
-                            <VisualizerWrapper
-                                show={showVisualizer}
-                                cameraPosition={cameraPosition}
-                                ref={visualizerRef}
-                                state={state}
-                                actions={actions}
-                                containerID={containerID}
-                                isSecondary={false}
-                            />
-                        ) : (
-                            <div className={styles.visualizerMsgContainer}>
-                                <Icon path={mdiEmoticonSadOutline} size={4} />
-                                <span style={{ fontSize: '16px' }}>{'It looks like you don\'t support WebGL'}</span>
-                            </div>
-                        )
-                    }
+                    {((isConnected && true) || showUnlockButton) && (
+                        <UnlockButton />
+                    )}
+                    <MachineStatusArea state={state} actions={actions} />
+                    {WebGL.isWebGLAvailable() ? (
+                        <VisualizerWrapper
+                            show={showVisualizer}
+                            cameraPosition={cameraPosition}
+                            ref={visualizerRef}
+                            state={state}
+                            actions={actions}
+                            containerID={containerID}
+                            isSecondary={false}
+                        />
+                    ) : (
+                        <div className={styles.visualizerMsgContainer}>
+                            <Icon path={mdiEmoticonSadOutline} size={4} />
+                            <span style={{ fontSize: '16px' }}>
+                                It looks like you don&#39;t support WebGL
+                            </span>
+                        </div>
+                    )}
                     <WorkflowControl
                         ref={workflowRef}
                         state={state}
@@ -106,26 +121,23 @@ const PrimaryVisualizer = ({ actions, state, capable, showLoading, showRendering
                     />
                     <Wizard />
 
-
-                    {
-                        invalidGcode.shouldShow && invalidGcode.showModal && (
-                            <ValidationModal
-                                invalidGcode={invalidGcode}
-                                onProceed={handleRun}
-                                onCancel={reset}
-                            />
-                        )
-                    }
-                    {
-                        invalidLine.shouldShow && invalidLine.show && (
-                            <WarningModal
-                                onContinue={actions.lineWarning.onContinue}
-                                onIgnoreWarning={actions.lineWarning.onIgnoreWarning}
-                                onCancel={actions.lineWarning.onCancel}
-                                invalidLine={invalidLine.line}
-                            />
-                        )
-                    }
+                    {invalidGcode.shouldShow && invalidGcode.showModal && (
+                        <ValidationModal
+                            invalidGcode={invalidGcode}
+                            onProceed={handleRun}
+                            onCancel={reset}
+                        />
+                    )}
+                    {invalidLine.shouldShow && invalidLine.show && (
+                        <WarningModal
+                            onContinue={actions.lineWarning.onContinue}
+                            onIgnoreWarning={
+                                actions.lineWarning.onIgnoreWarning
+                            }
+                            onCancel={actions.lineWarning.onCancel}
+                            invalidLine={invalidLine.line}
+                        />
+                    )}
                 </div>
             </Widget.Content>
         </Widget>

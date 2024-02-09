@@ -43,12 +43,18 @@ import styles from './index.styl';
 import NavLogo from '../../components/NavLogo';
 import NavSidebar from '../NavSidebar';
 import useKeybinding from '../../lib/useKeybinding';
-import { GRBL_ACTIVE_STATE_ALARM, GRBL_ACTIVE_STATE_IDLE, GENERAL_CATEGORY, LOCATION_CATEGORY, GRBLHAL } from '../../constants';
+import {
+    GRBL_ACTIVE_STATE_ALARM,
+    GRBL_ACTIVE_STATE_IDLE,
+    GENERAL_CATEGORY,
+    LOCATION_CATEGORY,
+    GRBLHAL,
+} from '../../constants';
 import { Toaster, TOASTER_WARNING } from '../../lib/toaster/ToasterLib';
 
 class Header extends PureComponent {
     static propTypes = {
-        ...withRouter.propTypes
+        ...withRouter.propTypes,
     };
 
     state = this.getInitialState();
@@ -59,9 +65,10 @@ class Header extends PureComponent {
                 const res = await api.commands.fetch({ paging: false });
                 const { records: commands } = res.body;
 
-                this._isMounted && this.setState({
-                    commands: commands.filter(command => command.enabled)
-                });
+                this._isMounted &&
+                    this.setState({
+                        commands: commands.filter((command) => command.enabled),
+                    });
             } catch (res) {
                 // Ignore error
             }
@@ -72,9 +79,11 @@ class Header extends PureComponent {
                 const { taskId } = res.body;
 
                 this.setState({
-                    commands: this.state.commands.map(c => {
-                        return (c.id === cmd.id) ? { ...c, taskId: taskId, err: null } : c;
-                    })
+                    commands: this.state.commands.map((c) => {
+                        return c.id === cmd.id
+                            ? { ...c, taskId: taskId, err: null }
+                            : c;
+                    }),
                 });
             } catch (res) {
                 // Ignore error
@@ -87,26 +96,40 @@ class Header extends PureComponent {
             const state = get(reduxStore.getState(), 'controller.state.status');
             const activeState = get(state, 'activeState', 'Idle');
             const alarmCode = get(state, 'alarmCode', 0);
-            const controllerType = get(reduxStore.getState(), 'controller.type');
+            const controllerType = get(
+                reduxStore.getState(),
+                'controller.type',
+            );
             // if it's a grblHAL only shortcut, don't run it
             if (type === GRBLHAL && controllerType !== GRBLHAL) {
                 this.showToast();
                 return;
             }
 
-            const commandIsValidForAlarmState = ['reset', 'reset:limit', 'homing'].includes(command);
+            const commandIsValidForAlarmState = [
+                'reset',
+                'reset:limit',
+                'homing',
+            ].includes(command);
             const isInAlarmState = activeState === GRBL_ACTIVE_STATE_ALARM;
             // feedhold, cyclestart, homing, unlock, reset
-            if (((commandIsValidForAlarmState) && isInAlarmState) ||
-                (command !== 'reset:limit' && activeState === GRBL_ACTIVE_STATE_IDLE)) {
+            if (
+                (commandIsValidForAlarmState && isInAlarmState) ||
+                (command !== 'reset:limit' &&
+                    activeState === GRBL_ACTIVE_STATE_IDLE)
+            ) {
                 // unlock + reset on alarm 1 and 2, just unlock on others
-                if (activeState === GRBL_ACTIVE_STATE_ALARM && alarmCode !== 1 && alarmCode !== 2) {
+                if (
+                    activeState === GRBL_ACTIVE_STATE_ALARM &&
+                    alarmCode !== 1 &&
+                    alarmCode !== 2
+                ) {
                     command = 'unlock';
                 }
                 controller.command(command);
             }
-        }
-    }
+        },
+    };
 
     shuttleControlEvents = {
         CONTROLLER_COMMAND_UNLOCK: {
@@ -114,36 +137,36 @@ class Header extends PureComponent {
             keys: '$',
             cmd: 'CONTROLLER_COMMAND_UNLOCK',
             payload: {
-                command: 'reset:limit'
+                command: 'reset:limit',
             },
             preventDefault: false,
             isActive: true,
             category: GENERAL_CATEGORY,
-            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND
+            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND,
         },
         CONTROLLER_COMMAND_RESET: {
             title: 'Soft Reset',
             keys: '%',
             cmd: 'CONTROLLER_COMMAND_RESET',
             payload: {
-                command: 'reset'
+                command: 'reset',
             },
             preventDefault: false,
             isActive: true,
             category: GENERAL_CATEGORY,
-            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND
+            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND,
         },
         CONTROLLER_COMMAND_HOMING: {
             title: 'Homing',
             keys: ['ctrl', 'alt', 'command', 'h'].join('+'),
             cmd: 'CONTROLLER_COMMAND_HOMING',
             payload: {
-                command: 'homing'
+                command: 'homing',
             },
             preventDefault: true,
             isActive: true,
             category: LOCATION_CATEGORY,
-            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND
+            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND,
         },
         CONTROLLER_COMMAND_REALTIME_REPORT: {
             title: 'Realtime Report',
@@ -151,12 +174,12 @@ class Header extends PureComponent {
             cmd: 'CONTROLLER_COMMAND_REALTIME_REPORT',
             payload: {
                 command: 'realtime_report',
-                type: GRBLHAL
+                type: GRBLHAL,
             },
             preventDefault: true,
             isActive: true,
             category: GENERAL_CATEGORY,
-            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND
+            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND,
         },
         CONTROLLER_COMMAND_ERROR_CLEAR: {
             title: 'Error Clear',
@@ -164,12 +187,12 @@ class Header extends PureComponent {
             cmd: 'CONTROLLER_COMMAND_ERROR_CLEAR',
             payload: {
                 command: 'error_clear',
-                type: GRBLHAL
+                type: GRBLHAL,
             },
             preventDefault: true,
             isActive: true,
             category: GENERAL_CATEGORY,
-            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND
+            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND,
         },
         CONTROLLER_COMMAND_TOOLCHANGE_ACKNOWLEDGEMENT: {
             title: 'Toolchange Acknowledgement',
@@ -177,12 +200,12 @@ class Header extends PureComponent {
             cmd: 'CONTROLLER_COMMAND_TOOLCHANGE_ACKNOWLEDGEMENT',
             payload: {
                 command: 'toolchange:acknowledge',
-                type: GRBLHAL
+                type: GRBLHAL,
             },
             preventDefault: true,
             isActive: true,
             category: GENERAL_CATEGORY,
-            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND
+            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND,
         },
         CONTROLLER_COMMAND_VIRTUAL_STOP_TOGGLE: {
             title: 'Virtual Stop Toggle',
@@ -190,24 +213,24 @@ class Header extends PureComponent {
             cmd: 'CONTROLLER_COMMAND_VIRTUAL_STOP_TOGGLE',
             payload: {
                 command: 'virtual_stop_toggle',
-                type: GRBLHAL
+                type: GRBLHAL,
             },
             preventDefault: true,
             isActive: true,
             category: GENERAL_CATEGORY,
-            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND
+            callback: this.shuttleControlFunctions.CONTROLLER_COMMAND,
         },
     };
 
     controllerEvents = {
-        'disconnect': () => {
+        disconnect: () => {
             this.setState({
-                connected: false
+                connected: false,
             });
         },
-        'connect': () => {
+        connect: () => {
             this.setState({
-                connected: true
+                connected: true,
             });
         },
         'config:change': () => {
@@ -215,15 +238,15 @@ class Header extends PureComponent {
         },
         'task:start': (taskId) => {
             this.setState({
-                runningTasks: this.state.runningTasks.concat(taskId)
+                runningTasks: this.state.runningTasks.concat(taskId),
             });
         },
         'task:finish': (taskId, code) => {
-            const err = (code !== 0) ? new Error(`errno=${code}`) : null;
+            const err = code !== 0 ? new Error(`errno=${code}`) : null;
             let cmd = null;
 
             this.setState({
-                commands: this.state.commands.map(c => {
+                commands: this.state.commands.map((c) => {
                     if (c.taskId !== taskId) {
                         return c;
                     }
@@ -231,23 +254,24 @@ class Header extends PureComponent {
                     return {
                         ...c,
                         taskId: null,
-                        err: err
+                        err: err,
                     };
                 }),
-                runningTasks: without(this.state.runningTasks, taskId)
+                runningTasks: without(this.state.runningTasks, taskId),
             });
 
             if (cmd && this.state.pushPermission === Push.Permission.GRANTED) {
                 Push.create(cmd.title, {
-                    body: code === 0
-                        ? i18n._('Command succeeded')
-                        : i18n._('Command failed ({{err}})', { err: err }),
+                    body:
+                        code === 0
+                            ? i18n._('Command succeeded')
+                            : i18n._('Command failed ({{err}})', { err: err }),
                     icon: 'images/icon-round.png',
                     timeout: 10 * 1000,
                     onClick: function () {
                         window.focus();
                         this.close();
-                    }
+                    },
                 });
             }
         },
@@ -255,7 +279,7 @@ class Header extends PureComponent {
             let cmd = null;
 
             this.setState({
-                commands: this.state.commands.map(c => {
+                commands: this.state.commands.map((c) => {
                     if (c.taskId !== taskId) {
                         return c;
                     }
@@ -263,10 +287,10 @@ class Header extends PureComponent {
                     return {
                         ...c,
                         taskId: null,
-                        err: err
+                        err: err,
                     };
                 }),
-                runningTasks: without(this.state.runningTasks, taskId)
+                runningTasks: without(this.state.runningTasks, taskId),
             });
 
             if (cmd && this.state.pushPermission === Push.Permission.GRANTED) {
@@ -277,10 +301,10 @@ class Header extends PureComponent {
                     onClick: function () {
                         window.focus();
                         this.close();
-                    }
+                    },
                 });
             }
-        }
+        },
     };
 
     _isMounted = false;
@@ -305,8 +329,8 @@ class Header extends PureComponent {
             hostInformation: {
                 address: '0.0.0.0',
                 port: 0,
-                headless: false
-            }
+                headless: false,
+            },
         };
     }
 
@@ -318,15 +342,20 @@ class Header extends PureComponent {
         this.addResizeEventListener();
 
         useKeybinding(this.shuttleControlEvents);
-        gamepad.on('gamepad:button', (event) => runAction({ event, shuttleControlEvents: this.shuttleControlEvents }));
+        gamepad.on('gamepad:button', (event) =>
+            runAction({
+                event,
+                shuttleControlEvents: this.shuttleControlEvents,
+            }),
+        );
 
         if (isElectron()) {
             this.registerIPCListeners();
-            window.ipcRenderer.invoke('check-remote-status').then(result => {
+            window.ipcRenderer.invoke('check-remote-status').then((result) => {
                 this.setState({
                     hostInformation: {
-                        ...result
-                    }
+                        ...result,
+                    },
                 });
             });
         }
@@ -343,28 +372,28 @@ class Header extends PureComponent {
     }
 
     addShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.on(eventName, callback);
         });
     }
 
     removeShuttleControlEvents() {
-        Object.keys(this.shuttleControlEvents).forEach(eventName => {
+        Object.keys(this.shuttleControlEvents).forEach((eventName) => {
             const callback = this.shuttleControlEvents[eventName].callback;
             combokeys.removeListener(eventName, callback);
         });
     }
 
     addControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.addListener(eventName, callback);
         });
     }
 
     removeControllerEvents() {
-        Object.keys(this.controllerEvents).forEach(eventName => {
+        Object.keys(this.controllerEvents).forEach((eventName) => {
             const callback = this.controllerEvents[eventName];
             controller.removeListener(eventName, callback);
         });
@@ -384,10 +413,10 @@ class Header extends PureComponent {
         pubsub.publish('showUpdateToast');
     }
 
-    registerIPCListeners () {
+    registerIPCListeners() {
         window.ipcRenderer.on('update_available', (info) => {
             this.setState({
-                updateAvailable: true
+                updateAvailable: true,
             });
             pubsub.publish('showUpdateToast', info);
         });
@@ -396,17 +425,21 @@ class Header extends PureComponent {
     updateScreenSize = () => {
         const isMobile = window.screen.width <= 639;
         this.setState({
-            mobile: isMobile
+            mobile: isMobile,
         });
     };
 
-    showToast = _.throttle(() => {
-        Toaster.pop({
-            msg: 'Unable to activate GrblHAL ONLY shortcut',
-            type: TOASTER_WARNING,
-            duration: 3000
-        });
-    }, 3000, { trailing: false });
+    showToast = _.throttle(
+        () => {
+            Toaster.pop({
+                msg: 'Unable to activate GrblHAL ONLY shortcut',
+                type: TOASTER_WARNING,
+                duration: 3000,
+            });
+        },
+        3000,
+        { trailing: false },
+    );
 
     render() {
         const { updateAvailable, hostInformation, mobile } = this.state;
@@ -414,17 +447,20 @@ class Header extends PureComponent {
             <>
                 <div className={styles.navBar}>
                     <div className={styles.primary}>
-                        <NavLogo updateAvailable={updateAvailable} onClick={() => this.toggleUpdateToast()} />
+                        <NavLogo
+                            updateAvailable={updateAvailable}
+                            onClick={() => this.toggleUpdateToast()}
+                        />
                         <NavbarConnection
                             state={this.state}
                             actions={this.actions}
                             widgetId="connection"
                         />
-                        {
-                            isElectron() && <HeadlessIndicator {...hostInformation} />
-                        }
+                        {isElectron() && (
+                            <HeadlessIndicator {...hostInformation} />
+                        )}
                     </div>
-                    { !mobile && <NavSidebar /> }
+                    {!mobile && <NavSidebar />}
                 </div>
             </>
         );

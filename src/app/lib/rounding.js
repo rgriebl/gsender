@@ -127,10 +127,10 @@ export const determineRoundedValue = (key, value) => {
             newVal[el] = determineRoundedValue(key + '.' + el, value[el]);
         });
         return newVal;
-    // if array and is something we should round, iterate through the values and round
+        // if array and is something we should round, iterate through the values and round
     } else if (isArray && storeValuesThatNeedRounding.has(key)) {
         return value.map((el) => roundMetric(el));
-    // if a single value, round
+        // if a single value, round
     } else if (storeValuesThatNeedRounding.has(key)) {
         return roundMetric(value);
     }

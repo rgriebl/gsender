@@ -37,15 +37,15 @@ const t = (...args) => {
 };
 
 const _ = (...args) => {
-    if ((args.length === 0) || (typeof args[0] === 'undefined')) {
+    if (args.length === 0 || typeof args[0] === 'undefined') {
         return i18next.t.apply(i18next, args);
     }
 
     const [value = '', options = {}] = args;
     const key = ((value, options) => {
         const { context, count } = { ...options };
-        const containsContext = (context !== undefined) && (context !== null);
-        const containsPlural = (typeof count === 'number');
+        const containsContext = context !== undefined && context !== null;
+        const containsPlural = typeof count === 'number';
         if (containsContext) {
             value = value + i18next.options.contextSeparator + options.context;
         }
@@ -67,5 +67,5 @@ const _ = (...args) => {
 
 export default {
     t,
-    _
+    _,
 };

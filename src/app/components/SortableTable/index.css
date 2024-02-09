@@ -33,7 +33,7 @@ label {
     font-weight: 400;
 }
 
-.tableContainer{
+.tableContainer {
     padding: 20px;
     background-color: rgba(25, 53, 80, 0.5);
     width: 100%;
@@ -55,15 +55,15 @@ label {
     border: none !important;
 }
 
-.table td{
-    border: #ADADAD solid 1px !important;
+.table td {
+    border: #adadad solid 1px !important;
 }
 
-.table th{
-    border: #ADADAD solid 1px !important;
+.table th {
+    border: #adadad solid 1px !important;
 }
 
-.table>tbody>tr>td {
+.table > tbody > tr > td {
     vertical-align: middle;
 }
 /* .table tbody tr:hover{

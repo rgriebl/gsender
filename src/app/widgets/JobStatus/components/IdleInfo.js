@@ -10,7 +10,12 @@ import styles from './IdleInfo.styl';
 import FileStat from './FileStat';
 import { IMPERIAL_UNITS, METRIC_UNITS } from '../../../constants';
 
-const getFeedString = (movementSet, convertedFeedMin, convertedFeedMax, feedUnits) => {
+const getFeedString = (
+    movementSet,
+    convertedFeedMin,
+    convertedFeedMax,
+    feedUnits,
+) => {
     if (movementSet.length === 0) {
         return 'No Feedrates';
     }
@@ -39,7 +44,7 @@ const IdleInfo = ({ state, ...props }) => {
         units,
         lastFileRan,
         fileModal,
-        bbox: { delta, min, max } // This is mapped to correct units from redux earlier in the component tree
+        bbox: { delta, min, max }, // This is mapped to correct units from redux earlier in the component tree
     } = state;
     const {
         fileLoaded,
@@ -47,11 +52,11 @@ const IdleInfo = ({ state, ...props }) => {
         toolSet,
         movementSet,
         estimatedTime,
-        usedAxes
+        usedAxes,
     } = props;
 
     let convertedFeedMin, convertedFeedMax, feedUnits;
-    feedUnits = (units === METRIC_UNITS) ? 'mm/min' : 'ipm';
+    feedUnits = units === METRIC_UNITS ? 'mm/min' : 'ipm';
 
     let feedrateMin = Math.min(...movementSet);
     let feedrateMax = Math.max(...movementSet);
@@ -88,12 +93,20 @@ const IdleInfo = ({ state, ...props }) => {
             return '-';
         }
         //Given time is a unix timestamp to be compared to unix timestamp 0
-        const elapsedMinute = moment(moment(givenTime)).diff(moment.unix(0), 'minutes');
-        const elapsedSecond = String((moment(moment(givenTime)).diff(moment.unix(0), 'seconds')));
+        const elapsedMinute = moment(moment(givenTime)).diff(
+            moment.unix(0),
+            'minutes',
+        );
+        const elapsedSecond = String(
+            moment(moment(givenTime)).diff(moment.unix(0), 'seconds'),
+        );
 
         //Grab last two characters in the elapsedSecond variable, which represent the seconds that have passed
-        const strElapsedSecond = `${(elapsedSecond[elapsedSecond.length - 2] !== undefined ? elapsedSecond[elapsedSecond.length - 2] : '')}${String(elapsedSecond[elapsedSecond.length - 1])}`;
-        const formattedSeconds = Number(strElapsedSecond) < 59 ? Number(strElapsedSecond) : `${Number(strElapsedSecond) - 60}`;
+        const strElapsedSecond = `${elapsedSecond[elapsedSecond.length - 2] !== undefined ? elapsedSecond[elapsedSecond.length - 2] : ''}${String(elapsedSecond[elapsedSecond.length - 1])}`;
+        const formattedSeconds =
+            Number(strElapsedSecond) < 59
+                ? Number(strElapsedSecond)
+                : `${Number(strElapsedSecond) - 60}`;
 
         return `${elapsedMinute}m ${Math.abs(formattedSeconds)}s`;
     };
@@ -134,15 +147,22 @@ const IdleInfo = ({ state, ...props }) => {
             round: true,
             units,
             delimiter: ' ',
-            spacer: ''
+            spacer: '',
         });
 
         return shortEnglishHumanizer(time * 1000);
     };
 
-    const feedString = getFeedString(movementSet, convertedFeedMin, convertedFeedMax, feedUnits);
+    const feedString = getFeedString(
+        movementSet,
+        convertedFeedMin,
+        convertedFeedMax,
+        feedUnits,
+    );
 
-    let elapsedTimeToDisplay = outputFormattedTimeForLastFile(state.lastFileRunLength);
+    let elapsedTimeToDisplay = outputFormattedTimeForLastFile(
+        state.lastFileRunLength,
+    );
 
     const formattedEstimateTime = formatEstimatedTime(estimatedTime);
 
@@ -159,11 +179,11 @@ const IdleInfo = ({ state, ...props }) => {
                     {feedString}
                 </FileStat>
                 <FileStat label="Spindle">
-                    {
-                        getSpindleString(spindleSet, spindleMin, spindleMax)
-                    }
+                    {getSpindleString(spindleSet, spindleMin, spindleMax)}
                     <br />
-                    {toolSet.length > 0 ? `${toolSet.length} (${formattedToolsUsed()})` : 'No Tools'}
+                    {toolSet.length > 0
+                        ? `${toolSet.length} (${formattedToolsUsed()})`
+                        : 'No Tools'}
                 </FileStat>
                 <FileStat label="Dimensions">
                     {`${delta.x} ${units} (X)`}
@@ -186,15 +206,14 @@ const IdleInfo = ({ state, ...props }) => {
                     <br />
                     {`${max.z} ${units} (Z)`}
                 </FileStat>
-                {
-                    lastFileRan
-                        ? (
-                            <FileStat label="Previous Run">
-                                <span className={styles.textWrap}>{lastFileRan}</span>
-                                {`Run Length: ${elapsedTimeToDisplay}`}
-                            </FileStat>
-                        ) : <FileStat label="Previous Run">-</FileStat>
-                }
+                {lastFileRan ? (
+                    <FileStat label="Previous Run">
+                        <span className={styles.textWrap}>{lastFileRan}</span>
+                        {`Run Length: ${elapsedTimeToDisplay}`}
+                    </FileStat>
+                ) : (
+                    <FileStat label="Previous Run">-</FileStat>
+                )}
             </div>
         </div>
     ) : (
@@ -205,15 +224,14 @@ const IdleInfo = ({ state, ...props }) => {
                 <FileStat label="Dimensions">-</FileStat>
                 <FileStat label="Minimum">-</FileStat>
                 <FileStat label="Maximum">-</FileStat>
-                {
-                    lastFileRan
-                        ? (
-                            <FileStat label="Previous Run">
-                                <span className={styles.textWrap}>{lastFileRan}</span>
-                                {`Run Length: ${elapsedTimeToDisplay}`}
-                            </FileStat>
-                        ) : <FileStat label="Previous Run">-</FileStat>
-                }
+                {lastFileRan ? (
+                    <FileStat label="Previous Run">
+                        <span className={styles.textWrap}>{lastFileRan}</span>
+                        {`Run Length: ${elapsedTimeToDisplay}`}
+                    </FileStat>
+                ) : (
+                    <FileStat label="Previous Run">-</FileStat>
+                )}
             </div>
         </div>
     );
@@ -226,15 +244,19 @@ IdleInfo.propTypes = {
 export default connect((store) => {
     const file = get(store, 'file', {});
 
-    const movementSet = [...file.movementSet].map(value => Number(value.slice(1)));
+    const movementSet = [...file.movementSet].map((value) =>
+        Number(value.slice(1)),
+    );
     const toolSet = [...file.toolSet];
-    const spindleSet = [...file.spindleSet].map(value => Number(value.slice(1)));
+    const spindleSet = [...file.spindleSet].map((value) =>
+        Number(value.slice(1)),
+    );
 
     return {
         ...file,
         movementSet,
         toolSet,
         spindleSet,
-        usedAxes: file.usedAxes
+        usedAxes: file.usedAxes,
     };
 })(IdleInfo);

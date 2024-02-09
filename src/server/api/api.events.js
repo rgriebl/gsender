@@ -28,7 +28,7 @@ import config from '../services/configstore';
 import {
     ERR_BAD_REQUEST,
     ERR_NOT_FOUND,
-    ERR_INTERNAL_SERVER_ERROR
+    ERR_INTERNAL_SERVER_ERROR,
 } from '../constants';
 
 const log = logger('api:events');
@@ -77,26 +77,26 @@ export const create = (req, res) => {
         enabled = true,
         event = '',
         trigger = '',
-        commands = ''
+        commands = '',
     } = { ...req.body };
 
     if (!event) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "event" parameter must not be empty'
+            msg: 'The "event" parameter must not be empty',
         });
         return;
     }
 
     if (!trigger) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "trigger" parameter must not be empty'
+            msg: 'The "trigger" parameter must not be empty',
         });
         return;
     }
 
     if (!commands) {
         res.status(ERR_BAD_REQUEST).send({
-            msg: 'The "commands" parameter must not be empty'
+            msg: 'The "commands" parameter must not be empty',
         });
         return;
     }
@@ -109,7 +109,7 @@ export const create = (req, res) => {
             enabled: !!enabled,
             event: event,
             trigger: trigger,
-            commands: commands
+            commands: commands,
         };
 
         records.set(event, record);
@@ -118,7 +118,7 @@ export const create = (req, res) => {
         res.send({ record: record });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -130,7 +130,7 @@ export const read = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -145,7 +145,7 @@ export const update = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -154,7 +154,7 @@ export const update = (req, res) => {
         enabled = record.enabled,
         event = record.event,
         trigger = record.trigger,
-        commands = record.commands
+        commands = record.commands,
     } = { ...req.body };
 
     // Skip validation for "enabled", "event", "trigger", and "commands"
@@ -179,7 +179,7 @@ export const update = (req, res) => {
         res.send({ records: Object.fromEntries(records) });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -191,7 +191,7 @@ export const __delete = (req, res) => {
 
     if (!record) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -203,7 +203,7 @@ export const __delete = (req, res) => {
         res.send({ id: record.id, event: record.event });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };
@@ -218,7 +218,7 @@ export const clearAll = (req, res) => {
         res.send({ msg: 'Successfully deleted events' });
     } catch (err) {
         res.status(ERR_INTERNAL_SERVER_ERROR).send({
-            msg: 'Failed to save ' + JSON.stringify(settings.rcfile)
+            msg: 'Failed to save ' + JSON.stringify(settings.rcfile),
         });
     }
 };

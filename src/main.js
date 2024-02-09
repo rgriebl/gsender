@@ -21,7 +21,16 @@
  *
  */
 
-import { app, ipcMain, dialog, powerSaveBlocker, powerMonitor, screen, session, clipboard } from 'electron';
+import {
+    app,
+    ipcMain,
+    dialog,
+    powerSaveBlocker,
+    powerMonitor,
+    screen,
+    session,
+    clipboard,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import Store from 'electron-store';
 import chalk from 'chalk';
@@ -45,7 +54,10 @@ let grblLog = log.create('grbl');
 let logPath;
 
 if (process.env.NODE_ENV === 'production') {
-    Sentry.init({ dsn: 'https://c09ff263997c4a47ba22b3c948f19734@o558751.ingest.sentry.io/5692684', release: pkg.version });
+    Sentry.init({
+        dsn: 'https://c09ff263997c4a47ba22b3c948f19734@o558751.ingest.sentry.io/5692684',
+        release: pkg.version,
+    });
 }
 
 const main = () => {
@@ -83,7 +95,10 @@ const main = () => {
     // Increase V8 heap size of the main process
     if (process.arch === 'x64') {
         const memoryLimit = 1024 * 8; // 8GB
-        app.commandLine.appendSwitch('--js-flags', `--max-old-space-size=${memoryLimit}`);
+        app.commandLine.appendSwitch(
+            '--js-flags',
+            `--max-old-space-size=${memoryLimit}`,
+        );
     }
 
     if (process.platform === 'linux') {
@@ -97,7 +112,6 @@ const main = () => {
     logPath = path.join(app.getPath('userData'), 'logs/grbl.log');
     grblLog.transports.file.resolvePath = () => logPath;
 
-
     app.whenReady().then(async () => {
         try {
             await session.defaultSession.clearCache();
@@ -108,9 +122,11 @@ const main = () => {
                 width: 500,
                 height: 400,
                 show: false,
-                frame: false
+                frame: false,
             });
-            splashScreen.loadFile(path.join(__dirname, 'app/assets/Splashscreen.gif'));
+            splashScreen.loadFile(
+                path.join(__dirname, 'app/assets/Splashscreen.gif'),
+            );
             splashScreen.webContents.on('did-finish-load', () => {
                 splashScreen.show();
             });
@@ -126,8 +142,9 @@ const main = () => {
                 if (error.message.includes('EADDR')) {
                     dialog.showMessageBoxSync(null, {
                         title: 'Error Connecting to Remote Address',
-                        message: 'There was an problem connecting to the remote address in gSender.',
-                        detail: 'Remote mode has been disabled. Please verify the configured IP address before restarting the application.'
+                        message:
+                            'There was an problem connecting to the remote address in gSender.',
+                        detail: 'Remote mode has been disabled. Please verify the configured IP address before restarting the application.',
                     });
                     app.relaunch();
                     app.exit(-1);
@@ -143,7 +160,10 @@ const main = () => {
                 port,
             };
             if (!(address && port)) {
-                log.error('Unable to start the server at ' + chalk.cyan(`http://${address}:${port}`));
+                log.error(
+                    'Unable to start the server at ' +
+                        chalk.cyan(`http://${address}:${port}`),
+                );
                 return;
             }
 
@@ -156,15 +176,18 @@ const main = () => {
             const bounds = {
                 minWidth: 1024,
                 minHeight: 768,
-                ...store.get('bounds')
+                ...store.get('bounds'),
             };
             const options = {
                 ...bounds,
                 title: `gSender ${pkg.version}`,
-                kiosk
+                kiosk,
             };
-            const window = await windowManager.openWindow(url, options, splashScreen);
-
+            const window = await windowManager.openWindow(
+                url,
+                options,
+                splashScreen,
+            );
 
             // Power saver - display sleep higher precedence over app suspension
             powerSaveBlocker.start('prevent-display-sleep');
@@ -207,9 +230,21 @@ const main = () => {
                 }
 
                 if (error.type.includes('GRBL_HAL')) {
-                    (error.type === 'GRBL_HAL_ERROR') ? grblLog.error(`GRBL_HAL_ERROR:Error ${error.code} - ${error.description} Line ${error.lineNumber}: "${error.line.trim()}" Origin- ${error.origin.trim()}`) : grblLog.error(`GRBL_HAL_ALARM:Alarm ${error.code} - ${error.description}`);
+                    error.type === 'GRBL_HAL_ERROR'
+                        ? grblLog.error(
+                              `GRBL_HAL_ERROR:Error ${error.code} - ${error.description} Line ${error.lineNumber}: "${error.line.trim()}" Origin- ${error.origin.trim()}`,
+                          )
+                        : grblLog.error(
+                              `GRBL_HAL_ALARM:Alarm ${error.code} - ${error.description}`,
+                          );
                 } else {
-                    (error.type === 'GRBL_ERROR') ? grblLog.error(`GRBL_ERROR:Error ${error.code} - ${error.description} Line ${error.lineNumber}: "${error.line.trim()}" Origin- ${error.origin.trim()}`) : grblLog.error(`GRBL_ALARM:Alarm ${error.code} - ${error.description}`);
+                    error.type === 'GRBL_ERROR'
+                        ? grblLog.error(
+                              `GRBL_ERROR:Error ${error.code} - ${error.description} Line ${error.lineNumber}: "${error.line.trim()}" Origin- ${error.origin.trim()}`,
+                          )
+                        : grblLog.error(
+                              `GRBL_ALARM:Alarm ${error.code} - ${error.description}`,
+                          );
                 }
             });
 
@@ -240,14 +275,16 @@ const main = () => {
                     if (prevDirectory) {
                         additionalOptions.defaultPath = prevDirectory;
                     }
-                    const file = await dialog.showOpenDialog(window,
-                        {
-                            properties: ['openFile'],
-                            filters: [
-                                { name: 'G-Code Files', extensions: ['gcode', 'gc', 'nc', 'tap', 'cnc'] },
-                                { name: 'All Files', extensions: ['*'] }
-                            ]
-                        },);
+                    const file = await dialog.showOpenDialog(window, {
+                        properties: ['openFile'],
+                        filters: [
+                            {
+                                name: 'G-Code Files',
+                                extensions: ['gcode', 'gc', 'nc', 'tap', 'cnc'],
+                            },
+                            { name: 'All Files', extensions: ['*'] },
+                        ],
+                    });
 
                     if (!file) {
                         return;
@@ -262,7 +299,8 @@ const main = () => {
                         return [dir, base];
                     };
 
-                    const [filePath, fileName] = getFileInformation(FULL_FILE_PATH);
+                    const [filePath, fileName] =
+                        getFileInformation(FULL_FILE_PATH);
 
                     prevDirectory = filePath; // set previous directory
 
@@ -273,7 +311,12 @@ const main = () => {
                         }
 
                         const { size } = fs.statSync(FULL_FILE_PATH);
-                        window.webContents.send('returned-upload-dialog-data', { data, size, name: fileName, path: FULL_FILE_PATH });
+                        window.webContents.send('returned-upload-dialog-data', {
+                            data,
+                            size,
+                            name: fileName,
+                            path: FULL_FILE_PATH,
+                        });
                     });
                 } catch (e) {
                     log.error(`Caught error in listener - ${e}`);
@@ -289,27 +332,39 @@ const main = () => {
                     minHeight: 460 / factor,
                     useContentSize: true,
                     title: 'gSender',
-                    parent: window
+                    parent: window,
                 };
                 // Hash router URL should look like '{url}/#/widget/:id'
                 const address = `${url}/#${route}`;
                 const shouldMaximize = false;
                 const isChild = true;
 
-                windowManager.openWindow(address, childOptions, null, shouldMaximize, isChild);
+                windowManager.openWindow(
+                    address,
+                    childOptions,
+                    null,
+                    shouldMaximize,
+                    isChild,
+                );
             });
 
             ipcMain.on('reconnect-main', (event, options) => {
                 let shouldReconnect = false;
                 try {
-                    if (event && event.sender && event.sender.browserWindowOptions) {
-                        shouldReconnect = !event.sender.browserWindowOptions.parent && windowManager.childWindows.length > 0;
+                    if (
+                        event &&
+                        event.sender &&
+                        event.sender.browserWindowOptions
+                    ) {
+                        shouldReconnect =
+                            !event.sender.browserWindowOptions.parent &&
+                            windowManager.childWindows.length > 0;
                     }
                 } catch (err) {
                     log.error(err);
                 }
                 if (shouldReconnect) {
-                    windowManager.childWindows.forEach(window => {
+                    windowManager.childWindows.forEach((window) => {
                         window.webContents.send('reconnect', options);
                     });
                 }
@@ -321,7 +376,7 @@ const main = () => {
 
             ipcMain.on('recieve-data', (event, msg) => {
                 const { widget, data } = msg;
-                windowManager.childWindows.forEach(window => {
+                windowManager.childWindows.forEach((window) => {
                     window.webContents.send('recieve-data-' + widget, data);
                 });
             });
@@ -335,7 +390,7 @@ const main = () => {
             log.error(err);
             log.err(err.name);
             await dialog.showMessageBox({
-                message: err
+                message: err,
             });
         }
         //Check for available updates at end to avoid try-catch failing to load events

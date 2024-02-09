@@ -28,7 +28,16 @@ import { round } from '../../lib/rounding';
 
 // default max value is the highest number consisting only of 9s that is below the safe integer value
 // it's more aesthetic than 9007199254740991 lol
-const ControlledNumberInput = ({ className, value, type = 'decimal', externalOnChange = null, max = 999999999999999, min = -999999999999999, hasRounding = true, ...props }) => {
+const ControlledNumberInput = ({
+    className,
+    value,
+    type = 'decimal',
+    externalOnChange = null,
+    max = 999999999999999,
+    min = -999999999999999,
+    hasRounding = true,
+    ...props
+}) => {
     const inputRef = useRef();
     const [originalValue, setOriginalValue] = useState(value);
     const [localValue, setLocalValue] = useState(value);

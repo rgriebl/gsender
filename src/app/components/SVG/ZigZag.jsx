@@ -2,7 +2,11 @@ import React from 'react';
 
 function Icon(props) {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="14.27 6.1 57.6 76.83" {...props}>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="14.27 6.1 57.6 76.83"
+            {...props}
+        >
             <rect
                 width="100%"
                 height="100%"

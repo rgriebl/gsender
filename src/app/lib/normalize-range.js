@@ -36,12 +36,12 @@ export const test = (value, min, max, minExclusive, maxExclusive) => {
     return !(
         value < min ||
         value > max ||
-        (maxExclusive && (value === max)) ||
-        (minExclusive && (value === min))
+        (maxExclusive && value === max) ||
+        (minExclusive && value === min)
     );
 };
 
 export default {
     limit,
-    test
+    test,
 };

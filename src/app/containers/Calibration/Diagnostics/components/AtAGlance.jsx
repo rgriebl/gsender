@@ -26,26 +26,43 @@ import { get } from 'lodash';
 import cx from 'classnames';
 
 import ToggleSwitch from 'Components/ToggleSwitch';
-import { getHomingLocation, FRONT_RIGHT, FRONT_LEFT, BACK_LEFT } from 'app/widgets/Location/RapidPosition';
+import {
+    getHomingLocation,
+    FRONT_RIGHT,
+    FRONT_LEFT,
+    BACK_LEFT,
+} from 'app/widgets/Location/RapidPosition';
 import store from 'app/store';
 import controller from 'app/lib/controller';
 
 import StatusRow from './StatusRow';
 import styles from '../index.styl';
 
-const AtAGlance = ({ homing, softLimits, homingLocation, reportInches, stepperMotors }) => {
+const AtAGlance = ({
+    homing,
+    softLimits,
+    homingLocation,
+    reportInches,
+    stepperMotors,
+}) => {
     const handleStepperMotorToggle = (value) => {
         if (!controller.settings?.settings) {
             return;
         }
 
         if (value) {
-            store.replace('workspace.diagnostics.stepperMotor.storedValue', controller.settings.settings.$1);
+            store.replace(
+                'workspace.diagnostics.stepperMotor.storedValue',
+                controller.settings.settings.$1,
+            );
             controller.command('gcode', ['$1=255', '$$']);
             return;
         }
 
-        const storedValue = store.get('workspace.diagnostics.stepperMotor.storedValue', 50);
+        const storedValue = store.get(
+            'workspace.diagnostics.stepperMotor.storedValue',
+            50,
+        );
 
         controller.command('gcode', [`$1=${storedValue}`, '$$']);
         store.replace('workspace.diagnostics.stepperMotor.storedValue', null);
@@ -58,19 +75,25 @@ const AtAGlance = ({ homing, softLimits, homingLocation, reportInches, stepperMo
             <StatusRow label="Home Location" value={homingLocation} />
             <StatusRow label="Report Inches" value={reportInches} />
 
-            <div className={cx(styles.pinRow, styles.separator)} style={{ paddingBottom: '0.25rem' }}>
+            <div
+                className={cx(styles.pinRow, styles.separator)}
+                style={{ paddingBottom: '0.25rem' }}
+            >
                 <span className={styles.statusLabel}>Stepper Motors</span>
                 <div style={{ display: 'flex', gap: '1rem' }}>
-                    <ToggleSwitch checked={stepperMotors === '255'} onChange={handleStepperMotorToggle} />
+                    <ToggleSwitch
+                        checked={stepperMotors === '255'}
+                        onChange={handleStepperMotorToggle}
+                    />
                     <span
                         className={styles.statusValue}
-                        style={{ width: '8ch', textAlign: 'right', color: stepperMotors === '255' ? 'red' : 'green' }}
+                        style={{
+                            width: '8ch',
+                            textAlign: 'right',
+                            color: stepperMotors === '255' ? 'red' : 'green',
+                        }}
                     >
-                        {
-                            stepperMotors === '255'
-                                ? 'Locked'
-                                : 'Unlocked'
-                        }
+                        {stepperMotors === '255' ? 'Locked' : 'Unlocked'}
                     </span>
                 </div>
             </div>

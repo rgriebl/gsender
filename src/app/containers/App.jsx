@@ -29,7 +29,7 @@ import styles from './App.styl';
 
 class App extends PureComponent {
     static propTypes = {
-        ...withRouter.propTypes
+        ...withRouter.propTypes,
     };
 
     componentDidMount() {
@@ -40,10 +40,8 @@ class App extends PureComponent {
     render() {
         const { location } = this.props;
         // TODO: Refactor this to handle conditional branches/look into alternatives
-        const accepted = ([
-            '/workspace',
-            '/widget'
-        ].indexOf(location.pathname) >= 0);
+        const accepted =
+            ['/workspace', '/widget'].indexOf(location.pathname) >= 0;
 
         if (!accepted) {
             return (
@@ -51,8 +49,8 @@ class App extends PureComponent {
                     to={{
                         pathname: '/workspace',
                         state: {
-                            from: location
-                        }
+                            from: location,
+                        },
                     }}
                 />
             );
@@ -63,7 +61,10 @@ class App extends PureComponent {
                 <Workspace
                     {...this.props}
                     style={{
-                        display: (location.pathname !== '/workspace') ? 'none' : 'block'
+                        display:
+                            location.pathname !== '/workspace'
+                                ? 'none'
+                                : 'block',
                     }}
                 />
             </div>

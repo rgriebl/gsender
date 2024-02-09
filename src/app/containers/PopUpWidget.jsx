@@ -34,11 +34,10 @@ import portal from 'app/lib/portal';
 import api from 'app/api';
 import WidgetWrapper from './Workspace/Widget';
 
-
 class PopUpWidget extends Component {
     static propTypes = {
         ...withRouter.propTypes,
-        route: PropTypes.string.isRequired
+        route: PropTypes.string.isRequired,
     };
 
     state = { activeWidgets: [] };
@@ -47,42 +46,49 @@ class PopUpWidget extends Component {
         portal(({ onClose }) => (
             <Modal size="xs" onClose={onClose}>
                 <Modal.Header>
-                    <Modal.Title>
-                        {i18n._('Fork Widget')}
-                    </Modal.Title>
+                    <Modal.Title>{i18n._('Fork Widget')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {i18n._('Are you sure you want to fork this widget?')}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button
-                        onClick={onClose}
-                    >
-                        {i18n._('Cancel')}
-                    </Button>
+                    <Button onClick={onClose}>{i18n._('Cancel')}</Button>
                     <Button
                         btnStyle="primary"
-                        onClick={chainedFunction(
-                            () => {
-                                const name = widgetId.split(':')[0];
-                                if (!name) {
-                                    api.log.printLog(`Failed to fork widget: widgetId=${widgetId}`, 'popupwidget', 72, 'error');
-                                    return;
-                                }
+                        onClick={chainedFunction(() => {
+                            const name = widgetId.split(':')[0];
+                            if (!name) {
+                                api.log.printLog(
+                                    `Failed to fork widget: widgetId=${widgetId}`,
+                                    'popupwidget',
+                                    72,
+                                    'error',
+                                );
+                                return;
+                            }
 
-                                // Use the same widget settings in a new widget
-                                const forkedWidgetId = `${name}:${uuid.v4()}`;
-                                const defaultSettings = store.get(`widgets["${name}"]`);
-                                const clonedSettings = store.get(`widgets["${widgetId}"]`, defaultSettings);
-                                store.set(`widgets["${forkedWidgetId}"]`, clonedSettings);
+                            // Use the same widget settings in a new widget
+                            const forkedWidgetId = `${name}:${uuid.v4()}`;
+                            const defaultSettings = store.get(
+                                `widgets["${name}"]`,
+                            );
+                            const clonedSettings = store.get(
+                                `widgets["${widgetId}"]`,
+                                defaultSettings,
+                            );
+                            store.set(
+                                `widgets["${forkedWidgetId}"]`,
+                                clonedSettings,
+                            );
 
-                                const widgets = [...this.state.widgets, forkedWidgetId];
-                                this.setState({ widgets: widgets });
+                            const widgets = [
+                                ...this.state.widgets,
+                                forkedWidgetId,
+                            ];
+                            this.setState({ widgets: widgets });
 
-                                this.props.onForkWidget(widgetId);
-                            },
-                            onClose
-                        )}
+                            this.props.onForkWidget(widgetId);
+                        }, onClose)}
                     >
                         {i18n._('OK')}
                     </Button>
@@ -95,35 +101,28 @@ class PopUpWidget extends Component {
         portal(({ onClose }) => (
             <Modal size="xs" onClose={onClose}>
                 <Modal.Header>
-                    <Modal.Title>
-                        {i18n._('Remove Widget')}
-                    </Modal.Title>
+                    <Modal.Title>{i18n._('Remove Widget')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {i18n._('Are you sure you want to remove this widget?')}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button
-                        onClick={onClose}
-                    >
-                        {i18n._('Cancel')}
-                    </Button>
+                    <Button onClick={onClose}>{i18n._('Cancel')}</Button>
                     <Button
                         btnStyle="primary"
-                        onClick={chainedFunction(
-                            () => {
-                                const widgets = this.state.widgets.filter(n => n !== widgetId);
-                                this.setState({ widgets: widgets });
+                        onClick={chainedFunction(() => {
+                            const widgets = this.state.widgets.filter(
+                                (n) => n !== widgetId,
+                            );
+                            this.setState({ widgets: widgets });
 
-                                if (widgetId.match(/\w+:[\w\-]+/)) {
-                                    // Remove forked widget settings
-                                    store.unset(`widgets["${widgetId}"]`);
-                                }
+                            if (widgetId.match(/\w+:[\w\-]+/)) {
+                                // Remove forked widget settings
+                                store.unset(`widgets["${widgetId}"]`);
+                            }
 
-                                this.props.onRemoveWidget(widgetId);
-                            },
-                            onClose
-                        )}
+                            this.props.onRemoveWidget(widgetId);
+                        }, onClose)}
                     >
                         {i18n._('OK')}
                     </Button>

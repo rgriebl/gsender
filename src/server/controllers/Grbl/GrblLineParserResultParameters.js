@@ -23,7 +23,9 @@
 
 class GrblLineParserResultParameters {
     static parse(line) {
-        const r = line.match(/^\[(G54|G55|G56|G57|G58|G59|G28|G30|G92|TLO|PRB):(.+)\]$/);
+        const r = line.match(
+            /^\[(G54|G55|G56|G57|G58|G59|G28|G30|G92|TLO|PRB):(.+)\]$/,
+        );
         if (!r) {
             return null;
         }
@@ -32,7 +34,7 @@ class GrblLineParserResultParameters {
         const value = r[2];
         const payload = {
             name: name,
-            value: ''
+            value: '',
         };
 
         // [Gxx:0.000]
@@ -61,7 +63,7 @@ class GrblLineParserResultParameters {
 
         return {
             type: GrblLineParserResultParameters,
-            payload: payload
+            payload: payload,
         };
     }
 }

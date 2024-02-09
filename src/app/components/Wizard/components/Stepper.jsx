@@ -9,17 +9,15 @@ const Stepper = () => {
     const { steps, completedStep, activeStep } = useWizardContext();
     return (
         <div className={styles.stepperWrapper}>
-            {
-                steps.map((step, index) => (
-                    <Step
-                        step={step}
-                        key={uniqueId()}
-                        index={index}
-                        active={activeStep === index}
-                        complete={completedStep >= index}
-                    />
-                ))
-            }
+            {steps.map((step, index) => (
+                <Step
+                    step={step}
+                    key={uniqueId()}
+                    index={index}
+                    active={activeStep === index}
+                    complete={completedStep >= index}
+                />
+            ))}
         </div>
     );
 };

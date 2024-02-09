@@ -28,21 +28,18 @@ import ReactDOM from 'react-dom';
 
 class Input extends Component {
     static propTypes = {
-        componentClass: PropTypes.oneOfType([
-            PropTypes.func,
-            PropTypes.string
-        ]),
+        componentClass: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
         innerRef: PropTypes.oneOfType([
             PropTypes.func,
             PropTypes.object,
-            PropTypes.string
+            PropTypes.string,
         ]),
-        type: PropTypes.string
+        type: PropTypes.string,
     };
 
     static defaultProps = {
         componentClass: 'input',
-        type: 'text'
+        type: 'text',
     };
 
     get value() {
@@ -77,7 +74,11 @@ class Input extends Component {
         } = this.props;
 
         return (
-            <Component {...props} ref={innerRef} className={cx(className, 'form-control')} />
+            <Component
+                {...props}
+                ref={innerRef}
+                className={cx(className, 'form-control')}
+            />
         );
     }
 }

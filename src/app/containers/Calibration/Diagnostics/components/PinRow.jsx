@@ -29,10 +29,13 @@ const PinRow = ({ label, value = false }) => {
     return (
         <div className={styles.pinRow}>
             <div className={styles.pinLabel}>{label}</div>
-            <div className={cx(styles.pinIndicator, value ? styles.pinActive : styles.pinInactive)}>
-                {
-                    value ? 'On' : 'Off'
-                }
+            <div
+                className={cx(
+                    styles.pinIndicator,
+                    value ? styles.pinActive : styles.pinInactive,
+                )}
+            >
+                {value ? 'On' : 'Off'}
             </div>
         </div>
     );

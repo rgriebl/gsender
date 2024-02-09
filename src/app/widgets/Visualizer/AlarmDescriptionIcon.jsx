@@ -33,7 +33,7 @@ import styles from './workflow-control.styl';
 const getCodeDescription = (code = 1) => {
     const controllerType = get(reduxStore.getState(), 'controller.type');
     const ALARMS = controllerType === GRBLHAL ? GRBL_HAL_ALARMS : GRBL_ALARMS;
-    const alarm = ALARMS.find(alarm => alarm.code === code);
+    const alarm = ALARMS.find((alarm) => alarm.code === code);
     if (alarm) {
         return alarm.description;
     }

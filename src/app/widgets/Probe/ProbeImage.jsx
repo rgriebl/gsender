@@ -24,7 +24,11 @@
 import React from 'react';
 import cx from 'classnames';
 import { Image } from 'Components/Image';
-import { TOUCHPLATE_TYPE_STANDARD, TOUCHPLATE_TYPE_AUTOZERO, TOUCHPLATE_TYPE_ZERO } from 'app/lib/constants';
+import {
+    TOUCHPLATE_TYPE_STANDARD,
+    TOUCHPLATE_TYPE_AUTOZERO,
+    TOUCHPLATE_TYPE_ZERO,
+} from 'app/lib/constants';
 import styles from './index.styl';
 import XProbe from './assets/Block-X.gif';
 import YProbe from './assets/Block-Y.gif';
@@ -35,8 +39,11 @@ import ZOnlyProbe from './assets/Probe-Z.gif';
 import AutoZProbe from './assets/AutoZero-Z.gif';
 import AutoXYZProbe from './assets/AutoZero-Rem.gif';
 
-
-const ProbeImage = ({ probeCommand, touchplateType = TOUCHPLATE_TYPE_STANDARD, visible = true }) => {
+const ProbeImage = ({
+    probeCommand,
+    touchplateType = TOUCHPLATE_TYPE_STANDARD,
+    visible = true,
+}) => {
     const getProbeImage = () => {
         const { id } = probeCommand;
         if (touchplateType === TOUCHPLATE_TYPE_AUTOZERO) {
@@ -63,7 +70,10 @@ const ProbeImage = ({ probeCommand, touchplateType = TOUCHPLATE_TYPE_STANDARD, v
 
     return (
         <div className={styles.imgWrap}>
-            <Image src={imgSrc} className={cx({ [styles.imgHidden]: !visible })} />
+            <Image
+                src={imgSrc}
+                className={cx({ [styles.imgHidden]: !visible })}
+            />
         </div>
     );
 };

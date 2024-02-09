@@ -49,7 +49,7 @@ import _noop from 'lodash/noop';
 import rimraf from 'rimraf';
 import {
     LanguageDetector as i18nextLanguageDetector,
-    handle as i18nextHandle
+    handle as i18nextHandle,
 } from 'i18next-http-middleware';
 import urljoin from './lib/urljoin';
 import logger from './lib/logger';
@@ -64,25 +64,26 @@ import {
     authorizeIPAddress,
     //validateUser
 } from './access-control';
-import {
-    ERR_FORBIDDEN
-} from './constants';
+import { ERR_FORBIDDEN } from './constants';
 
 const log = logger('app');
 
-const renderPage = (view = 'index', cb = _noop) => (req, res, next) => {
-    // Override IE's Compatibility View Settings
-    // http://stackoverflow.com/questions/6156639/x-ua-compatible-is-set-to-ie-edge-but-it-still-doesnt-stop-compatibility-mode
-    res.set({ 'X-UA-Compatible': 'IE=edge' });
+const renderPage =
+    (view = 'index', cb = _noop) =>
+    (req, res, next) => {
+        // Override IE's Compatibility View Settings
+        // http://stackoverflow.com/questions/6156639/x-ua-compatible-is-set-to-ie-edge-but-it-still-doesnt-stop-compatibility-mode
+        res.set({ 'X-UA-Compatible': 'IE=edge' });
 
-    const locals = { ...cb(req, res) };
-    res.render(view, locals);
-};
+        const locals = { ...cb(req, res) };
+        res.render(view, locals);
+    };
 
 const appMain = () => {
     const app = express();
 
-    { // Settings
+    {
+        // Settings
         if (process.env.NODE_ENV === 'development') {
             const webpackDevServer = require('./webpack-dev-server').default;
             webpackDevServer(app);
@@ -114,7 +115,7 @@ const appMain = () => {
         app.set('view engine', settings.view.defaultExtension); // The default engine extension to use when omitted
         app.set('views', [
             path.resolve(__dirname, '../app'),
-            path.resolve(__dirname, 'views')
+            path.resolve(__dirname, 'views'),
         ]); // The view directory path
 
         log.debug('app.settings: %j', app.settings);
@@ -124,10 +125,7 @@ const appMain = () => {
     app.use(cors());
 
     // Setup i18n (i18next)
-    i18next
-        .use(Backend)
-        .use(i18nextLanguageDetector)
-        .init(settings.i18next);
+    i18next.use(Backend).use(i18nextLanguageDetector).init(settings.i18next);
 
     app.use(async (req, res, next) => {
         try {
@@ -160,34 +158,42 @@ const appMain = () => {
         fs.mkdirSync(path);
 
         const FileStore = sessionFileStore(session);
-        app.use(session({
-            // https://github.com/expressjs/session#secret
-            secret: settings.secret,
+        app.use(
+            session({
+                // https://github.com/expressjs/session#secret
+                secret: settings.secret,
 
-            // https://github.com/expressjs/session#resave
-            resave: true,
+                // https://github.com/expressjs/session#resave
+                resave: true,
 
-            // https://github.com/expressjs/session#saveuninitialized
-            saveUninitialized: true,
+                // https://github.com/expressjs/session#saveuninitialized
+                saveUninitialized: true,
 
-            store: new FileStore({
-                path: path,
-                logFn: (...args) => {
-                    log.debug.apply(log, args);
-                }
-            })
-        }));
+                store: new FileStore({
+                    path: path,
+                    logFn: (...args) => {
+                        log.debug.apply(log, args);
+                    },
+                }),
+            }),
+        );
     } catch (err) {
         log.error(err);
     }
 
-    app.use(favicon(path.join(_get(settings, 'assets.app.path', ''), 'favicon.ico')));
+    app.use(
+        favicon(
+            path.join(_get(settings, 'assets.app.path', ''), 'favicon.ico'),
+        ),
+    );
     app.use(cookieParser());
 
     // Connect's body parsing middleware. This only handles urlencoded and json bodies.
     // https://github.com/expressjs/body-parser
     app.use(bodyParser.json(settings.middleware['body-parser'].json));
-    app.use(bodyParser.urlencoded(settings.middleware['body-parser'].urlencoded));
+    app.use(
+        bodyParser.urlencoded(settings.middleware['body-parser'].urlencoded),
+    );
 
     // For multipart bodies, please use the following modules:
     // - [busboy](https://github.com/mscdex/busboy) and [connect-busboy](https://github.com/mscdex/connect-busboy)
@@ -215,7 +221,7 @@ const appMain = () => {
         const asset = settings.assets[name];
 
         log.debug('assets: name=%s, asset=%s', name, JSON.stringify(asset));
-        if (!(asset.path)) {
+        if (!asset.path) {
             log.error('asset path is not defined');
             return;
         }
@@ -223,34 +229,43 @@ const appMain = () => {
         asset.routes.forEach((assetRoute) => {
             const route = urljoin(settings.route || '/', assetRoute || '');
             log.debug('> route=%s', name, route);
-            app.use(route, serveStatic(asset.path, {
-                maxAge: asset.maxAge
-            }));
+            app.use(
+                route,
+                serveStatic(asset.path, {
+                    maxAge: asset.maxAge,
+                }),
+            );
         });
     });
 
     app.use(i18nextHandle(i18next, {}));
 
-    { // Secure API Access
-        app.use(urljoin(settings.route, 'api'), expressJwt({
-            secret: config.get('secret'),
-            credentialsRequired: true
-        }));
+    {
+        // Secure API Access
+        app.use(
+            urljoin(settings.route, 'api'),
+            expressJwt({
+                secret: config.get('secret'),
+                credentialsRequired: true,
+            }),
+        );
 
         app.use((err, req, res, next) => {
-            let bypass = !(err && (err.name === 'UnauthorizedError'));
+            let bypass = !(err && err.name === 'UnauthorizedError');
 
             // Check whether the app is running in development mode
-            bypass = bypass || (process.env.NODE_ENV === 'development');
+            bypass = bypass || process.env.NODE_ENV === 'development';
 
             // Check whether the request path is not restricted
             const whitelist = [
                 // Also see "src/app/api/index.js"
-                urljoin(settings.route, 'api/signin')
+                urljoin(settings.route, 'api/signin'),
             ];
-            bypass = bypass || whitelist.some(path => {
-                return req.path.indexOf(path) === 0;
-            });
+            bypass =
+                bypass ||
+                whitelist.some((path) => {
+                    return req.path.indexOf(path) === 0;
+                });
 
             if (!bypass) {
                 // Check whether the provided credential is correct
@@ -267,7 +282,9 @@ const appMain = () => {
 
             if (!bypass) {
                 const ipaddr = req.ip || req.connection.remoteAddress;
-                log.warn(`Forbidden: ipaddr=${ipaddr}, code="${err.code}", message="${err.message}"`);
+                log.warn(
+                    `Forbidden: ipaddr=${ipaddr}, code="${err.code}", message="${err.message}"`,
+                );
                 res.status(ERR_FORBIDDEN).end('Forbidden Access');
                 return;
             }
@@ -276,15 +293,23 @@ const appMain = () => {
         });
     }
 
-    { // Register API routes with public access
+    {
+        // Register API routes with public access
         // Also see "src/app/app.js"
         app.post(urljoin(settings.route, 'api/signin'), api.users.signin);
     }
 
-    { // Register API routes with authorized access
+    {
+        // Register API routes with authorized access
         // Version
-        app.get(urljoin(settings.route, 'api/version/latest'), api.version.getLatestVersion);
-        app.get(urljoin(settings.route, 'api/version/appUpdateSupport'), api.version.getShouldInstallUpdates);
+        app.get(
+            urljoin(settings.route, 'api/version/latest'),
+            api.version.getLatestVersion,
+        );
+        app.get(
+            urljoin(settings.route, 'api/version/appUpdateSupport'),
+            api.version.getShouldInstallUpdates,
+        );
 
         // State
         app.get(urljoin(settings.route, 'api/state'), api.state.get);
@@ -294,34 +319,61 @@ const appMain = () => {
         // G-code
         app.get(urljoin(settings.route, 'api/gcode'), api.gcode.fetch);
         app.post(urljoin(settings.route, 'api/gcode'), api.gcode.upload);
-        app.get(urljoin(settings.route, 'api/gcode/download'), api.gcode.download);
-        app.post(urljoin(settings.route, 'api/gcode/download'), api.gcode.download); // Alias
+        app.get(
+            urljoin(settings.route, 'api/gcode/download'),
+            api.gcode.download,
+        );
+        app.post(
+            urljoin(settings.route, 'api/gcode/download'),
+            api.gcode.download,
+        ); // Alias
 
         // Controllers
-        app.get(urljoin(settings.route, 'api/controllers'), api.controllers.get);
+        app.get(
+            urljoin(settings.route, 'api/controllers'),
+            api.controllers.get,
+        );
 
         // Commands
         app.get(urljoin(settings.route, 'api/commands'), api.commands.fetch);
         app.post(urljoin(settings.route, 'api/commands'), api.commands.create);
         app.get(urljoin(settings.route, 'api/commands/:id'), api.commands.read);
-        app.put(urljoin(settings.route, 'api/commands/:id'), api.commands.update);
-        app.delete(urljoin(settings.route, 'api/commands/:id'), api.commands.__delete);
-        app.post(urljoin(settings.route, 'api/commands/run/:id'), api.commands.run);
+        app.put(
+            urljoin(settings.route, 'api/commands/:id'),
+            api.commands.update,
+        );
+        app.delete(
+            urljoin(settings.route, 'api/commands/:id'),
+            api.commands.__delete,
+        );
+        app.post(
+            urljoin(settings.route, 'api/commands/run/:id'),
+            api.commands.run,
+        );
 
         // Events
         app.get(urljoin(settings.route, 'api/events'), api.events.fetch);
         app.post(urljoin(settings.route, 'api/events/'), api.events.create);
         app.get(urljoin(settings.route, 'api/events/:id'), api.events.read);
         app.put(urljoin(settings.route, 'api/events/:id'), api.events.update);
-        app.delete(urljoin(settings.route, 'api/events/:id'), api.events.__delete);
+        app.delete(
+            urljoin(settings.route, 'api/events/:id'),
+            api.events.__delete,
+        );
         app.delete(urljoin(settings.route, 'api/events'), api.events.clearAll);
 
         // Machines
         app.get(urljoin(settings.route, 'api/machines'), api.machines.fetch);
         app.post(urljoin(settings.route, 'api/machines'), api.machines.create);
         app.get(urljoin(settings.route, 'api/machines/:id'), api.machines.read);
-        app.put(urljoin(settings.route, 'api/machines/:id'), api.machines.update);
-        app.delete(urljoin(settings.route, 'api/machines/:id'), api.machines.__delete);
+        app.put(
+            urljoin(settings.route, 'api/machines/:id'),
+            api.machines.update,
+        );
+        app.delete(
+            urljoin(settings.route, 'api/machines/:id'),
+            api.machines.__delete,
+        );
 
         //Headless mode / Remote mode
         app.put(urljoin(settings.route, '/api/remote'), api.remote.update);
@@ -332,15 +384,24 @@ const appMain = () => {
         app.get(urljoin(settings.route, 'api/jobstats'), api.jobStats.fetch);
 
         // Maintenance
-        app.put(urljoin(settings.route, '/api/maintenance'), api.maintenance.update);
-        app.get(urljoin(settings.route, 'api/maintenance'), api.maintenance.fetch);
+        app.put(
+            urljoin(settings.route, '/api/maintenance'),
+            api.maintenance.update,
+        );
+        app.get(
+            urljoin(settings.route, 'api/maintenance'),
+            api.maintenance.fetch,
+        );
 
         // Macros
         app.get(urljoin(settings.route, 'api/macros'), api.macros.fetch);
         app.post(urljoin(settings.route, 'api/macros'), api.macros.create);
         app.get(urljoin(settings.route, 'api/macros/:id'), api.macros.read);
         app.put(urljoin(settings.route, 'api/macros/:id'), api.macros.update);
-        app.delete(urljoin(settings.route, 'api/macros/:id'), api.macros.__delete);
+        app.delete(
+            urljoin(settings.route, 'api/macros/:id'),
+            api.macros.__delete,
+        );
 
         // MDI
         app.get(urljoin(settings.route, 'api/mdi'), api.mdi.fetch);
@@ -355,19 +416,37 @@ const appMain = () => {
         app.post(urljoin(settings.route, 'api/users/'), api.users.create);
         app.get(urljoin(settings.route, 'api/users/:id'), api.users.read);
         app.put(urljoin(settings.route, 'api/users/:id'), api.users.update);
-        app.delete(urljoin(settings.route, 'api/users/:id'), api.users.__delete);
+        app.delete(
+            urljoin(settings.route, 'api/users/:id'),
+            api.users.__delete,
+        );
 
         // Watch
         app.get(urljoin(settings.route, 'api/watch/files'), api.watch.getFiles);
-        app.post(urljoin(settings.route, 'api/watch/files'), api.watch.getFiles);
+        app.post(
+            urljoin(settings.route, 'api/watch/files'),
+            api.watch.getFiles,
+        );
         app.get(urljoin(settings.route, 'api/watch/file'), api.watch.readFile);
         app.post(urljoin(settings.route, 'api/watch/file'), api.watch.readFile);
 
         // Metrics
-        app.get(urljoin(settings.route, 'api/metrics/collectUserData'), api.metrics.getCollectDataStatus);
-        app.post(urljoin(settings.route, 'api/metrics/collectUserData'), api.metrics.toggleCollectData);
-        app.post(urljoin(settings.route, 'api/metrics/sendData'), api.metrics.sendData);
-        app.post(urljoin(settings.route, 'api/metrics/sendUsageData'), api.metrics.sendUsageData);
+        app.get(
+            urljoin(settings.route, 'api/metrics/collectUserData'),
+            api.metrics.getCollectDataStatus,
+        );
+        app.post(
+            urljoin(settings.route, 'api/metrics/collectUserData'),
+            api.metrics.toggleCollectData,
+        );
+        app.post(
+            urljoin(settings.route, 'api/metrics/sendData'),
+            api.metrics.sendData,
+        );
+        app.post(
+            urljoin(settings.route, 'api/metrics/sendUsageData'),
+            api.metrics.sendUsageData,
+        );
 
         // Alarms/Errors
         app.put(urljoin(settings.route, 'api/alarmList'), api.alarmList.update);
@@ -376,41 +455,55 @@ const appMain = () => {
         // Files - with multer
         const storage = multer.memoryStorage();
         const upload = multer({
-            storage
+            storage,
         });
-        app.post(urljoin(settings.route, 'api/file'), upload.single('gcode'), api.files.uploadFile);
+        app.post(
+            urljoin(settings.route, 'api/file'),
+            upload.single('gcode'),
+            api.files.uploadFile,
+        );
 
         // Log
         app.post(urljoin(settings.route, 'api/log'), api.logs.printLog);
     }
 
     // page
-    app.get(urljoin(settings.route, '/'), renderPage('index.hbs', (req, res) => {
-        const webroot = _get(settings, 'assets.app.routes[0]', ''); // with trailing slash
-        const lng = req.language;
-        const t = req.t;
+    app.get(
+        urljoin(settings.route, '/'),
+        renderPage('index.hbs', (req, res) => {
+            const webroot = _get(settings, 'assets.app.routes[0]', ''); // with trailing slash
+            const lng = req.language;
+            const t = req.t;
 
-        return {
-            webroot: webroot,
-            lang: lng,
-            title: `${t('title')} ${settings.version}`,
-            loading: t('loading')
-        };
-    }));
+            return {
+                webroot: webroot,
+                lang: lng,
+                title: `${t('title')} ${settings.version}`,
+                loading: t('loading'),
+            };
+        }),
+    );
 
-    { // Error handling
+    {
+        // Error handling
         app.use(errlog());
-        app.use(errclient({
-            error: 'XHR error'
-        }));
-        app.use(errnotfound({
-            view: path.join('common', '404.hogan'),
-            error: 'Not found'
-        }));
-        app.use(errserver({
-            view: path.join('common', '500.hogan'),
-            error: 'Internal server error'
-        }));
+        app.use(
+            errclient({
+                error: 'XHR error',
+            }),
+        );
+        app.use(
+            errnotfound({
+                view: path.join('common', '404.hogan'),
+                error: 'Not found',
+            }),
+        );
+        app.use(
+            errserver({
+                view: path.join('common', '500.hogan'),
+                error: 'Internal server error',
+            }),
+        );
     }
 
     return app;

@@ -23,7 +23,9 @@
 
 import _trim from 'lodash/trim';
 
-const pattern = new RegExp(/^([a-zA-Z0-9]+)\s+((?:\d+\.){1,2}\d+[a-zA-Z0-9\-\.]*)([^\[]*\[[^\]]+\].*)?/);
+const pattern = new RegExp(
+    /^([a-zA-Z0-9]+)\s+((?:\d+\.){1,2}\d+[a-zA-Z0-9\-\.]*)([^\[]*\[[^\]]+\].*)?/,
+);
 
 class GrblLineParserResultStartup {
     // Grbl 0.9j ['$' for help]
@@ -50,7 +52,7 @@ class GrblLineParserResultStartup {
 
         return {
             type: GrblLineParserResultStartup,
-            payload: payload
+            payload: payload,
         };
     }
 }

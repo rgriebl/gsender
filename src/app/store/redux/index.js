@@ -38,14 +38,23 @@ const configureStore = (preloadedState) => {
     if (env === 'production') {
         enhancer = applyMiddleware(thunk, sagaMiddleware);
     } else {
-        const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+        const composeEnhancers =
+            window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
         enhancer = composeEnhancers(
-            applyMiddleware(thunk, sagaMiddleware, createLogger({ collapsed: true })),
+            applyMiddleware(
+                thunk,
+                sagaMiddleware,
+                createLogger({ collapsed: true }),
+            ),
         );
     }
-    const debounceNotify = debounce(notify => notify());
+    const debounceNotify = debounce((notify) => notify());
 
-    const store = createStore(mainReducer, preloadedState, compose(enhancer, batchedSubscribe(debounceNotify)));
+    const store = createStore(
+        mainReducer,
+        preloadedState,
+        compose(enhancer, batchedSubscribe(debounceNotify)),
+    );
     store.close = () => store.dispatch(END);
     store.runSaga = sagaMiddleware.run;
     return store;

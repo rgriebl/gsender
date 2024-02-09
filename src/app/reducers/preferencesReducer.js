@@ -1,5 +1,10 @@
 import { createReducer } from 'redux-action';
-import { SET_SHORTCUTS_LIST, HOLD_SHORTCUTS, UNHOLD_SHORTCUTS, SET_IP_LIST } from 'app/actions/preferencesActions';
+import {
+    SET_SHORTCUTS_LIST,
+    HOLD_SHORTCUTS,
+    UNHOLD_SHORTCUTS,
+    SET_IP_LIST,
+} from 'app/actions/preferencesActions';
 import store from 'app/store';
 
 const initialState = {
@@ -17,7 +22,7 @@ const reducer = createReducer(initialState, {
             shortcuts: {
                 ...state.shortcuts,
                 list: payload,
-            }
+            },
         };
     },
     [HOLD_SHORTCUTS]: (payload, state) => {
@@ -26,7 +31,7 @@ const reducer = createReducer(initialState, {
             shortcuts: {
                 ...state.shortcuts,
                 shouldHold: true,
-            }
+            },
         };
     },
     [UNHOLD_SHORTCUTS]: (payload, state) => {
@@ -35,7 +40,7 @@ const reducer = createReducer(initialState, {
             shortcuts: {
                 ...state.shortcuts,
                 shouldHold: false,
-            }
+            },
         };
     },
     [SET_IP_LIST]: (payload, state) => {
@@ -43,7 +48,7 @@ const reducer = createReducer(initialState, {
             ...state,
             ipList: payload,
         };
-    }
+    },
 });
 
 export default reducer;

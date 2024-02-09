@@ -49,7 +49,10 @@ class History {
     }
 
     forward() {
-        if ((this.history.length === 0) || (this.index + 1 >= this.history.length)) {
+        if (
+            this.history.length === 0 ||
+            this.index + 1 >= this.history.length
+        ) {
             return undefined;
         }
 
@@ -59,7 +62,7 @@ class History {
     }
 
     back() {
-        if ((this.history.length === 0) || (this.index - 1 < 0)) {
+        if (this.history.length === 0 || this.index - 1 < 0) {
             return undefined;
         }
 
@@ -73,7 +76,10 @@ class History {
             return undefined;
         }
         n = Number(n) || 0;
-        this.index = Math.min(Math.max(0, this.index + n), this.history.length - 1);
+        this.index = Math.min(
+            Math.max(0, this.index + n),
+            this.history.length - 1,
+        );
         const index = (this.start + this.index) % this.history.length;
         return this.history[index];
     }

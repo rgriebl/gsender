@@ -25,9 +25,18 @@ import { ArcCurve } from 'three';
 import { isEmpty } from 'lodash';
 import GCodeVirtualizer, { rotateAxis } from 'app/lib/GCodeVirtualizer';
 
-
-onmessage = function({ data }) {
-    const { content, visualizer, isLaser = false, shouldIncludeSVG = false, needsVisualization = true, parsedData = {}, isNewFile = false, accelerations, maxFeedrates } = data;
+onmessage = function ({ data }) {
+    const {
+        content,
+        visualizer,
+        isLaser = false,
+        shouldIncludeSVG = false,
+        needsVisualization = true,
+        parsedData = {},
+        isNewFile = false,
+        accelerations,
+        maxFeedrates,
+    } = data;
 
     // Common state variables
     let vertices = [];
@@ -66,13 +75,21 @@ onmessage = function({ data }) {
     const createPath = (motion) => {
         let verticesStr = 'M';
         for (let i = 0; i < SVGVertices.length; i++) {
-            verticesStr += SVGVertices[i].x1 + ',' + SVGVertices[i].y1 + ',' + SVGVertices[i].x2 + ',' + SVGVertices[i].y2 + ',';
+            verticesStr +=
+                SVGVertices[i].x1 +
+                ',' +
+                SVGVertices[i].y1 +
+                ',' +
+                SVGVertices[i].x2 +
+                ',' +
+                SVGVertices[i].y2 +
+                ',';
         }
         paths.push({
             motion: motion,
             path: verticesStr,
             strokeWidth: 10,
-            fill: 'none'
+            fill: 'none',
         });
     };
 
@@ -97,7 +114,7 @@ onmessage = function({ data }) {
         frames.push(vertexIndex);
 
         currentLines++;
-        const newProgress = Math.floor(currentLines / totalLines * 100);
+        const newProgress = Math.floor((currentLines / totalLines) * 100);
         if (newProgress !== progress) {
             progress = newProgress;
             postMessage(progress);
@@ -124,13 +141,10 @@ onmessage = function({ data }) {
                     v2.z = newV2.z;
 
                     // normal
-                    const opacity = (motion === 'G0') ? 0.5 : 1;
+                    const opacity = motion === 'G0' ? 0.5 : 1;
                     const color = [motion, opacity];
                     colors.push(color, color);
-                    vertices.push(
-                        v1.x, v1.y, v1.z,
-                        v2.x, v2.y, v2.z
-                    );
+                    vertices.push(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z);
 
                     // svg
                     if (shouldIncludeSVG) {
@@ -139,7 +153,7 @@ onmessage = function({ data }) {
                             x1: v1.x,
                             y1: v1.y,
                             x2: v2.x,
-                            y2: v2.y
+                            y2: v2.y,
                         });
                     }
                 }
@@ -162,13 +176,15 @@ onmessage = function({ data }) {
                     radius,
                     startAngle,
                     endAngle,
-                    isClockwise
+                    isClockwise,
                 );
 
                 const DEGREES_PER_LINE_SEGMENT = 5;
 
                 const angleDiff = Math.abs(v2.a - v1.a);
-                const divisions = Math.ceil(angleDiff / DEGREES_PER_LINE_SEGMENT);
+                const divisions = Math.ceil(
+                    angleDiff / DEGREES_PER_LINE_SEGMENT,
+                );
                 const points = arcCurve.getPoints(divisions);
                 const color = [motion, 1];
 
@@ -185,16 +201,16 @@ onmessage = function({ data }) {
             addArcCurve: (modal, v1, v2, v0) => {
                 if (needsVisualization) {
                     const { motion, plane } = modal;
-                    const isClockwise = (motion === 'G2');
+                    const isClockwise = motion === 'G2';
                     const radius = Math.sqrt(
-                        ((v1.x - v0.x) ** 2) + ((v1.y - v0.y) ** 2)
+                        (v1.x - v0.x) ** 2 + (v1.y - v0.y) ** 2,
                     );
                     let startAngle = Math.atan2(v1.y - v0.y, v1.x - v0.x);
                     let endAngle = Math.atan2(v2.y - v0.y, v2.x - v0.x);
 
                     // Draw full circle if startAngle and endAngle are both zero
                     if (startAngle === endAngle) {
-                        endAngle += (2 * Math.PI);
+                        endAngle += 2 * Math.PI;
                     }
 
                     const arcCurve = new ArcCurve(
@@ -203,7 +219,7 @@ onmessage = function({ data }) {
                         radius, // aRadius
                         startAngle, // aStartAngle
                         endAngle, // aEndAngle
-                        isClockwise // isClockwise
+                        isClockwise, // isClockwise
                     );
                     const divisions = 30;
                     const points = arcCurve.getPoints(divisions);
@@ -215,34 +231,36 @@ onmessage = function({ data }) {
                         svgInitialization(motion);
                     }
 
-
                     for (let i = 0; i < points.length; ++i) {
                         const point = points[i];
                         const pointA = points[i - 1];
                         const pointB = points[i];
                         const z = ((v2.z - v1.z) / points.length) * i + v1.z;
 
-                        if (plane === 'G17') { // XY-plane
+                        if (plane === 'G17') {
+                            // XY-plane
                             vertices.push(point.x, point.y, z);
                             if (shouldIncludeSVG && i > 0) {
                                 SVGVertices.push({
                                     x1: pointA.x,
                                     y1: pointA.y,
                                     x2: pointB.x,
-                                    y2: pointB.y
+                                    y2: pointB.y,
                                 });
                             }
-                        } else if (plane === 'G18') { // ZX-plane
+                        } else if (plane === 'G18') {
+                            // ZX-plane
                             vertices.push(point.y, z, point.x);
                             if (shouldIncludeSVG && i > 0) {
                                 SVGVertices.push({
                                     x1: pointA.y,
                                     y1: z,
                                     x2: pointB.y,
-                                    y2: z
+                                    y2: z,
                                 });
                             }
-                        } else if (plane === 'G19') { // YZ-plane
+                        } else if (plane === 'G19') {
+                            // YZ-plane
                             vertices.push(z, point.x, point.y);
                             if (shouldIncludeSVG && i > 0) {
                                 if (i > 0) {
@@ -250,7 +268,7 @@ onmessage = function({ data }) {
                                         x1: z,
                                         y1: pointA.x,
                                         x2: z,
-                                        y2: pointB.x
+                                        y2: pointB.x,
                                     });
                                 }
                             }
@@ -258,7 +276,7 @@ onmessage = function({ data }) {
                         colors.push(color);
                     }
                 }
-            }
+            },
         },
         laser: {
             addLine: (modal, v1, v2) => {
@@ -268,7 +286,7 @@ onmessage = function({ data }) {
             addArcCurve: (modal, v1, v2, v0) => {
                 const { addArcCurve: dAddArcCurve } = handlers.normal;
                 dAddArcCurve(modal, v1, v2, v0);
-            }
+            },
         },
         svg: {
             addLine: (modal, v1, v2, v0) => {
@@ -290,21 +308,21 @@ onmessage = function({ data }) {
                     x1: v1.x,
                     y1: v1.y,
                     x2: v2.x,
-                    y2: v2.y
+                    y2: v2.y,
                 });
             },
             addArcCurve: (modal, v1, v2, v0) => {
                 const { motion, plane } = modal;
-                const isClockwise = (motion === 'G2');
+                const isClockwise = motion === 'G2';
                 const radius = Math.sqrt(
-                    ((v1.x - v0.x) ** 2) + ((v1.y - v0.y) ** 2)
+                    (v1.x - v0.x) ** 2 + (v1.y - v0.y) ** 2,
                 );
                 let startAngle = Math.atan2(v1.y - v0.y, v1.x - v0.x);
                 let endAngle = Math.atan2(v2.y - v0.y, v2.x - v0.x);
 
                 // Draw full circle if startAngle and endAngle are both zero
                 if (startAngle === endAngle) {
-                    endAngle += (2 * Math.PI);
+                    endAngle += 2 * Math.PI;
                 }
 
                 const arcCurve = new ArcCurve(
@@ -313,7 +331,7 @@ onmessage = function({ data }) {
                     radius, // aRadius
                     startAngle, // aStartAngle
                     endAngle, // aEndAngle
-                    isClockwise // isClockwise
+                    isClockwise, // isClockwise
                 );
                 const divisions = 30;
                 const points = arcCurve.getPoints(divisions);
@@ -335,31 +353,34 @@ onmessage = function({ data }) {
                     const pointB = points[i];
                     const z = ((v2.z - v1.z) / points.length) * i + v1.z;
 
-                    if (plane === 'G17') { // XY-plane
+                    if (plane === 'G17') {
+                        // XY-plane
                         SVGVertices.push({
                             x1: pointA.x,
                             y1: pointA.y,
                             x2: pointB.x,
-                            y2: pointB.y
+                            y2: pointB.y,
                         });
-                    } else if (plane === 'G18') { // ZX-plane
+                    } else if (plane === 'G18') {
+                        // ZX-plane
                         SVGVertices.push({
                             x1: pointA.y,
                             y1: z,
                             x2: pointB.y,
-                            y2: z
+                            y2: z,
                         });
-                    } else if (plane === 'G19') { // YZ-plane
+                    } else if (plane === 'G19') {
+                        // YZ-plane
                         SVGVertices.push({
                             x1: z,
                             y1: pointA.x,
                             x2: z,
-                            y2: pointB.x
+                            y2: pointB.x,
                         });
                     }
                 }
-            }
-        }
+            },
+        },
     };
 
     // Determine which handler to use - normal by default, then laser if selected
@@ -371,7 +392,14 @@ onmessage = function({ data }) {
     const { addLine, addArcCurve, addCurve } = handlers[handlerKey];
     let fileInfo = null;
     let parsedDataToSend = null;
-    const vm = new GCodeVirtualizer({ addLine, addArcCurve, addCurve, collate: true, accelerations, maxFeedrates });
+    const vm = new GCodeVirtualizer({
+        addLine,
+        addArcCurve,
+        addCurve,
+        collate: true,
+        accelerations,
+        maxFeedrates,
+    });
 
     if (!isEmpty(parsedData) && !isNewFile) {
         const { data, info, modalChanges, feedrateChanges } = parsedData;
@@ -447,7 +475,7 @@ onmessage = function({ data }) {
                 }
                 spindleValues = {
                     spindleOn,
-                    spindleSpeed
+                    spindleSpeed,
                 };
 
                 spindleChanges.push(spindleValues); //TODO:  Make this work for laser mode
@@ -476,7 +504,7 @@ onmessage = function({ data }) {
                 updateSpindleStateFromLine(data);
                 spindleValues = {
                     spindleOn,
-                    spindleSpeed
+                    spindleSpeed,
                 };
 
                 spindleChanges.push(spindleValues); //TODO:  Make this work for laser mode
@@ -484,9 +512,7 @@ onmessage = function({ data }) {
             onData(data);
         });
 
-        const lines = content
-            .split(/\r?\n/)
-            .reverse();
+        const lines = content.split(/\r?\n/).reverse();
 
         while (lines.length) {
             let line = lines.pop();

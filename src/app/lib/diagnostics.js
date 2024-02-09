@@ -26,7 +26,14 @@ import isEmpty from 'lodash/isEmpty';
 import get from 'lodash/get';
 import partition from 'lodash/partition';
 import uniqueId from 'lodash/uniqueId';
-import { pdf, Page, View, Text, Document, StyleSheet } from '@react-pdf/renderer';
+import {
+    pdf,
+    Page,
+    View,
+    Text,
+    Document,
+    StyleSheet,
+} from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import store from 'app/store';
 import reduxStore from 'app/store/redux';
@@ -44,13 +51,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         textAlign: 'center',
-        fontFamily: 'Helvetica-Bold'
+        fontFamily: 'Helvetica-Bold',
     },
     author: {
         fontSize: 12,
         textAlign: 'center',
         marginBottom: 40,
-        fontFamily: 'Helvetica'
+        fontFamily: 'Helvetica',
     },
     container: {
         margin: 18,
@@ -61,11 +68,11 @@ const styles = StyleSheet.create({
         fontSize: 18,
         margin: 12,
         textDecoration: 'underline',
-        fontFamily: 'Helvetica-Bold'
+        fontFamily: 'Helvetica-Bold',
     },
     lineWrapper: {
         marginTop: 6,
-        marginBottom: 6
+        marginBottom: 6,
     },
     textBold: {
         fontSize: 12,
@@ -75,12 +82,12 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 12,
         textAlign: 'justify',
-        fontFamily: 'Helvetica'
+        fontFamily: 'Helvetica',
     },
     textItalic: {
         fontSize: 12,
         textAlign: 'justify',
-        fontFamily: 'Helvetica-Oblique'
+        fontFamily: 'Helvetica-Oblique',
     },
     image: {
         marginVertical: 15,
@@ -114,19 +121,19 @@ const styles = StyleSheet.create({
     },
     tableRow: {
         // margin: 'auto',
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     tableCol: {
         width: '50%',
         borderStyle: 'solid',
         borderWidth: 1,
         borderLeftWidth: 0,
-        borderTopWidth: 0
+        borderTopWidth: 0,
     },
     tableCell: {
         margin: 'auto',
         marginTop: 5,
-        fontSize: 10
+        fontSize: 10,
     },
 
     clearTable: {
@@ -136,7 +143,7 @@ const styles = StyleSheet.create({
     },
     clearTableRow: {
         marginBottom: 12,
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     clearTableCol: {
         width: '50%',
@@ -144,12 +151,16 @@ const styles = StyleSheet.create({
     clearTableCell: {
         marginRight: 'auto',
         marginTop: 12,
-        fontSize: 10
-    }
+        fontSize: 10,
+    },
 });
 
 const getEEPROMValues = () => {
-    const eeprom = get(reduxStore.getState(), 'controller.settings.settings', {});
+    const eeprom = get(
+        reduxStore.getState(),
+        'controller.settings.settings',
+        {},
+    );
     return eeprom;
 };
 
@@ -205,33 +216,27 @@ const unwrapObject = (obj, iteration) => {
         return tabs + 'NULL\n';
     }
     // .join('') is used to solve an issue where unwanted commas appeared: https://stackoverflow.com/a/45812277
-    return (
-        Object.keys(obj).map((key, i) => (
+    return Object.keys(obj)
+        .map((key, i) =>
             typeof obj[key] === 'object'
                 ? tabs + key + ': \n' + unwrapObject(obj[key], iteration + 1)
-                : tabs + key + ': ' + obj[key] + '\n'
-        )).join('')
-    );
+                : tabs + key + ': ' + obj[key] + '\n',
+        )
+        .join('');
 };
 
 const createTableRows = (array) => {
-    return (
-        Object.keys(array).map((key, i) => (
-            // from https://github.com/diegomura/react-pdf/issues/487#issuecomment-465513123
-            <View style={styles.tableRow} key={uniqueId()}>
-                <View style={styles.tableCol}>
-                    <Text style={styles.tableCell}>
-                        {key}
-                    </Text>
-                </View>
-                <View style={styles.tableCol}>
-                    <Text style={styles.tableCell}>
-                        {array[key]}
-                    </Text>
-                </View>
+    return Object.keys(array).map((key, i) => (
+        // from https://github.com/diegomura/react-pdf/issues/487#issuecomment-465513123
+        <View style={styles.tableRow} key={uniqueId()}>
+            <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{key}</Text>
             </View>
-        ))
-    );
+            <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{array[key]}</Text>
+            </View>
+        </View>
+    ));
 };
 
 function generateSupportFile() {
@@ -245,15 +250,16 @@ function generateSupportFile() {
     const mode = getMode();
     const connection = getConnection();
     const fileInfo = getFileInfo();
-    let alarms, errors = [];
+    let alarms,
+        errors = [];
 
-    api.alarmList.fetch().then(data => {
+    api.alarmList.fetch().then((data) => {
         const grblAlarmsAndErrors = get(data, 'body.list', []);
         [alarms, errors] = partition(grblAlarmsAndErrors, ['type', 'ALARM']);
     });
 
     let eepromData = [];
-    Object.entries(eeprom).forEach(entry => {
+    Object.entries(eeprom).forEach((entry) => {
         const [key, value] = entry;
         eepromData.push({ key: key, value: value });
     });
@@ -272,9 +278,7 @@ function generateSupportFile() {
                                 </Text>
                                 <Text style={styles.textBold}>
                                     {'OS: '}
-                                    <Text style={styles.text}>
-                                        {os + '\n'}
-                                    </Text>
+                                    <Text style={styles.text}>{os + '\n'}</Text>
                                 </Text>
                             </Text>
                         </View>
@@ -283,75 +287,83 @@ function generateSupportFile() {
                                 <Text style={styles.subtitle}>
                                     {'Machine Profile\n'}
                                 </Text>
-                                {
-                                    machineProfile ? (
-                                        <>
-                                            <Text style={styles.textBold}>
-                                                {'ID: '}
-                                                <Text style={styles.text}>
-                                                    {machineProfile.id + '\n'}
-                                                </Text>
+                                {machineProfile ? (
+                                    <>
+                                        <Text style={styles.textBold}>
+                                            {'ID: '}
+                                            <Text style={styles.text}>
+                                                {machineProfile.id + '\n'}
                                             </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Company: '}
-                                                <Text style={styles.text}>
-                                                    {machineProfile.company + '\n'}
-                                                </Text>
-                                            </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Name: '}
-                                                <Text style={styles.text}>
-                                                    {machineProfile.name + '\n'}
-                                                </Text>
-                                            </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Type: '}
-                                                <Text style={styles.text}>
-                                                    {machineProfile.type + '\n'}
-                                                </Text>
-                                            </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Version: '}
-                                                <Text style={styles.text}>
-                                                    {machineProfile.version + '\n'}
-                                                </Text>
-                                            </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Limits:\n'}
-                                                <Text style={styles.textItalic}>
-                                                    {'    X Max: '}
-                                                    <Text style={styles.text}>
-                                                        {get(machineProfile, 'limits.xmax', '0') + '\n'}
-                                                    </Text>
-                                                    {'    Y Max: '}
-                                                    <Text style={styles.text}>
-                                                        {get(machineProfile, 'limits.ymax', '0') + '\n'}
-                                                    </Text>
-                                                    {'    Z Max: '}
-                                                    <Text style={styles.text}>
-                                                        {get(machineProfile, 'limits.zmax', '0') + '\n'}
-                                                    </Text>
-                                                </Text>
-                                            </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Spindle/Laser: '}
-                                                <Text style={styles.text}>
-                                                    {machineProfile.spindle + '\n'}
-                                                </Text>
-                                            </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Laser Mode Enabled: '}
-                                                <Text style={styles.text}>
-                                                    {mode + '\n'}
-                                                </Text>
-                                            </Text>
-                                        </>
-                                    ) : (
-                                        <Text style={styles.text}>
-                                            {'NULL\n'}
                                         </Text>
-                                    )
-                                }
+                                        <Text style={styles.textBold}>
+                                            {'Company: '}
+                                            <Text style={styles.text}>
+                                                {machineProfile.company + '\n'}
+                                            </Text>
+                                        </Text>
+                                        <Text style={styles.textBold}>
+                                            {'Name: '}
+                                            <Text style={styles.text}>
+                                                {machineProfile.name + '\n'}
+                                            </Text>
+                                        </Text>
+                                        <Text style={styles.textBold}>
+                                            {'Type: '}
+                                            <Text style={styles.text}>
+                                                {machineProfile.type + '\n'}
+                                            </Text>
+                                        </Text>
+                                        <Text style={styles.textBold}>
+                                            {'Version: '}
+                                            <Text style={styles.text}>
+                                                {machineProfile.version + '\n'}
+                                            </Text>
+                                        </Text>
+                                        <Text style={styles.textBold}>
+                                            {'Limits:\n'}
+                                            <Text style={styles.textItalic}>
+                                                {'    X Max: '}
+                                                <Text style={styles.text}>
+                                                    {get(
+                                                        machineProfile,
+                                                        'limits.xmax',
+                                                        '0',
+                                                    ) + '\n'}
+                                                </Text>
+                                                {'    Y Max: '}
+                                                <Text style={styles.text}>
+                                                    {get(
+                                                        machineProfile,
+                                                        'limits.ymax',
+                                                        '0',
+                                                    ) + '\n'}
+                                                </Text>
+                                                {'    Z Max: '}
+                                                <Text style={styles.text}>
+                                                    {get(
+                                                        machineProfile,
+                                                        'limits.zmax',
+                                                        '0',
+                                                    ) + '\n'}
+                                                </Text>
+                                            </Text>
+                                        </Text>
+                                        <Text style={styles.textBold}>
+                                            {'Spindle/Laser: '}
+                                            <Text style={styles.text}>
+                                                {machineProfile.spindle + '\n'}
+                                            </Text>
+                                        </Text>
+                                        <Text style={styles.textBold}>
+                                            {'Laser Mode Enabled: '}
+                                            <Text style={styles.text}>
+                                                {mode + '\n'}
+                                            </Text>
+                                        </Text>
+                                    </>
+                                ) : (
+                                    <Text style={styles.text}>{'NULL\n'}</Text>
+                                )}
                             </Text>
                         </View>
                     </View>
@@ -361,44 +373,44 @@ function generateSupportFile() {
                                 <Text style={styles.subtitle}>
                                     {'Connection\n'}
                                 </Text>
-                                {
-                                    connection ? (
-                                        <>
-                                            <Text style={styles.textBold}>
-                                                {'Available Ports:\n'}
-                                                <Text style={styles.text}>
-                                                    {
-                                                        unwrapObject(connection.ports, 1)
-                                                    }
-                                                </Text>
+                                {connection ? (
+                                    <>
+                                        <Text style={styles.textBold}>
+                                            {'Available Ports:\n'}
+                                            <Text style={styles.text}>
+                                                {unwrapObject(
+                                                    connection.ports,
+                                                    1,
+                                                )}
                                             </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Connected Port: '}
-                                                <Text style={styles.text}>
-                                                    {connection.port + '\n'}
-                                                </Text>
-                                            </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Baudrate: '}
-                                                <Text style={styles.text}>
-                                                    {connection.baudrate ? connection.baudrate + '\n' : 'null\n'}
-                                                </Text>
-                                            </Text>
-                                            <Text style={styles.textBold}>
-                                                {'Unrecognized Ports:\n'}
-                                                <Text style={styles.text}>
-                                                    {
-                                                        unwrapObject(connection.unrecognizedPorts, 1)
-                                                    }
-                                                </Text>
-                                            </Text>
-                                        </>
-                                    ) : (
-                                        <Text style={styles.text}>
-                                            {'NULL\n'}
                                         </Text>
-                                    )
-                                }
+                                        <Text style={styles.textBold}>
+                                            {'Connected Port: '}
+                                            <Text style={styles.text}>
+                                                {connection.port + '\n'}
+                                            </Text>
+                                        </Text>
+                                        <Text style={styles.textBold}>
+                                            {'Baudrate: '}
+                                            <Text style={styles.text}>
+                                                {connection.baudrate
+                                                    ? connection.baudrate + '\n'
+                                                    : 'null\n'}
+                                            </Text>
+                                        </Text>
+                                        <Text style={styles.textBold}>
+                                            {'Unrecognized Ports:\n'}
+                                            <Text style={styles.text}>
+                                                {unwrapObject(
+                                                    connection.unrecognizedPorts,
+                                                    1,
+                                                )}
+                                            </Text>
+                                        </Text>
+                                    </>
+                                ) : (
+                                    <Text style={styles.text}>{'NULL\n'}</Text>
+                                )}
                             </Text>
                         </View>
                         <View style={styles.clearTableCol}>
@@ -409,115 +421,120 @@ function generateSupportFile() {
                                 <Text style={styles.textBold}>
                                     {'Type: '}
                                     <Text style={styles.text}>
-                                        { grblInfo.type ? grblInfo.type + '\n' : 'NULL\n' }
+                                        {grblInfo.type
+                                            ? grblInfo.type + '\n'
+                                            : 'NULL\n'}
                                     </Text>
                                 </Text>
-                                {
-                                    !isEmpty(grblInfo.mpos) ? (
-                                        <Text style={styles.textBold}>
-                                            {'MPos: \n'}
-                                            <Text style={styles.textItalic}>
-                                                {'    a: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.mpos.a + '\n'}
-                                                </Text>
-                                                {'    b: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.mpos.b + '\n'}
-                                                </Text>
-                                                {'    c: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.mpos.c + '\n'}
-                                                </Text>
-                                                {'    x: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.mpos.x + '\n'}
-                                                </Text>
-                                                {'    y: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.mpos.y + '\n'}
-                                                </Text>
-                                                {'    z: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.mpos.z + '\n'}
-                                                </Text>
-                                            </Text>
-                                        </Text>
-                                    ) : (
-                                        <Text style={styles.textBold}>
-                                            {'MPos: '}
+                                {!isEmpty(grblInfo.mpos) ? (
+                                    <Text style={styles.textBold}>
+                                        {'MPos: \n'}
+                                        <Text style={styles.textItalic}>
+                                            {'    a: '}
                                             <Text style={styles.text}>
-                                                {'NULL\n'}
+                                                {grblInfo.mpos.a + '\n'}
                                             </Text>
-                                        </Text>
-                                    )
-                                }
-                                {
-                                    !isEmpty(grblInfo.wpos) ? (
-                                        <Text style={styles.textBold}>
-                                            {'WPos: \n'}
-                                            <Text style={styles.textItalic}>
-                                                {'    a: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.wpos.a + '\n'}
-                                                </Text>
-                                                {'    b: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.wpos.b + '\n'}
-                                                </Text>
-                                                {'    c: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.wpos.c + '\n'}
-                                                </Text>
-                                                {'    x: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.wpos.x + '\n'}
-                                                </Text>
-                                                {'    y: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.wpos.y + '\n'}
-                                                </Text>
-                                                {'    z: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.wpos.z + '\n'}
-                                                </Text>
-                                            </Text>
-                                        </Text>
-                                    ) : (
-                                        <Text style={styles.textBold}>
-                                            {'WPos: '}
+                                            {'    b: '}
                                             <Text style={styles.text}>
-                                                {'NULL\n'}
+                                                {grblInfo.mpos.b + '\n'}
                                             </Text>
-                                        </Text>
-                                    )
-                                }
-                                {
-                                    grblInfo.sender.status ? (
-                                        <Text style={styles.textBold}>
-                                            {'Sender Status: \n'}
-                                            <Text style={styles.textItalic}>
-                                                {'    Modal: \n'}
-                                                <Text style={styles.text}>
-                                                    {
-                                                        grblInfo.sender.status.context ? unwrapObject(grblInfo.sender.status.context.modal, 2) : 'NULL\n'
-                                                    }
-                                                </Text>
-                                                {'    Tool: '}
-                                                <Text style={styles.text}>
-                                                    {grblInfo.sender.status.context?.tool ? '        ' + grblInfo.sender.status.context.tool.toString() + '\n' : 'NULL\n'}
-                                                </Text>
-                                            </Text>
-                                        </Text>
-                                    ) : (
-                                        <Text style={styles.textBold}>
-                                            {'Sender Status: '}
+                                            {'    c: '}
                                             <Text style={styles.text}>
-                                                {'NULL\n'}
+                                                {grblInfo.mpos.c + '\n'}
+                                            </Text>
+                                            {'    x: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.mpos.x + '\n'}
+                                            </Text>
+                                            {'    y: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.mpos.y + '\n'}
+                                            </Text>
+                                            {'    z: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.mpos.z + '\n'}
                                             </Text>
                                         </Text>
-                                    )
-                                }
+                                    </Text>
+                                ) : (
+                                    <Text style={styles.textBold}>
+                                        {'MPos: '}
+                                        <Text style={styles.text}>
+                                            {'NULL\n'}
+                                        </Text>
+                                    </Text>
+                                )}
+                                {!isEmpty(grblInfo.wpos) ? (
+                                    <Text style={styles.textBold}>
+                                        {'WPos: \n'}
+                                        <Text style={styles.textItalic}>
+                                            {'    a: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.wpos.a + '\n'}
+                                            </Text>
+                                            {'    b: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.wpos.b + '\n'}
+                                            </Text>
+                                            {'    c: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.wpos.c + '\n'}
+                                            </Text>
+                                            {'    x: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.wpos.x + '\n'}
+                                            </Text>
+                                            {'    y: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.wpos.y + '\n'}
+                                            </Text>
+                                            {'    z: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.wpos.z + '\n'}
+                                            </Text>
+                                        </Text>
+                                    </Text>
+                                ) : (
+                                    <Text style={styles.textBold}>
+                                        {'WPos: '}
+                                        <Text style={styles.text}>
+                                            {'NULL\n'}
+                                        </Text>
+                                    </Text>
+                                )}
+                                {grblInfo.sender.status ? (
+                                    <Text style={styles.textBold}>
+                                        {'Sender Status: \n'}
+                                        <Text style={styles.textItalic}>
+                                            {'    Modal: \n'}
+                                            <Text style={styles.text}>
+                                                {grblInfo.sender.status.context
+                                                    ? unwrapObject(
+                                                          grblInfo.sender.status
+                                                              .context.modal,
+                                                          2,
+                                                      )
+                                                    : 'NULL\n'}
+                                            </Text>
+                                            {'    Tool: '}
+                                            <Text style={styles.text}>
+                                                {grblInfo.sender.status.context
+                                                    ?.tool
+                                                    ? '        ' +
+                                                      grblInfo.sender.status.context.tool.toString() +
+                                                      '\n'
+                                                    : 'NULL\n'}
+                                            </Text>
+                                        </Text>
+                                    </Text>
+                                ) : (
+                                    <Text style={styles.textBold}>
+                                        {'Sender Status: '}
+                                        <Text style={styles.text}>
+                                            {'NULL\n'}
+                                        </Text>
+                                    </Text>
+                                )}
                                 <Text style={styles.textBold}>
                                     {'Workflow State: '}
                                     <Text style={styles.text}>
@@ -543,186 +560,210 @@ function generateSupportFile() {
                     {/* TableHeader */}
                     <View style={styles.tableRow}>
                         <View style={styles.tableCol}>
-                            <Text style={[styles.tableCell, { fontFamily: 'Helvetica-Bold' }]}>
+                            <Text
+                                style={[
+                                    styles.tableCell,
+                                    { fontFamily: 'Helvetica-Bold' },
+                                ]}
+                            >
                                 Setting
                             </Text>
                         </View>
                         <View style={styles.tableCol}>
-                            <Text style={[styles.tableCell, { fontFamily: 'Helvetica-Bold' }]}>
+                            <Text
+                                style={[
+                                    styles.tableCell,
+                                    { fontFamily: 'Helvetica-Bold' },
+                                ]}
+                            >
                                 Value
                             </Text>
                         </View>
                     </View>
                     {/* TableContent */}
-                    { createTableRows(eeprom) }
+                    {createTableRows(eeprom)}
                 </View>
                 <Text style={styles.subtitle} break>
                     Recent Alarms
                 </Text>
                 <View style={styles.container}>
-                    {
-                        alarms.length > 0 ? (
-                            alarms.map((log, i) => {
-                                return (
-                                    <View style={styles.lineWrapper} key={uniqueId()}>
-                                        <Text style={styles.text}>
-                                            {new Date(log.time).toLocaleString() + '\n'}
-                                            <Text style={[styles.error, { color: 'red' }]}>
-                                                {'    ' + log.MESSAGE + '\n'}
-                                            </Text>
-                                            <Text>{'    Input: ' + log.line}</Text>
-                                            <Text>{'    Controller: ' + log.controller}</Text>
+                    {alarms.length > 0 ? (
+                        alarms.map((log, i) => {
+                            return (
+                                <View
+                                    style={styles.lineWrapper}
+                                    key={uniqueId()}
+                                >
+                                    <Text style={styles.text}>
+                                        {new Date(log.time).toLocaleString() +
+                                            '\n'}
+                                        <Text
+                                            style={[
+                                                styles.error,
+                                                { color: 'red' },
+                                            ]}
+                                        >
+                                            {'    ' + log.MESSAGE + '\n'}
                                         </Text>
-                                    </View>
-                                );
-                            })
-                        ) : (
-                            <Text style={styles.text}>
-                                None
-                            </Text>
-                        )
-                    }
-                </View>
-                <Text style={styles.subtitle}>
-                    Recent Errors
-                </Text>
-                <View style={styles.container}>
-                    {
-                        errors.length > 0 ? (
-                            errors.map((log, i) => {
-                                return (
-                                    <View style={styles.lineWrapper} key={uniqueId()}>
-                                        <Text style={styles.text}>
-                                            {new Date(log.time).toLocaleString() + '\n'}
-                                            <Text style={[styles.error, { color: 'red' }]}>
-                                                {'    ' + log.MESSAGE + '\n'}
-                                            </Text>
-                                            <Text>{'    Input: ' + log.line}</Text>
-                                            <Text>{'    Controller: ' + log.controller}</Text>
+                                        <Text>{'    Input: ' + log.line}</Text>
+                                        <Text>
+                                            {'    Controller: ' +
+                                                log.controller}
                                         </Text>
-                                    </View>
-                                );
-                            })
-                        ) : (
-                            <Text style={styles.text}>
-                                None
-                            </Text>
-                        )
-                    }
-                </View>
-                <Text style={styles.subtitle}>
-                    Terminal History
-                </Text>
-                <View style={styles.container}>
-                    <Text style={styles.text}>
-                        {
-                            history.length > 0 ? (
-                                history.map((value, i) => {
-                                    return value + '\n';
-                                })
-                            ) : (
-                                'None'
-                            )
-                        }
-                    </Text>
-                </View>
-                <Text style={styles.subtitle}>
-                    G-Code File
-                </Text>
-                {
-                    fileInfo.fileLoaded && grblInfo.sender.status ? (
-                        <View style={styles.table}>
-                            {/* TableHeader */}
-                            <View style={styles.tableRow}>
-                                <View style={styles.tableCol}>
-                                    <Text style={[styles.tableCell, { fontFamily: 'Helvetica-Bold' }]}>
-                                        Status
                                     </Text>
                                 </View>
-                                <View style={styles.tableCol}>
-                                    <Text style={[styles.tableCell, { fontFamily: 'Helvetica-Bold' }]}>
-                                        Value
-                                    </Text>
-                                </View>
-                            </View>
-                            {/* TableContent */}
-                            <View style={styles.tableRow}>
-                                <View style={styles.tableCol}>
-                                    <Text style={styles.tableCell}>
-                                        Name
-                                    </Text>
-                                </View>
-                                <View style={styles.tableCol}>
-                                    <Text style={styles.tableCell}>
-                                        {grblInfo.sender.status.name}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.tableRow}>
-                                <View style={styles.tableCol}>
-                                    <Text style={styles.tableCell}>
-                                        Sent
-                                    </Text>
-                                </View>
-                                <View style={styles.tableCol}>
-                                    <Text style={styles.tableCell}>
-                                        {grblInfo.sender.status.sent}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.tableRow}>
-                                <View style={styles.tableCol}>
-                                    <Text style={styles.tableCell}>
-                                        Received
-                                    </Text>
-                                </View>
-                                <View style={styles.tableCol}>
-                                    <Text style={styles.tableCell}>
-                                        {grblInfo.sender.status.remainingTime}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.tableRow}>
-                                <View style={styles.tableCol}>
-                                    <Text style={styles.tableCell}>
-                                        Total
-                                    </Text>
-                                </View>
-                                <View style={styles.tableCol}>
-                                    <Text style={styles.tableCell}>
-                                        {grblInfo.sender.status.total}
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
+                            );
+                        })
                     ) : (
-                        <View style={styles.table}>
-                            {/* TableHeader */}
-                            <View style={styles.tableRow}>
-                                <View style={styles.tableCol}>
-                                    <Text style={[styles.tableCell, { fontFamily: 'Helvetica-Bold' }]}>
-                                        Status
+                        <Text style={styles.text}>None</Text>
+                    )}
+                </View>
+                <Text style={styles.subtitle}>Recent Errors</Text>
+                <View style={styles.container}>
+                    {errors.length > 0 ? (
+                        errors.map((log, i) => {
+                            return (
+                                <View
+                                    style={styles.lineWrapper}
+                                    key={uniqueId()}
+                                >
+                                    <Text style={styles.text}>
+                                        {new Date(log.time).toLocaleString() +
+                                            '\n'}
+                                        <Text
+                                            style={[
+                                                styles.error,
+                                                { color: 'red' },
+                                            ]}
+                                        >
+                                            {'    ' + log.MESSAGE + '\n'}
+                                        </Text>
+                                        <Text>{'    Input: ' + log.line}</Text>
+                                        <Text>
+                                            {'    Controller: ' +
+                                                log.controller}
+                                        </Text>
                                     </Text>
                                 </View>
-                                <View style={styles.tableCol}>
-                                    <Text style={[styles.tableCell, { fontFamily: 'Helvetica-Bold' }]}>
-                                        Value
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                    )
-                }
+                            );
+                        })
+                    ) : (
+                        <Text style={styles.text}>None</Text>
+                    )}
+                </View>
+                <Text style={styles.subtitle}>Terminal History</Text>
                 <View style={styles.container}>
                     <Text style={styles.text}>
-                        { gcode || 'No File Loaded' }
+                        {history.length > 0
+                            ? history.map((value, i) => {
+                                  return value + '\n';
+                              })
+                            : 'None'}
                     </Text>
+                </View>
+                <Text style={styles.subtitle}>G-Code File</Text>
+                {fileInfo.fileLoaded && grblInfo.sender.status ? (
+                    <View style={styles.table}>
+                        {/* TableHeader */}
+                        <View style={styles.tableRow}>
+                            <View style={styles.tableCol}>
+                                <Text
+                                    style={[
+                                        styles.tableCell,
+                                        { fontFamily: 'Helvetica-Bold' },
+                                    ]}
+                                >
+                                    Status
+                                </Text>
+                            </View>
+                            <View style={styles.tableCol}>
+                                <Text
+                                    style={[
+                                        styles.tableCell,
+                                        { fontFamily: 'Helvetica-Bold' },
+                                    ]}
+                                >
+                                    Value
+                                </Text>
+                            </View>
+                        </View>
+                        {/* TableContent */}
+                        <View style={styles.tableRow}>
+                            <View style={styles.tableCol}>
+                                <Text style={styles.tableCell}>Name</Text>
+                            </View>
+                            <View style={styles.tableCol}>
+                                <Text style={styles.tableCell}>
+                                    {grblInfo.sender.status.name}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={styles.tableRow}>
+                            <View style={styles.tableCol}>
+                                <Text style={styles.tableCell}>Sent</Text>
+                            </View>
+                            <View style={styles.tableCol}>
+                                <Text style={styles.tableCell}>
+                                    {grblInfo.sender.status.sent}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={styles.tableRow}>
+                            <View style={styles.tableCol}>
+                                <Text style={styles.tableCell}>Received</Text>
+                            </View>
+                            <View style={styles.tableCol}>
+                                <Text style={styles.tableCell}>
+                                    {grblInfo.sender.status.remainingTime}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={styles.tableRow}>
+                            <View style={styles.tableCol}>
+                                <Text style={styles.tableCell}>Total</Text>
+                            </View>
+                            <View style={styles.tableCol}>
+                                <Text style={styles.tableCell}>
+                                    {grblInfo.sender.status.total}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                ) : (
+                    <View style={styles.table}>
+                        {/* TableHeader */}
+                        <View style={styles.tableRow}>
+                            <View style={styles.tableCol}>
+                                <Text
+                                    style={[
+                                        styles.tableCell,
+                                        { fontFamily: 'Helvetica-Bold' },
+                                    ]}
+                                >
+                                    Status
+                                </Text>
+                            </View>
+                            <View style={styles.tableCol}>
+                                <Text
+                                    style={[
+                                        styles.tableCell,
+                                        { fontFamily: 'Helvetica-Bold' },
+                                    ]}
+                                >
+                                    Value
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                )}
+                <View style={styles.container}>
+                    <Text style={styles.text}>{gcode || 'No File Loaded'}</Text>
                 </View>
                 <Text
                     style={styles.pageNumber}
-                    render={({ pageNumber, totalPages }) => (
+                    render={({ pageNumber, totalPages }) =>
                         `${pageNumber} / ${totalPages}`
-                    )}
+                    }
                     fixed
                 />
             </Page>
@@ -734,13 +775,17 @@ function generateSupportFile() {
         const blob = await pdf(<SupportFile />).toBlob();
         const date = new Date();
         const currentDate = date.toLocaleDateString().replaceAll('/', '-');
-        const currentTime = date.toLocaleTimeString('it-IT').replaceAll(':', '-');
+        const currentTime = date
+            .toLocaleTimeString('it-IT')
+            .replaceAll(':', '-');
 
         saveAs(blob, 'diagnostics_' + currentDate + '_' + currentTime + '.pdf');
     };
 
     return (
-        <ToolModalButton icon="fas fa-file-pdf" onClick={submitForm}>Download Now!</ToolModalButton>
+        <ToolModalButton icon="fas fa-file-pdf" onClick={submitForm}>
+            Download Now!
+        </ToolModalButton>
     );
 }
 

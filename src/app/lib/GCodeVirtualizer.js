@@ -8,7 +8,7 @@ const translatePosition = (position, newPosition, relative) => {
     if (Number.isNaN(newPosition)) {
         return position;
     }
-    return relative ? (position + newPosition) : newPosition;
+    return relative ? position + newPosition : newPosition;
 };
 
 export const toRadians = (degrees) => {
@@ -50,7 +50,6 @@ export const rotateAxis = (axis, { y, z, a }) => {
     return null;
 };
 
-
 // from in to mm
 const in2mm = (val = 0) => val * 25.4;
 
@@ -90,9 +89,9 @@ class GCodeVirtualizer extends EventEmitter {
 
     re3 = new RegExp(/\s+/g);
 
-    minBounds = [0, 0, 0]
+    minBounds = [0, 0, 0];
 
-    maxBounds = [0, 0, 0]
+    maxBounds = [0, 0, 0];
 
     modal = {
         // Motion Mode
@@ -142,22 +141,22 @@ class GCodeVirtualizer extends EventEmitter {
         coolant: 'M9', // 'M7', 'M8', 'M7,M8', or 'M9'
 
         // Tool Select
-        tool: 0
-    }
+        tool: 0,
+    };
 
     position = {
         x: 0,
         y: 0,
         z: 0,
         a: 0,
-    }
+    };
 
     offsets = {
         x: 0,
         y: 0,
         z: 0,
         a: 0,
-    }
+    };
 
     vmState = {
         tools: null,
@@ -167,24 +166,23 @@ class GCodeVirtualizer extends EventEmitter {
             min: {
                 x: 0,
                 y: 0,
-                z: 0
+                z: 0,
             },
             max: {
                 x: 0,
                 y: 0,
-                z: 0
-            }
+                z: 0,
+            },
         },
-        usedAxes: new Set()
-
-    }
+        usedAxes: new Set(),
+    };
 
     // data to save so we don't have to reparse
     data = [
         {
             Scode: null, // spindle value for the line
             lineData: null, // modal changes, v1, v2, v0
-        }
+        },
     ];
 
     estimates = [];
@@ -192,16 +190,16 @@ class GCodeVirtualizer extends EventEmitter {
     modalChanges = [
         {
             change: null,
-            count: 0
-        }
+            count: 0,
+        },
     ];
     modalCounter = 0;
 
     feedrateChanges = [
         {
             change: null,
-            count: 0
-        }
+            count: 0,
+        },
     ];
     feedrateCounter = 0;
 
@@ -209,7 +207,7 @@ class GCodeVirtualizer extends EventEmitter {
 
     handlers = {
         // G0: Rapid Linear Move
-        'G0': (params) => {
+        G0: (params) => {
             if (this.modal.motion !== 'G0') {
                 this.setModal({ motion: 'G0' });
                 this.saveModal({ motion: 'G0' });
@@ -234,27 +232,42 @@ class GCodeVirtualizer extends EventEmitter {
             const angleDiff = Math.abs(v2.a - v1.a);
 
             if (isCurvedLine && angleDiff > ANGLE_THRESHOLD) {
-                this.fn.addCurve(this.modal, this.offsetG92(v1), this.offsetG92(v2));
+                this.fn.addCurve(
+                    this.modal,
+                    this.offsetG92(v1),
+                    this.offsetG92(v2),
+                );
             } else {
-                this.fn.addLine(this.modal, this.offsetG92(v1), this.offsetG92(v2));
+                this.fn.addLine(
+                    this.modal,
+                    this.offsetG92(v1),
+                    this.offsetG92(v2),
+                );
             }
 
             // Update position
             this.calculateMachiningTime(targetPosition);
             this.updateBounds(targetPosition);
-            this.setPosition(targetPosition.x, targetPosition.y, targetPosition.z, targetPosition.a);
+            this.setPosition(
+                targetPosition.x,
+                targetPosition.y,
+                targetPosition.z,
+                targetPosition.a,
+            );
 
             if (!this.hasSetV1) {
                 this.data[this.totalLines].lineData = {
                     v1: this.offsetG92(v1),
                     v2: this.offsetG92(v2),
-                    shouldUseAddCurve: isCurvedLine && angleDiff > ANGLE_THRESHOLD,
+                    shouldUseAddCurve:
+                        isCurvedLine && angleDiff > ANGLE_THRESHOLD,
                 };
                 this.hasSetV1 = true;
             } else {
                 this.data[this.totalLines].lineData = {
                     v2: this.offsetG92(v2),
-                    shouldUseAddCurve: isCurvedLine && angleDiff > ANGLE_THRESHOLD,
+                    shouldUseAddCurve:
+                        isCurvedLine && angleDiff > ANGLE_THRESHOLD,
                 };
             }
         },
@@ -272,7 +285,7 @@ class GCodeVirtualizer extends EventEmitter {
         //   G1 F1500 (Set the feedrate to 1500mm/minute)
         //   G1 X90.6 Y13.8 E22.4 (Move to 90.6mm on the X axis and 13.8mm on the Y axis while extruding 22.4mm of material)
         //
-        'G1': (params) => {
+        G1: (params) => {
             if (this.modal.motion !== 'G1') {
                 this.setModal({ motion: 'G1' });
                 this.saveModal({ motion: 'G1' });
@@ -297,27 +310,42 @@ class GCodeVirtualizer extends EventEmitter {
             const angleDiff = Math.abs(v2.a - v1.a);
 
             if (isCurvedLine && angleDiff > ANGLE_THRESHOLD) {
-                this.fn.addCurve(this.modal, this.offsetG92(v1), this.offsetG92(v2));
+                this.fn.addCurve(
+                    this.modal,
+                    this.offsetG92(v1),
+                    this.offsetG92(v2),
+                );
             } else {
-                this.fn.addLine(this.modal, this.offsetG92(v1), this.offsetG92(v2));
+                this.fn.addLine(
+                    this.modal,
+                    this.offsetG92(v1),
+                    this.offsetG92(v2),
+                );
             }
 
             // Update position + increment machining time
             this.calculateMachiningTime(targetPosition);
             this.updateBounds(targetPosition);
-            this.setPosition(targetPosition.x, targetPosition.y, targetPosition.z, targetPosition.a);
+            this.setPosition(
+                targetPosition.x,
+                targetPosition.y,
+                targetPosition.z,
+                targetPosition.a,
+            );
 
             if (!this.hasSetV1) {
                 this.data[this.totalLines].lineData = {
                     v1: this.offsetG92(v1),
                     v2: this.offsetG92(v2),
-                    shouldUseAddCurve: isCurvedLine && angleDiff > ANGLE_THRESHOLD,
+                    shouldUseAddCurve:
+                        isCurvedLine && angleDiff > ANGLE_THRESHOLD,
                 };
                 this.hasSetV1 = true;
             } else {
                 this.data[this.totalLines].lineData = {
                     v2: this.offsetG92(v2),
-                    shouldUseAddCurve: isCurvedLine && angleDiff > ANGLE_THRESHOLD,
+                    shouldUseAddCurve:
+                        isCurvedLine && angleDiff > ANGLE_THRESHOLD,
                 };
             }
         },
@@ -339,7 +367,7 @@ class GCodeVirtualizer extends EventEmitter {
         // Referring
         //   http://linuxcnc.org/docs/2.5/html/gcode/gcode.html#sec:G2-G3-Arc
         //   https://github.com/grbl/grbl/issues/236
-        'G2': (params) => {
+        G2: (params) => {
             if (this.modal.motion !== 'G2') {
                 this.setModal({ motion: 'G2' });
                 this.saveModal({ motion: 'G2' });
@@ -348,7 +376,7 @@ class GCodeVirtualizer extends EventEmitter {
             const v1 = {
                 x: this.position.x,
                 y: this.position.y,
-                z: this.position.z
+                z: this.position.z,
             };
             const v2 = {
                 x: this.translateX(params.X),
@@ -356,23 +384,27 @@ class GCodeVirtualizer extends EventEmitter {
                 z: this.translateZ(params.Z),
                 a: this.translateA(params.A),
             };
-            const v0 = { // fixed point
+            const v0 = {
+                // fixed point
                 x: this.translateI(params.I),
                 y: this.translateJ(params.J),
-                z: this.translateK(params.K)
+                z: this.translateK(params.K),
             };
             const isClockwise = true;
             const targetPosition = { x: v2.x, y: v2.y, z: v2.z };
 
-            if (this.isXYPlane()) { // XY-plane
+            if (this.isXYPlane()) {
+                // XY-plane
                 [v1.x, v1.y, v1.z] = [v1.x, v1.y, v1.z];
                 [v2.x, v2.y, v2.z] = [v2.x, v2.y, v2.z];
                 [v0.x, v0.y, v0.z] = [v0.x, v0.y, v0.z];
-            } else if (this.isZXPlane()) { // ZX-plane
+            } else if (this.isZXPlane()) {
+                // ZX-plane
                 [v1.x, v1.y, v1.z] = [v1.z, v1.x, v1.y];
                 [v2.x, v2.y, v2.z] = [v2.z, v2.x, v2.y];
                 [v0.x, v0.y, v0.z] = [v0.z, v0.x, v0.y];
-            } else if (this.isYZPlane()) { // YZ-plane
+            } else if (this.isYZPlane()) {
+                // YZ-plane
                 [v1.x, v1.y, v1.z] = [v1.y, v1.z, v1.x];
                 [v2.x, v2.y, v2.z] = [v2.y, v2.z, v2.x];
                 [v0.x, v0.y, v0.z] = [v0.y, v0.z, v0.x];
@@ -395,36 +427,45 @@ class GCodeVirtualizer extends EventEmitter {
                     height = -height;
                 }
 
-                const offsetX = x / 2 - y / distance * height;
-                const offsetY = y / 2 + x / distance * height;
+                const offsetX = x / 2 - (y / distance) * height;
+                const offsetY = y / 2 + (x / distance) * height;
 
                 v0.x = v1.x + offsetX;
                 v0.y = v1.y + offsetY;
             }
 
             //this.offsetAddArcCurve(v1, v2, v0);
-            this.fn.addArcCurve(this.modal, this.offsetG92(v1), this.offsetG92(v2), this.offsetG92(v0));
+            this.fn.addArcCurve(
+                this.modal,
+                this.offsetG92(v1),
+                this.offsetG92(v2),
+                this.offsetG92(v0),
+            );
 
             // Update position
             this.calculateMachiningTime(targetPosition);
             this.updateBounds(targetPosition);
-            this.setPosition(targetPosition.x, targetPosition.y, targetPosition.z);
+            this.setPosition(
+                targetPosition.x,
+                targetPosition.y,
+                targetPosition.z,
+            );
 
             if (!this.hasSetV1) {
                 this.data[this.totalLines].lineData = {
                     v1: this.offsetG92(v1),
                     v2: this.offsetG92(v2),
-                    v0: this.offsetG92(v0)
+                    v0: this.offsetG92(v0),
                 };
                 this.hasSetV1 = true;
             } else {
                 this.data[this.totalLines].lineData = {
                     v2: this.offsetG92(v2),
-                    v0: this.offsetG92(v0)
+                    v0: this.offsetG92(v0),
                 };
             }
         },
-        'G3': (params) => {
+        G3: (params) => {
             if (this.modal.motion !== 'G3') {
                 this.setModal({ motion: 'G3' });
                 this.saveModal({ motion: 'G3' });
@@ -433,7 +474,7 @@ class GCodeVirtualizer extends EventEmitter {
             const v1 = {
                 x: this.position.x,
                 y: this.position.y,
-                z: this.position.z
+                z: this.position.z,
             };
             const v2 = {
                 x: this.translateX(params.X),
@@ -441,23 +482,27 @@ class GCodeVirtualizer extends EventEmitter {
                 z: this.translateZ(params.Z),
                 a: this.translateA(params.A),
             };
-            const v0 = { // fixed point
+            const v0 = {
+                // fixed point
                 x: this.translateI(params.I),
                 y: this.translateJ(params.J),
-                z: this.translateK(params.K)
+                z: this.translateK(params.K),
             };
             const isClockwise = false;
             const targetPosition = { x: v2.x, y: v2.y, z: v2.z };
 
-            if (this.isXYPlane()) { // XY-plane
+            if (this.isXYPlane()) {
+                // XY-plane
                 [v1.x, v1.y, v1.z] = [v1.x, v1.y, v1.z];
                 [v2.x, v2.y, v2.z] = [v2.x, v2.y, v2.z];
                 [v0.x, v0.y, v0.z] = [v0.x, v0.y, v0.z];
-            } else if (this.isZXPlane()) { // ZX-plane
+            } else if (this.isZXPlane()) {
+                // ZX-plane
                 [v1.x, v1.y, v1.z] = [v1.z, v1.x, v1.y];
                 [v2.x, v2.y, v2.z] = [v2.z, v2.x, v2.y];
                 [v0.x, v0.y, v0.z] = [v0.z, v0.x, v0.y];
-            } else if (this.isYZPlane()) { // YZ-plane
+            } else if (this.isYZPlane()) {
+                // YZ-plane
                 [v1.x, v1.y, v1.z] = [v1.y, v1.z, v1.x];
                 [v2.x, v2.y, v2.z] = [v2.y, v2.z, v2.x];
                 [v0.x, v0.y, v0.z] = [v0.y, v0.z, v0.x];
@@ -480,31 +525,40 @@ class GCodeVirtualizer extends EventEmitter {
                     height = -height;
                 }
 
-                const offsetX = x / 2 - y / distance * height;
-                const offsetY = y / 2 + x / distance * height;
+                const offsetX = x / 2 - (y / distance) * height;
+                const offsetY = y / 2 + (x / distance) * height;
 
                 v0.x = v1.x + offsetX;
                 v0.y = v1.y + offsetY;
             }
 
-            this.fn.addArcCurve(this.modal, this.offsetG92(v1), this.offsetG92(v2), this.offsetG92(v0));
+            this.fn.addArcCurve(
+                this.modal,
+                this.offsetG92(v1),
+                this.offsetG92(v2),
+                this.offsetG92(v0),
+            );
 
             // Update position
             this.calculateMachiningTime(targetPosition);
             this.updateBounds(targetPosition);
-            this.setPosition(targetPosition.x, targetPosition.y, targetPosition.z);
+            this.setPosition(
+                targetPosition.x,
+                targetPosition.y,
+                targetPosition.z,
+            );
 
             if (!this.hasSetV1) {
                 this.data[this.totalLines].lineData = {
                     v1: this.offsetG92(v1),
                     v2: this.offsetG92(v2),
-                    v0: this.offsetG92(v0)
+                    v0: this.offsetG92(v0),
                 };
                 this.hasSetV1 = true;
             } else {
                 this.data[this.totalLines].lineData = {
                     v2: this.offsetG92(v2),
-                    v0: this.offsetG92(v0)
+                    v0: this.offsetG92(v0),
                 };
             }
         },
@@ -514,7 +568,7 @@ class GCodeVirtualizer extends EventEmitter {
         //   Snnn Time to wait, in seconds (Only on Marlin and Smoothie)
         // Example
         //   G4 P200
-        'G4': (params) => {
+        G4: (params) => {
             if (this.modal.motion !== 'G4') {
                 this.setModal({ motion: 'G4' });
                 this.saveModal({ motion: 'G4' });
@@ -529,43 +583,42 @@ class GCodeVirtualizer extends EventEmitter {
             this.totalTime += dwellTime;
 
             this.data[this.totalLines].lineData = {
-                dwellTime: dwellTime
+                dwellTime: dwellTime,
             };
         },
         // G10: Coordinate System Data Tool and Work Offset Tables
-        'G10': (params) => {
-        },
+        G10: (params) => {},
         // G17..19: Plane Selection
         // G17: XY (default)
-        'G17': (params) => {
+        G17: (params) => {
             if (this.modal.plane !== 'G17') {
                 this.setModal({ plane: 'G17' });
                 this.saveModal({ plane: 'G17' });
             }
         },
         // G18: XZ
-        'G18': (params) => {
+        G18: (params) => {
             if (this.modal.plane !== 'G18') {
                 this.setModal({ plane: 'G18' });
                 this.saveModal({ plane: 'G18' });
             }
         },
         // G19: YZ
-        'G19': (params) => {
+        G19: (params) => {
             if (this.modal.plane !== 'G19') {
                 this.setModal({ plane: 'G19' });
                 this.saveModal({ plane: 'G19' });
             }
         },
         // G20: Use inches for length units
-        'G20': (params) => {
+        G20: (params) => {
             if (this.modal.units !== 'G20') {
                 this.setModal({ units: 'G20' });
                 this.saveModal({ units: 'G20' });
             }
         },
         // G21: Use millimeters for length units
-        'G21': (params) => {
+        G21: (params) => {
             if (this.modal.units !== 'G21') {
                 this.setModal({ units: 'G21' });
                 this.saveModal({ units: 'G21' });
@@ -608,51 +661,51 @@ class GCodeVirtualizer extends EventEmitter {
             }
         },
         // G49: No Tool Length Offset
-        'G49': () => {
+        G49: () => {
             if (this.modal.tlo !== 'G49') {
                 this.setModal({ tlo: 'G49' });
                 this.saveModal({ tlo: 'G49' });
             }
         },
         // G54..59: Coordinate System Select
-        'G54': () => {
+        G54: () => {
             if (this.modal.wcs !== 'G54') {
                 this.setModal({ wcs: 'G54' });
                 this.saveModal({ wcs: 'G54' });
             }
         },
-        'G55': () => {
+        G55: () => {
             if (this.modal.wcs !== 'G55') {
                 this.setModal({ wcs: 'G55' });
                 this.saveModal({ wcs: 'G55' });
             }
         },
-        'G56': () => {
+        G56: () => {
             if (this.modal.wcs !== 'G56') {
                 this.setModal({ wcs: 'G56' });
                 this.saveModal({ wcs: 'G56' });
             }
         },
-        'G57': () => {
+        G57: () => {
             if (this.modal.wcs !== 'G57') {
                 this.setModal({ wcs: 'G57' });
                 this.saveModal({ wcs: 'G57' });
             }
         },
-        'G58': () => {
+        G58: () => {
             if (this.modal.wcs !== 'G58') {
                 this.setModal({ wcs: 'G58' });
                 this.saveModal({ wcs: 'G58' });
             }
         },
-        'G59': () => {
+        G59: () => {
             if (this.modal.wcs !== 'G59') {
                 this.setModal({ wcs: 'G59' });
                 this.saveModal({ wcs: 'G59' });
             }
         },
         // G80: Cancel Canned Cycle
-        'G80': () => {
+        G80: () => {
             if (this.modal.motion !== 'G80') {
                 this.setModal({ motion: 'G80' });
                 this.saveModal({ motion: 'G80' });
@@ -662,7 +715,7 @@ class GCodeVirtualizer extends EventEmitter {
         // Example
         //   G90
         // All coordinates from now on are absolute relative to the origin of the machine.
-        'G90': () => {
+        G90: () => {
             if (this.modal.distance !== 'G90') {
                 this.setModal({ distance: 'G90' });
                 this.saveModal({ distance: 'G90' });
@@ -672,7 +725,7 @@ class GCodeVirtualizer extends EventEmitter {
         // Example
         //   G91
         // All coordinates from now on are relative to the last position.
-        'G91': () => {
+        G91: () => {
             if (this.modal.distance !== 'G91') {
                 this.setModal({ distance: 'G91' });
                 this.saveModal({ distance: 'G91' });
@@ -689,9 +742,13 @@ class GCodeVirtualizer extends EventEmitter {
         // Allows programming of absolute zero point, by reseting the current position to the params specified.
         // This would set the machine's X coordinate to 10. No physical motion will occur.
         // A G92 without coordinates will reset all axes to zero.
-        'G92': (params) => {
+        G92: (params) => {
             // A G92 without coordinates will reset all axes to zero.
-            if ((params.X === undefined) && (params.Y === undefined) && (params.Z === undefined)) {
+            if (
+                params.X === undefined &&
+                params.Y === undefined &&
+                params.Z === undefined
+            ) {
                 this.position.x += this.offsets.x;
                 this.offsets.x = 0;
                 this.position.y += this.offsets.y;
@@ -733,7 +790,7 @@ class GCodeVirtualizer extends EventEmitter {
         // In inverse time feed rate mode, an F word means the move should be completed in
         // [one divided by the F number] minutes.
         // For example, if the F number is 2.0, the move should be completed in half a minute.
-        'G93': () => {
+        G93: () => {
             if (this.modal.feedmode !== 'G93') {
                 this.setModal({ feedmode: 'G93' });
                 this.saveModal({ feedmode: 'G93' });
@@ -744,7 +801,7 @@ class GCodeVirtualizer extends EventEmitter {
         // controlled point should move at a certain number of inches per minute,
         // millimeters per minute or degrees per minute, depending upon what length units
         // are being used and which axis or axes are moving.
-        'G94': () => {
+        G94: () => {
             if (this.modal.feedmode !== 'G94') {
                 this.setModal({ feedmode: 'G94' });
                 this.saveModal({ feedmode: 'G94' });
@@ -755,35 +812,35 @@ class GCodeVirtualizer extends EventEmitter {
         // controlled point should move at a certain number of inches per spindle revolution,
         // millimeters per spindle revolution or degrees per spindle revolution, depending upon
         // what length units are being used and which axis or axes are moving.
-        'G95': () => {
+        G95: () => {
             if (this.modal.feedmode !== 'G95') {
                 this.setModal({ feedmode: 'G95' });
                 this.saveModal({ feedmode: 'G95' });
             }
         },
         // M0: Program Pause
-        'M0': () => {
+        M0: () => {
             if (this.modal.program !== 'M0') {
                 this.setModal({ program: 'M0' });
                 this.saveModal({ program: 'M0' });
             }
         },
         // M1: Program Pause
-        'M1': () => {
+        M1: () => {
             if (this.modal.program !== 'M1') {
                 this.setModal({ program: 'M1' });
                 this.saveModal({ program: 'M1' });
             }
         },
         // M2: Program End
-        'M2': () => {
+        M2: () => {
             if (this.modal.program !== 'M2') {
                 this.setModal({ program: 'M2' });
                 this.saveModal({ program: 'M2' });
             }
         },
         // M30: Program End
-        'M30': () => {
+        M30: () => {
             if (this.modal.program !== 'M30') {
                 this.setModal({ program: 'M30' });
                 this.saveModal({ program: 'M30' });
@@ -791,28 +848,28 @@ class GCodeVirtualizer extends EventEmitter {
         },
         // Spindle Control
         // M3: Start the spindle turning clockwise at the currently programmed speed
-        'M3': (params) => {
+        M3: (params) => {
             if (this.modal.spindle !== 'M3') {
                 this.setModal({ spindle: 'M3' });
                 this.saveModal({ spindle: 'M3' });
             }
         },
         // M4: Start the spindle turning counterclockwise at the currently programmed speed
-        'M4': (params) => {
+        M4: (params) => {
             if (this.modal.spindle !== 'M4') {
                 this.setModal({ spindle: 'M4' });
                 this.saveModal({ spindle: 'M4' });
             }
         },
         // M5: Stop the spindle from turning
-        'M5': () => {
+        M5: () => {
             if (this.modal.spindle !== 'M5') {
                 this.setModal({ spindle: 'M5' });
                 this.saveModal({ spindle: 'M5' });
             }
         },
         // M6: Tool Change
-        'M6': (params) => {
+        M6: (params) => {
             if (params && params.T !== undefined) {
                 this.setModal({ tool: params.T });
                 this.saveModal({ tool: params.T });
@@ -820,37 +877,41 @@ class GCodeVirtualizer extends EventEmitter {
         },
         // Coolant Control
         // M7: Turn mist coolant on
-        'M7': () => {
+        M7: () => {
             const coolants = this.modal.coolant.split(',');
             if (coolants.indexOf('M7') >= 0) {
                 return;
             }
 
             this.setModal({
-                coolant: coolants.indexOf('M8') >= 0 ? 'M7,M8' : 'M7'
+                coolant: coolants.indexOf('M8') >= 0 ? 'M7,M8' : 'M7',
             });
-            this.saveModal({ coolant: coolants.indexOf('M8') >= 0 ? 'M7,M8' : 'M7' });
+            this.saveModal({
+                coolant: coolants.indexOf('M8') >= 0 ? 'M7,M8' : 'M7',
+            });
         },
         // M8: Turn flood coolant on
-        'M8': () => {
+        M8: () => {
             const coolants = this.modal.coolant.split(',');
             if (coolants.indexOf('M8') >= 0) {
                 return;
             }
 
             this.setModal({
-                coolant: coolants.indexOf('M7') >= 0 ? 'M7,M8' : 'M8'
+                coolant: coolants.indexOf('M7') >= 0 ? 'M7,M8' : 'M8',
             });
-            this.saveModal({ coolant: coolants.indexOf('M7') >= 0 ? 'M7,M8' : 'M8' });
+            this.saveModal({
+                coolant: coolants.indexOf('M7') >= 0 ? 'M7,M8' : 'M8',
+            });
         },
         // M9: Turn all coolant off
-        'M9': () => {
+        M9: () => {
             if (this.modal.coolant !== 'M9') {
                 this.setModal({ coolant: 'M9' });
                 this.saveModal({ coolant: 'M9' });
             }
         },
-        'T': (tool) => {
+        T: (tool) => {
             if (tool !== undefined) {
                 this.setModal({ tool: tool });
                 this.saveModal({ tool: tool });
@@ -858,12 +919,20 @@ class GCodeVirtualizer extends EventEmitter {
                     this.vmState.tools.add(`T${tool}`);
                 }
             }
-        }
+        },
     };
 
     constructor(options) {
         super();
-        const { addLine = noop, addArcCurve = noop, addCurve = noop, callback = noop, collate = false, accelerations, maxFeedrates } = options;
+        const {
+            addLine = noop,
+            addArcCurve = noop,
+            addCurve = noop,
+            callback = noop,
+            collate = false,
+            accelerations,
+            maxFeedrates,
+        } = options;
         this.fn = { addLine, addArcCurve, addCurve, callback };
         this.collate = collate;
 
@@ -895,7 +964,7 @@ class GCodeVirtualizer extends EventEmitter {
             const word = words[i];
             const letter = word[0];
 
-            if ((letter === 'G') || (letter === 'M') || (letter === 'T')) {
+            if (letter === 'G' || letter === 'M' || letter === 'T') {
                 groups.push([word]);
                 continue;
             }
@@ -910,7 +979,6 @@ class GCodeVirtualizer extends EventEmitter {
         return groups;
     }
 
-
     /**
      * Returns an object composed from arrays of property names and values.
      * @example
@@ -919,7 +987,7 @@ class GCodeVirtualizer extends EventEmitter {
      */
     fromPairs(pairs) {
         let index = -1;
-        const length = (!pairs) ? 0 : pairs.length;
+        const length = !pairs ? 0 : pairs.length;
         const result = {};
 
         while (++index < length) {
@@ -929,7 +997,6 @@ class GCodeVirtualizer extends EventEmitter {
 
         return result;
     }
-
 
     virtualize(line = '') {
         if (!line) {
@@ -972,7 +1039,7 @@ class GCodeVirtualizer extends EventEmitter {
             let args = {};
 
             if (letter === 'G') {
-                cmd = (letter + code);
+                cmd = letter + code;
                 args = this.fromPairs(words.slice(1));
 
                 if (args.X !== undefined) {
@@ -992,21 +1059,41 @@ class GCodeVirtualizer extends EventEmitter {
                 }
 
                 // Motion Mode
-                if (code === 0 || code === 1 || code === 2 || code === 3 || code === 38.2 || code === 38.3 || code === 38.4 || code === 38.5) {
+                if (
+                    code === 0 ||
+                    code === 1 ||
+                    code === 2 ||
+                    code === 3 ||
+                    code === 38.2 ||
+                    code === 38.3 ||
+                    code === 38.4 ||
+                    code === 38.5
+                ) {
                     this.motionMode = cmd;
                 } else if (code === 80) {
                     this.motionMode = '';
                 }
             } else if (letter === 'M') {
-                cmd = (letter + code);
+                cmd = letter + code;
                 args = this.fromPairs(words.slice(1));
-            } else if (letter === 'T') { // T1 ; w/o M6
+            } else if (letter === 'T') {
+                // T1 ; w/o M6
                 cmd = letter;
                 args = code;
             } else if (letter === 'S') {
                 cmd = letter;
                 args = code;
-            } else if (letter === 'X' || letter === 'Y' || letter === 'Z' || letter === 'A' || letter === 'B' || letter === 'C' || letter === 'I' || letter === 'J' || letter === 'K') {
+            } else if (
+                letter === 'X' ||
+                letter === 'Y' ||
+                letter === 'Z' ||
+                letter === 'A' ||
+                letter === 'B' ||
+                letter === 'C' ||
+                letter === 'I' ||
+                letter === 'J' ||
+                letter === 'K'
+            ) {
                 // Use previous motion command if the line does not start with G-code or M-code.
                 cmd = this.motionMode;
                 args = this.fromPairs(words);
@@ -1025,7 +1112,7 @@ class GCodeVirtualizer extends EventEmitter {
         // add new data structure
         this.data.push({
             Scode: null,
-            lineData: null
+            lineData: null,
         });
         this.modalCounter++;
         this.feedrateCounter++;
@@ -1070,12 +1157,12 @@ class GCodeVirtualizer extends EventEmitter {
             z: pos.z + this.offsets.z,
             a: pos.a + this.offsets.a,
         };
-    }
+    };
 
     setModal(modal) {
         this.modal = {
             ...this.modal,
-            ...modal
+            ...modal,
         };
         return this.modal;
     }
@@ -1085,11 +1172,13 @@ class GCodeVirtualizer extends EventEmitter {
         return this.feed;
     }
 
-    isMetricUnits() { // mm
+    isMetricUnits() {
+        // mm
         return this.modal.units === 'G21';
     }
 
-    isImperialUnits() { // inches
+    isImperialUnits() {
+        // inches
         return this.modal.units === 'G20';
     }
 
@@ -1116,16 +1205,16 @@ class GCodeVirtualizer extends EventEmitter {
     setPosition(...pos) {
         if (typeof pos[0] === 'object') {
             const { x, y, z, a } = { ...pos[0] };
-            this.position.x = (typeof x === 'number') ? x : this.position.x;
-            this.position.y = (typeof y === 'number') ? y : this.position.y;
-            this.position.z = (typeof z === 'number') ? z : this.position.z;
-            this.position.a = (typeof a === 'number') ? a : this.position.a;
+            this.position.x = typeof x === 'number' ? x : this.position.x;
+            this.position.y = typeof y === 'number' ? y : this.position.y;
+            this.position.z = typeof z === 'number' ? z : this.position.z;
+            this.position.a = typeof a === 'number' ? a : this.position.a;
         } else {
             const [x, y, z, a] = pos;
-            this.position.x = (typeof x === 'number') ? x : this.position.x;
-            this.position.y = (typeof y === 'number') ? y : this.position.y;
-            this.position.z = (typeof z === 'number') ? z : this.position.z;
-            this.position.a = (typeof a === 'number') ? a : this.position.a;
+            this.position.x = typeof x === 'number' ? x : this.position.x;
+            this.position.y = typeof y === 'number' ? y : this.position.y;
+            this.position.z = typeof z === 'number' ? z : this.position.z;
+            this.position.a = typeof a === 'number' ? a : this.position.a;
         }
     }
 
@@ -1219,18 +1308,18 @@ class GCodeVirtualizer extends EventEmitter {
             min: {
                 x: minX,
                 y: minY,
-                z: minZ
+                z: minZ,
             },
             max: {
                 x: maxX,
                 y: maxY,
-                z: maxZ
+                z: maxZ,
             },
             delta: {
                 x: maxX - minX,
                 y: maxY - minY,
-                z: maxZ - minZ
-            }
+                z: maxZ - minZ,
+            },
         };
     }
 
@@ -1244,12 +1333,13 @@ class GCodeVirtualizer extends EventEmitter {
 
         let travelXY = Math.hypot(dx, dy);
         if (Number.isNaN(travelXY)) {
-            console.error('Invalid travel while calculating distance between V1 and V2');
+            console.error(
+                'Invalid travel while calculating distance between V1 and V2',
+            );
             return;
         }
         let travel = 0;
         travel = Math.hypot(travelXY, dz);
-
 
         let feed;
         const maxFeedArray = [];
@@ -1284,11 +1374,14 @@ class GCodeVirtualizer extends EventEmitter {
         const f = feed / 60;
 
         if (f === this.lastF) {
-            moveDuration = f !== 0 ? (travel / f) : 0;
+            moveDuration = f !== 0 ? travel / f : 0;
         } else {
-            moveDuration = this.getAcceleratedMove(travel, f, /*this.lastF,*/ minAccel);
+            moveDuration = this.getAcceleratedMove(
+                travel,
+                f,
+                /*this.lastF,*/ minAccel,
+            );
         }
-
 
         this.lastF = f;
         this.totalTime += moveDuration;
@@ -1304,16 +1397,16 @@ class GCodeVirtualizer extends EventEmitter {
         // Since the slowdown is assumed to be uniform, calculate the average velocity for half of the
         // expected displacement.
         // const lastF = lastVelocity * 0.1;
-        const accel = (acceleration === 0 ? 750 : acceleration); // Set a default accel to use for print time in case it's 0 somehow.
+        const accel = acceleration === 0 ? 750 : acceleration; // Set a default accel to use for print time in case it's 0 somehow.
         let halfLen = length / 2;
         const initTime = velocity / accel; // time to final velocity
-        const initDxTime = (0.5 * (velocity /*+ lastF*/) * initTime); // Initial displacement for the time to get to final velocity
+        const initDxTime = 0.5 * velocity /*+ lastF*/ * initTime; // Initial displacement for the time to get to final velocity
         let time = 0;
         if (halfLen >= initDxTime) {
-            halfLen -= (0.5 * (velocity /*+ lastF*/) * initTime);
+            halfLen -= 0.5 * velocity /*+ lastF*/ * initTime;
             time += initTime;
         }
-        time += (halfLen / (velocity /*+ lastF*/)); // constant speed for rest of the time and too short displacements
+        time += halfLen / velocity /*+ lastF*/; // constant speed for rest of the time and too short displacements
 
         return 2 * time; // cut in half before, so double to get full time spent.
     }
@@ -1327,13 +1420,15 @@ class GCodeVirtualizer extends EventEmitter {
     }
 
     getModalChanges() {
-        this.modalChanges[this.modalChanges.length - 1].count = this.modalCounter;
+        this.modalChanges[this.modalChanges.length - 1].count =
+            this.modalCounter;
         this.modalCounter = 0;
         return this.modalChanges;
     }
 
     getFeedrateChanges() {
-        this.feedrateChanges[this.feedrateChanges.length - 1].count = this.feedrateCounter;
+        this.feedrateChanges[this.feedrateChanges.length - 1].count =
+            this.feedrateCounter;
         this.feedrateCounter = 0;
         return this.feedrateChanges;
     }
@@ -1343,13 +1438,15 @@ class GCodeVirtualizer extends EventEmitter {
     }
 
     saveModal(change) {
-        this.modalChanges[this.modalChanges.length - 1].count = this.modalCounter;
+        this.modalChanges[this.modalChanges.length - 1].count =
+            this.modalCounter;
         this.modalCounter = 0;
         this.modalChanges.push({ change: change, count: 0 });
     }
 
     saveFeedrate(change) {
-        this.feedrateChanges[this.feedrateChanges.length - 1].count = this.feedrateCounter;
+        this.feedrateChanges[this.feedrateChanges.length - 1].count =
+            this.feedrateCounter;
         this.feedrateCounter = 0;
         this.feedrateChanges.push({ change: change, count: 0 });
     }
@@ -1361,6 +1458,5 @@ class GCodeVirtualizer extends EventEmitter {
         this.totalTime += time;
     }
 }
-
 
 export default GCodeVirtualizer;

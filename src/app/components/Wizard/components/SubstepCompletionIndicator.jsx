@@ -25,9 +25,18 @@ import React from 'react';
 import cx from 'classnames';
 import styles from '../index.styl';
 
-const SubstepCompletionIndicator = ({ completed = false, future = false, active = false }) => {
+const SubstepCompletionIndicator = ({
+    completed = false,
+    future = false,
+    active = false,
+}) => {
     return (
-        <div className={cx(styles.substepIndicator, { [styles.substepIndicatorComplete]: completed, [styles.substepIndicatorPending]: future })}>
+        <div
+            className={cx(styles.substepIndicator, {
+                [styles.substepIndicatorComplete]: completed,
+                [styles.substepIndicatorPending]: future,
+            })}
+        >
             {completed && <i className="fas fa-fw fa-clipboard-check" />}
             {future && <i className="far fa-fw fa-clipboard" />}
             {active && <i className="fas fa-fw fa-clipboard-list" />}

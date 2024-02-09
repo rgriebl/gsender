@@ -24,9 +24,7 @@
 import deepKeys from 'deep-keys';
 import _ from 'lodash';
 import config from '../services/configstore';
-import {
-    ERR_NOT_FOUND
-} from '../constants';
+import { ERR_NOT_FOUND } from '../constants';
 
 export const get = (req, res) => {
     const query = req.query || {};
@@ -39,7 +37,7 @@ export const get = (req, res) => {
     const key = `state.${query.key}`;
     if (!config.has(key)) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -59,7 +57,7 @@ export const unset = (req, res) => {
     const key = `state.${query.key}`;
     if (!config.has(key)) {
         res.status(ERR_NOT_FOUND).send({
-            msg: 'Not found'
+            msg: 'Not found',
         });
         return;
     }
@@ -85,7 +83,7 @@ export const set = (req, res) => {
         if (typeof oldValue === 'object' && typeof newValue === 'object') {
             config.set(`state.${key}`, {
                 ...oldValue,
-                ...newValue
+                ...newValue,
             });
         } else {
             config.set(`state.${key}`, newValue);

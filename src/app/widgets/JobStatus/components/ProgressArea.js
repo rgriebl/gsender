@@ -37,7 +37,8 @@ import { convertSecondsToTimeStamp } from '../../../lib/datetime';
  */
 const ProgressArea = ({ state }) => {
     const { senderStatus } = state;
-    const { total, received, elapsedTime, remainingTime, startTime } = senderStatus;
+    const { total, received, elapsedTime, remainingTime, startTime } =
+        senderStatus;
 
     /**
      * Format given time value to display minutes and seconds
@@ -49,12 +50,21 @@ const ProgressArea = ({ state }) => {
         }
 
         //Given time is a unix timestamp to be compared to unix timestamp 0
-        const elapsedMinute = moment(moment(givenTime)).diff(moment.unix(0), 'minutes');
-        const elapsedSecond = String((moment(moment(givenTime)).diff(moment.unix(0), 'seconds')));
+        const elapsedMinute = moment(moment(givenTime)).diff(
+            moment.unix(0),
+            'minutes',
+        );
+        const elapsedSecond = String(
+            moment(moment(givenTime)).diff(moment.unix(0), 'seconds'),
+        );
 
         //Grab last two characters in the elapsedSecond variable, which represent the seconds that have passed
-        const strElapsedSecond = `${(elapsedSecond[elapsedSecond.length - 2] !== undefined ? elapsedSecond[elapsedSecond.length - 2] : '')}${String(elapsedSecond[elapsedSecond.length - 1])}`;
-        const formattedSeconds = Math.abs(Number(strElapsedSecond) < 59 ? Number(strElapsedSecond) : `${Number(strElapsedSecond) - 60}`);
+        const strElapsedSecond = `${elapsedSecond[elapsedSecond.length - 2] !== undefined ? elapsedSecond[elapsedSecond.length - 2] : ''}${String(elapsedSecond[elapsedSecond.length - 1])}`;
+        const formattedSeconds = Math.abs(
+            Number(strElapsedSecond) < 59
+                ? Number(strElapsedSecond)
+                : `${Number(strElapsedSecond) - 60}`,
+        );
 
         const hours = elapsedMinute / 60;
 
@@ -95,7 +105,9 @@ const ProgressArea = ({ state }) => {
         return getFinishTime(remainingTime);
     };
 
-    const percentageValue = Number.isNaN(((received / total) * 100).toFixed(0)) ? 0 : ((received / total) * 100).toFixed(0);
+    const percentageValue = Number.isNaN(((received / total) * 100).toFixed(0))
+        ? 0
+        : ((received / total) * 100).toFixed(0);
 
     return (
         <div style={{ width: '50%', marginRight: '1rem' }}>
@@ -103,19 +115,25 @@ const ProgressArea = ({ state }) => {
                 <div className={styles.progressItemsWrapper}>
                     <div className={styles.progressItem}>
                         <span>Time Cutting</span>
-                        <span className={styles.progressItemTime}>{outputFormattedTime(elapsedTime)}</span>
+                        <span className={styles.progressItemTime}>
+                            {outputFormattedTime(elapsedTime)}
+                        </span>
                         <span style={{ color: 'black' }}>{received} Lines</span>
                     </div>
                     <GaugeChart color="#3e85c7" value={percentageValue} />
                     <div className={styles.progressItem}>
                         <span>Time Remaining</span>
-                        <Tooltip
-                            content={updateTime}
-                            hideOnClick
-                        >
-                            <span className={styles.progressItemTime}>{convertSecondsToTimeStamp(remainingTime, startTime)}</span>
+                        <Tooltip content={updateTime} hideOnClick>
+                            <span className={styles.progressItemTime}>
+                                {convertSecondsToTimeStamp(
+                                    remainingTime,
+                                    startTime,
+                                )}
+                            </span>
                         </Tooltip>
-                        <span style={{ color: 'black' }}>{total - received} Lines</span>
+                        <span style={{ color: 'black' }}>
+                            {total - received} Lines
+                        </span>
                     </div>
                 </div>
             </div>

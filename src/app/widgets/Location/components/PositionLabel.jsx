@@ -31,11 +31,13 @@ const PositionLabel = ({ value, small }) => {
     value = String(value);
     return (
         <div
-            style={{ fontSize: small ? '14px' : '1.75rem',
+            style={{
+                fontSize: small ? '14px' : '1.75rem',
                 padding: '0px 5px',
                 textAlign: 'center',
                 color: small ? SECONDARY_COLOR : PRIMARY_COLOR,
-                fontWeight: small ? '400' : 'bold' }}
+                fontWeight: small ? '400' : 'bold',
+            }}
             className={styles.axesPositionLabel}
         >
             <span>{value}</span>
@@ -44,10 +46,7 @@ const PositionLabel = ({ value, small }) => {
 };
 
 PositionLabel.propTypes = {
-    value: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-    ]),
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     small: PropTypes.bool,
 };
 

@@ -29,17 +29,19 @@ import {
     TOOL_CHANGE,
     UPDATE_CONTROLLER_SETTINGS,
     UPDATE_CONTROLLER_STATE,
-    UPDATE_FEEDER_STATUS, UPDATE_SENDER_STATUS, UPDATE_WORKFLOW_STATE,
+    UPDATE_FEEDER_STATUS,
+    UPDATE_SENDER_STATUS,
+    UPDATE_WORKFLOW_STATE,
     UPDATE_HOMING_FLAG,
     RESET_HOMING,
     UPDATE_PARTIAL_CONTROLLER_SETTINGS,
     UPDATE_TERMINAL_HISTORY,
-    UPDATE_SETTINGS_DESCRIPTIONS, UPDATE_ALARM_DESCRIPTIONS
+    UPDATE_SETTINGS_DESCRIPTIONS,
+    UPDATE_ALARM_DESCRIPTIONS,
 } from '../actions/controllerActions';
 import { in2mm, mm2in } from '../lib/units';
 import { WORKFLOW_STATE_IDLE } from '../constants';
 import store from '../store';
-
 
 const initialState = {
     type: '',
@@ -47,36 +49,36 @@ const initialState = {
     state: {},
     modal: {},
     mpos: {
-        x: 0.00,
-        y: 0.00,
-        z: 0.00,
-        a: 0.00,
-        b: 0.00,
-        c: 0.00
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        a: 0.0,
+        b: 0.0,
+        c: 0.0,
     },
     wpos: {
-        x: 0.00,
-        y: 0.00,
-        z: 0.00,
-        a: 0.00,
-        b: 0.00,
-        c: 0.00
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        a: 0.0,
+        b: 0.0,
+        c: 0.0,
     },
     homingFlag: false,
     homingRun: false,
     feeder: {
-        status: null
+        status: null,
     },
     sender: {
-        status: null
+        status: null,
     },
     workflow: {
-        state: WORKFLOW_STATE_IDLE
+        state: WORKFLOW_STATE_IDLE,
     },
     tool: {
-        context: null
+        context: null,
     },
-    terminalHistory: []
+    terminalHistory: [],
 };
 
 /**
@@ -95,19 +97,21 @@ function mapPosToFeedbackUnits(pos, settings) {
     };
     const $13 = ensurePositiveNumber(_get(settings, 'settings.$13'));
 
-    return _mapValues({
-        ...defaultPos,
-        ...pos,
-    }, (val) => {
-        return ($13 > 0) ? in2mm(val) : val;
-    });
+    return _mapValues(
+        {
+            ...defaultPos,
+            ...pos,
+        },
+        (val) => {
+            return $13 > 0 ? in2mm(val) : val;
+        },
+    );
 }
 
 function mapFeedrateToFeedbackUnits(feedrate, settings) {
     const $13 = ensurePositiveNumber(_get(settings, 'settings.$13'));
-    return ($13 > 0) ? in2mm(feedrate) : feedrate;
+    return $13 > 0 ? in2mm(feedrate) : feedrate;
 }
-
 
 function consolidateModals(state) {
     const defaultModals = {
@@ -119,14 +123,14 @@ function consolidateModals(state) {
         units: '',
         wcs: '',
         distance: '',
-        tool: ''
+        tool: '',
     };
 
     const modal = _get(state, 'parserstate.modal');
 
     return {
         ...defaultModals,
-        ...modal
+        ...modal,
     };
 }
 
@@ -140,28 +144,33 @@ const updateMachineLimitsFromEEPROM = ({ settings }) => {
         ...machineProfile.limits,
         xmax,
         ymax,
-        zmax
+        zmax,
     };
     machineProfile.mm = {
         depth: ymax,
         height: zmax,
-        width: xmax
+        width: xmax,
     };
     machineProfile.in = {
         depth: Number(mm2in(ymax).toFixed(2)),
         height: Number(mm2in(zmax).toFixed(2)),
-        width: Number(mm2in(xmax).toFixed(2))
+        width: Number(mm2in(xmax).toFixed(2)),
     };
     store.set('workspace.machineProfile', machineProfile);
 };
-
 
 const reducer = createReducer(initialState, {
     [UPDATE_CONTROLLER_SETTINGS]: (payload, reducerState) => {
         const { type, settings } = payload;
         const state = _get(reducerState, 'state');
-        const wpos = mapPosToFeedbackUnits(_get(state, 'status.wpos'), settings);
-        const mpos = mapPosToFeedbackUnits(_get(state, 'status.mpos'), settings);
+        const wpos = mapPosToFeedbackUnits(
+            _get(state, 'status.wpos'),
+            settings,
+        );
+        const mpos = mapPosToFeedbackUnits(
+            _get(state, 'status.mpos'),
+            settings,
+        );
         const modal = consolidateModals(state);
         updateMachineLimitsFromEEPROM(settings);
 
@@ -170,7 +179,7 @@ const reducer = createReducer(initialState, {
             settings,
             mpos,
             wpos,
-            modal
+            modal,
         };
     },
     [UPDATE_PARTIAL_CONTROLLER_SETTINGS]: (payload, reducerState) => {
@@ -179,46 +188,60 @@ const reducer = createReducer(initialState, {
                 ...reducerState.settings,
                 settings: {
                     ...reducerState.settings.settings,
-                    ...payload
-                }
-            }
+                    ...payload,
+                },
+            },
         };
     },
     [UPDATE_CONTROLLER_STATE]: (payload, reducerState) => {
         let { type, state } = payload;
         const settings = _get(reducerState, 'settings');
         const modal = consolidateModals(state);
-        const wpos = mapPosToFeedbackUnits(_get(state, 'status.wpos'), settings);
-        const mpos = mapPosToFeedbackUnits(_get(state, 'status.mpos'), settings);
-        state.status.feedrate = mapFeedrateToFeedbackUnits(_get(state, 'status.feedrate'), settings);
+        const wpos = mapPosToFeedbackUnits(
+            _get(state, 'status.wpos'),
+            settings,
+        );
+        const mpos = mapPosToFeedbackUnits(
+            _get(state, 'status.mpos'),
+            settings,
+        );
+        state.status.feedrate = mapFeedrateToFeedbackUnits(
+            _get(state, 'status.feedrate'),
+            settings,
+        );
 
         return {
             type,
             state,
             modal,
             wpos,
-            mpos
+            mpos,
         };
     },
     [UPDATE_FEEDER_STATUS]: (payload, reducerState) => {
         return {
             feeder: {
-                status: _get(payload, 'status', _get(reducerState, 'status'))
-            }
+                status: _get(payload, 'status', _get(reducerState, 'status')),
+            },
         };
     },
     [UPDATE_SENDER_STATUS]: (payload, reducerState) => {
         return {
             sender: {
-                status: _get(payload, 'status', _get(reducerState, 'status'))
-            }
+                status: _get(payload, 'status', _get(reducerState, 'status')),
+            },
         };
     },
     [UPDATE_WORKFLOW_STATE]: (payload, reducerState) => {
         return {
             workflow: {
-                state: _get(payload, 'state', _get(reducerState, 'status.activeState')) || WORKFLOW_STATE_IDLE,
-            }
+                state:
+                    _get(
+                        payload,
+                        'state',
+                        _get(reducerState, 'status.activeState'),
+                    ) || WORKFLOW_STATE_IDLE,
+            },
         };
     },
     [TOOL_CHANGE]: (context, reducerState) => {
@@ -228,24 +251,32 @@ const reducer = createReducer(initialState, {
         const { homingFlag } = payload;
         return {
             homingFlag,
-            homingRun: true
+            homingRun: true,
         };
     },
     [RESET_HOMING]: (payload, reducerState) => {
         return {
             homingFlag: false,
-            homingRun: false
+            homingRun: false,
         };
     },
     [UPDATE_TERMINAL_HISTORY]: (payload, reducerState) => {
         const newHistory = [...reducerState.terminalHistory, ...payload];
-        if (reducerState.terminalHistory.length > MAX_TERMINAL_INPUT_ARRAY_SIZE) {
-            for (let i = 0; i < reducerState.terminalHistory.length - MAX_TERMINAL_INPUT_ARRAY_SIZE; i++) {
+        if (
+            reducerState.terminalHistory.length > MAX_TERMINAL_INPUT_ARRAY_SIZE
+        ) {
+            for (
+                let i = 0;
+                i <
+                reducerState.terminalHistory.length -
+                    MAX_TERMINAL_INPUT_ARRAY_SIZE;
+                i++
+            ) {
                 newHistory.shift();
             }
         }
         return {
-            terminalHistory: newHistory
+            terminalHistory: newHistory,
         };
     },
     [UPDATE_SETTINGS_DESCRIPTIONS]: (payload, reducerState) => {
@@ -253,8 +284,8 @@ const reducer = createReducer(initialState, {
         return {
             settings: {
                 ...reducerState.settings,
-                descriptions
-            }
+                descriptions,
+            },
         };
     },
     [UPDATE_ALARM_DESCRIPTIONS]: (payload, reducerState) => {
@@ -262,10 +293,10 @@ const reducer = createReducer(initialState, {
         return {
             settings: {
                 ...reducerState.settings,
-                alarms
-            }
+                alarms,
+            },
         };
-    }
+    },
 });
 
 export default reducer;

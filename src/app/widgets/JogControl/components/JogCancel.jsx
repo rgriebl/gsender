@@ -31,7 +31,11 @@ const JogCancel = ({ activeState, ...props }) => {
         <button
             {...props}
             type="button"
-            className={cx(styles.jogCancelButton, { [styles.jogActive]: (activeState === GRBL_ACTIVE_STATE_RUN || activeState === GRBL_ACTIVE_STATE_JOG) })}
+            className={cx(styles.jogCancelButton, {
+                [styles.jogActive]:
+                    activeState === GRBL_ACTIVE_STATE_RUN ||
+                    activeState === GRBL_ACTIVE_STATE_JOG,
+            })}
             title="Cancel movement"
         >
             <i className="fas fa-ban" />

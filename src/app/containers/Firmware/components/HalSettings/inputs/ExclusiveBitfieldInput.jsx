@@ -6,7 +6,12 @@ import BitfieldInput from 'Containers/Firmware/components/HalSettings/inputs/Bit
 const ExclusiveBitfieldInput = ({ info, setting, onChange }) => {
     return (
         <>
-            <BitfieldInput info={info} onChange={onChange} setting={setting} isExclusive={true} />
+            <BitfieldInput
+                info={info}
+                onChange={onChange}
+                setting={setting}
+                isExclusive={true}
+            />
         </>
     );
 };

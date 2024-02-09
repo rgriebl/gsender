@@ -30,7 +30,7 @@ const WidgetList = (props) => {
     const style = {
         maxHeight: Math.max(window.innerHeight / 2, 200),
         overflowY: 'scroll',
-        padding: 15
+        padding: 15,
     };
 
     return (
@@ -55,7 +55,7 @@ const WidgetList = (props) => {
 
 WidgetList.propTypes = {
     list: PropTypes.array.isRequired,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
 };
 
 export default WidgetList;
