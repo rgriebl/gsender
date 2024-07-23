@@ -24,7 +24,7 @@
 /* eslint import/no-unresolved: 0 */
 import { app, autoUpdater, BrowserWindow } from 'electron';
 import os from 'os';
-import log from './log';
+import log from 'apps/electron/src/log';
 
 const notify = (title, message) => {
     const windows = BrowserWindow.getAllWindows();

@@ -22,7 +22,7 @@
  */
 
 import debug from 'debug';
-import pkg from '../package.json';
+import pkg from 'package.json';
 
 const log = {
     debug: debug(pkg + ':debug'),

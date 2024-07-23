@@ -20,7 +20,7 @@
  * of Sienci Labs Inc. in Waterloo, Ontario, Canada.
  *
  */
-import log from './log';
+import log from 'apps/electron/src/log';
 
 const path = require('path');
 const fs = require('fs').promises;

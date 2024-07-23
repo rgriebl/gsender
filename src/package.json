@@ -12,7 +12,7 @@
     "type": "git",
     "url": "https://github.com/Sienci-Labs/gsender"
   },
-  "main": "main.js",
+  "main": "../apps/electron/main.js",
   "dependencies": {
     "@sentry/electron": "^4.14.0",
     "@sentry/react": "^7.72.0",

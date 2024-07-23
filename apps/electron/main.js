@@ -32,12 +32,12 @@ import path from 'path';
 import fs from 'fs';
 import * as Sentry from '@sentry/electron/main';
 
-import WindowManager from './electron-app/WindowManager';
-import launchServer from './server-cli';
-import pkg from './package.json';
-import { parseAndReturnGCode } from './electron-app/RecentFiles';
-import { asyncCallWithTimeout } from './electron-app/AsyncTimeout';
-import { getGRBLLog } from './electron-app/grblLogs';
+import WindowManager from 'apps/electron/src/WindowManager';
+import launchServer from 'server-cli';
+import pkg from 'package.json';
+import { parseAndReturnGCode } from 'apps/electron/src/RecentFiles';
+import { asyncCallWithTimeout } from 'apps/electron/src/AsyncTimeout';
+import { getGRBLLog } from 'apps/electron/src/grblLogs';
 
 let windowManager = null;
 let hostInformation = {};
