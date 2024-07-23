@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const dotenv = require('dotenv');
 
-const babelConfig = require('./babel.config');
-const pkg = require('./package.json');
+const babelConfig = require('babel.config');
+const pkg = require('package.json');
 
 dotenv.config({
     path: path.resolve('webpack.config.server.development.env')

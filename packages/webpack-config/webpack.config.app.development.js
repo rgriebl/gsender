@@ -9,9 +9,9 @@ const stylusLoader = require('stylus-loader');
 const webpack = require('webpack');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WriteFileWebpackPlugin = require('write-file-webpack-plugin');
-const babelConfig = require('./babel.config');
-const buildConfig = require('./build.config');
-const pkg = require('./package.json');
+const babelConfig = require('babel.config');
+const buildConfig = require('build.config');
+const pkg = require('package.json');
 
 dotenv.config();
 

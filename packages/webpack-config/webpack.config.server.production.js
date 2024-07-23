@@ -8,8 +8,8 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
-const babelConfig = require('./babel.config');
-const pkg = require('./package.json');
+const babelConfig = require('babel.config');
+const pkg = require('package.json');
 
 dotenv.config({
     path: path.resolve('webpack.config.server.production.env')

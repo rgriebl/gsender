@@ -15,9 +15,9 @@ const webpack = require('webpack');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
-const babelConfig = require('./babel.config');
-const buildConfig = require('./build.config');
-const pkg = require('./package.json');
+const babelConfig = require('babel.config');
+const buildConfig = require('build.config');
+const pkg = require('package.json');
 
 dotenv.config({
     path: path.resolve('webpack.config.app.production.env')
