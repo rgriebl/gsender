@@ -1,9 +1,9 @@
 {
-  "name": "client",
+  "name": "@gsender/client",
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "echo 'tester'",
+    "dev": "vite",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --ssrManifest --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "compression": "^1.7.4",
-    "config": "*",
+    "@gsender/config": "workspace:*",
     "express": "^4.19.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sirv": "^2.0.4",
-    "ui-common": "*"
+    "@gsender/ui-common": "workspace:*"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

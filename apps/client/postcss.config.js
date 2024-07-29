@@ -1,1 +1,1 @@
-module.exports = require('config/postcss.config')
+module.exports = require('@gsender/config/postcss.config.js')
