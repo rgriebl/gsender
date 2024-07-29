@@ -1,0 +1,67 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "~actions/*": [
+                "actions/*"
+            ],
+            "~api/*": [
+                "api/*"
+            ],
+            "~assets/*": [
+                "assets/*"
+            ],
+            "~components/*": [
+                "components/*"
+            ],
+            "~config/*": [
+                "config/*"
+            ],
+            "~constants/*": [
+                "constants/*"
+            ],
+            "~containers/*": [
+                "containers/*"
+            ],
+            "~fonts/*": [
+                "fonts/*"
+            ],
+            "~i18n/*": [
+                "i18n/*"
+            ],
+            "~images/*": [
+                "images/*"
+            ],
+            "~lib/*": [
+                "lib/*"
+            ],
+            "~polyfill/*": [
+                "polyfill/*"
+            ],
+            "~reducers/*": [
+                "reducers/*"
+            ],
+            "~sagas/*": [
+                "sagas/*"
+            ],
+            "~store/*": [
+                "store/*"
+            ],
+            "~styles/*": [
+                "styles/*"
+            ],
+            "~widgets/*": [
+                "widgets/*"
+            ],
+            "~wizards/*": [
+                "wizards/*"
+            ],
+            "~workers/*": [
+                "workers/*"
+            ],
+            "~app/*": [
+                "app/*"
+            ]
+        }
+    }
+}
