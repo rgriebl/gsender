@@ -25,7 +25,7 @@ import ensureArray from 'ensure-array';
 import superagent from 'superagent';
 import superagentUse from 'superagent-use';
 // import axios from 'axios';
-import store from '../store';
+import store from 'apps/client-legacy/store';
 
 const bearer = (request) => {
     const token = store.get('session.token');

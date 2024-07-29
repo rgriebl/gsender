@@ -29,7 +29,7 @@ require('regenerator-runtime/runtime');
 const path = require('path');
 const isElectron = require('is-electron');
 const program = require('commander');
-const pkg = require('./package.json');
+const pkg = require('src/package.json');
 
 // Defaults to 'production'
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
