@@ -23,7 +23,7 @@
 
 import path from 'path';
 import pkg from '../../package.json';
-import { languages } from '../../../build.config';
+import { languages } from '@gsender/config/build.config';
 
 const RC_FILE = pkg.version.includes('EDGE') ? '.edge_rc' : '.sender_rc';
 const SESSION_PATH = '.sienci-sessions';

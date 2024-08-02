@@ -10,7 +10,7 @@ const webpack = require('webpack');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WriteFileWebpackPlugin = require('write-file-webpack-plugin');
 const babelConfig = require('babel.config');
-const buildConfig = require('build.config');
+const buildConfig = require('packages/configs/build.config');
 const pkg = require('package.json');
 
 dotenv.config();

@@ -449,7 +449,7 @@ const appMain = () => {
         // }));
     }
 
-    const { viteServer } = require('./vite-server');
+    const { viteServer } = require('apps/vite-server');
     viteServer(app);
 
     return app;
