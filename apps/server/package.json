@@ -2,11 +2,41 @@
   "name": "@gsender/server",
   "version": "1.0.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack-cli --progress --config ../../packages/webpack-config/webpack.config.server.development.js"
+  },
   "dependencies": {
-
+    "http-proxy": "~1.18.1",
+    "lodash": "~4.17.11",
+    "webappengine": "~1.2.0"
   },
   "devDependencies": {
-
+    "@sentry/webpack-plugin": "^2.7.1",
+    "html-webpack-plugin": "~3.2.0",
+    "terser-webpack-plugin": "^4",
+    "webpack": "~4.47.0",
+    "webpack-cli": "~3.3.1",
+    "webpack-dev-middleware": "~3.6.2",
+    "webpack-dev-server": "~3.3.1",
+    "webpack-hot-middleware": "~2.24.3",
+    "webpack-manifest-plugin": "~2.0.4",
+    "webpack-node-externals": "~1.7.2",
+    "babel-core": "~7.0.0-bridge.0",
+    "babel-eslint": "~10.0.1",
+    "babel-loader": "~8.0.5",
+    "babel-plugin-lodash": "~3.3.4",
+    "@babel/cli": "~7.4.3",
+    "@babel/core": "~7.4.3",
+    "@babel/node": "~7.2.2",
+    "@babel/polyfill": "~7.4.3",
+    "@babel/preset-env": "~7.4.3",
+    "@babel/preset-react": "~7.0.0",
+    "@babel/register": "~7.4.0",
+    "dotenv": "~7.0.0",
+    "bcrypt-nodejs": "0.0.3",
+    "chalk": "~2.4.2",
+    "ensure-array": "~1.0.0",
+    "ensure-type": "^1.4.2",
+    "expand-tilde": "~2.0.2"
   }
 }

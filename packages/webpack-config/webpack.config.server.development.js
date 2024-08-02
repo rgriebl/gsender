@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const dotenv = require('dotenv');
 
-const babelConfig = require('babel.config');
-const pkg = require('package.json');
+const babelConfig = require('./babel.config');
+const pkg = require('./package.json');
 
 dotenv.config({
     path: path.resolve('webpack.config.server.development.env')
@@ -21,18 +21,20 @@ const publicPath = ((payload) => {
 })(payload);
 const buildVersion = pkg.version;
 
+const rootFromConfig = path.resolve(__dirname, '..', '..');
+
 module.exports = {
     mode: 'development',
     devtool: 'cheap-module-eval-source-map',
     target: 'node', // ignore built-in modules like path, fs, etc.
-    context: path.resolve(__dirname, 'src/server'),
+    context: path.resolve(rootFromConfig, 'apps/server/src'),
     entry: {
         index: [
             './index.js'
         ]
     },
     output: {
-        path: path.resolve(__dirname, 'output/server'),
+        path: path.resolve(rootFromConfig, 'output/server'),
         filename: '[name].js',
         libraryTarget: 'commonjs2'
     },
