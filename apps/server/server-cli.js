@@ -108,7 +108,7 @@ module.exports = () => new Promise((resolve, reject) => {
     process.chdir(path.resolve(__dirname, 'server'));
     let kiosk = !!options.kiosk;
 
-    require('./server').createServer({
+    require('./src').createServer({
         port: options.port,
         host: options.host,
         backlog: options.backlog,

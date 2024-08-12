@@ -78,7 +78,7 @@ import {
     FILE_UNLOAD,
     ALARM,
     ERROR
-} from '../../../app_old/constants';
+} from '../../../client-legacy/constants';
 import { determineHALMachineZeroFlag, determineMaxMovement, getAxisMaximumLocation } from '../../lib/homing';
 import { calcOverrides } from '../runOverride';
 import ToolChanger from '../../lib/ToolChanger';

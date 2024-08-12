@@ -82,7 +82,7 @@ import {
     FILE_TYPE,
     ALARM,
     ERROR
-} from '../../../app_old/constants';
+} from '../../../client-legacy/constants';
 import { determineMachineZeroFlagSet, determineMaxMovement, getAxisMaximumLocation } from '../../lib/homing';
 import { calcOverrides } from '../runOverride';
 import { GCODE_TRANSLATION_TYPE, translateGcode } from '../../lib/gcode-translation';
