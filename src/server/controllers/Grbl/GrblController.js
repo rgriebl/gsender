@@ -210,12 +210,13 @@ class GrblController {
         this.engine = engine;
 
 
-        const { port, baudrate, rtscts } = { ...options };
+        const { port, baudrate, rtscts, network } = { ...options };
         this.options = {
             ...this.options,
             port: port,
             baudrate: baudrate,
-            rtscts: rtscts
+            rtscts: rtscts,
+            network
         };
 
         // Connection
@@ -223,6 +224,7 @@ class GrblController {
             path: port,
             baudRate: baudrate,
             rtscts: rtscts,
+            network,
             writeFilter: (data) => {
                 const line = data.trim();
 
