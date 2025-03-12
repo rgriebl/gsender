@@ -611,7 +611,7 @@ class CNCEngine {
                     if (device.banner.includes(GRBL) || device.banner.includes(GRBLHAL)) {
                         this.networkDevices.push({
                             ...device,
-                            controllerType: device.banner.includes(GRBL) ? GRBL : GRBLHAL,
+                            controllerType: device.banner.includes(GRBLHAL) ? GRBLHAL : GRBL,
                         });
                     }
                 });
