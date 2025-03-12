@@ -32,7 +32,6 @@ import PortListing from './PortListing';
 import styles from './Index.styl';
 import StatusIndicator from './StatusIndicator';
 import FirmwareSelector from './FirmwareSelector';
-import { GRBLHAL } from 'Constants';
 import FirmwareListing from './FirmwareListing';
 
 
@@ -241,10 +240,10 @@ class NavbarConnection extends PureComponent {
                         )
                     }
                     {
-                        !connected && controllerType === GRBLHAL && <h5>Network Devices</h5>
+                        !connected && <h5>Network Devices</h5>
                     }
                     {
-                        !connected && controllerType === GRBLHAL && (
+                        !connected && (
                             <div className={cx(styles.firmwareSelector, styles.bottomSpace)}>
                                 <PortListing
                                     port={ip}
